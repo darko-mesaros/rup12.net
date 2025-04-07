@@ -34,7 +34,7 @@ const options = {
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://jugokozmos.net',
+  site: 'https://rup12.net',
 
     markdown: {
         syntaxHighlight: false,
