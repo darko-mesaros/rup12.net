@@ -1,0 +1,9 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "rup12",
+  // Update to today's date
+  "compatibility_date": "2025-04-06",
+  "assets": {
+    "directory": "./dist"
+  }
+}
