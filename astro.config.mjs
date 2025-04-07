@@ -46,7 +46,7 @@ export default defineConfig({
     integrations: [react(), sitemap()],
     output: 'static',
 
-    adapter: cloudflare(),
+    //adapter: cloudflare(),
     vite: {
         plugins: [tailwindcss()],
         resolve: {
