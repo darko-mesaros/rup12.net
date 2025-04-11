@@ -30,7 +30,7 @@ This is really neat. Amazon Q Developer now has the a tools permissions/control 
 
 You can now enter `/tools` and then something like `untrust` and `trust` and `trustall`. Simply put, when you `untrust` a tool, that tool needs to ask for confirmation to do anything. So I can do:
 
-```
+```text
 /tools untrust fs_read
 ```
 
