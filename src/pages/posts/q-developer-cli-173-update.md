@@ -6,7 +6,7 @@ description: "Amazon Q Developer CLI1.7.3 introduces five key improvements: just
 excerpt: "A quick update on some neat new features coming out of Amazon Q Developer CLI"
 tags: [tools, aws, q, genai, development]
 image:
-  src:
+  src: /post-content/q-developer-173/header.jpg
   alt:
 pubDate: 2025-04-10
 isPinned: true
@@ -64,11 +64,11 @@ You can do multi-line things now within the actual command line. Love it!
 
 Lastly, there are additional controls when it comes to managing the context. Within `q` type `/context`, and you can actually see additional commands and more clarifications about the context rules that are part of Q developer CLI.
 
-![Screenshot of a terminal window showing amazon Q and the result of the /context command](22nkh44t6z1kg2nk8wyk.png)
+![Screenshot of a terminal window showing amazon Q and the result of the /context command](/post-content/q-developer-173/context_dialog.png)
 
 By typing `/context show` it will show you how the current *global* and *profile* contexts are configured.
 
-![Screenshot of a terminal window showing amazon q and showing more details of the /context show command](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/v17rjswex4mkznv0xomm.png)
+![Screenshot of a terminal window showing amazon q and showing more details of the /context show command](/post-content/q-developer-173/context_show.png)
 
 This isn't anything new, but it's a cleaner way of having you work with your context now and looks way nicer inside of Q CLI.
 
