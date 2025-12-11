@@ -9,7 +9,7 @@ const { description } = AppConfig;
 const { frontmatter } = Astro.props;
 ---
 
-<Base head={{ title: frontmatter.title, description }}>
+<Base head={{ title: frontmatter.title, description, image: `https://rup12.net/${frontmatter.image.src}` }}>
 	<div class="mx-auto w-full max-w-screen-lg">
 		<PostHeader
 			title={frontmatter.title}
