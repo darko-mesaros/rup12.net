@@ -2,8 +2,8 @@
 layout: ../../layouts/post.astro
 title: "Write your MCP servers in Rust"
 author: "Darko"
-description: ""
-excerpt: ""
+description: "There is more people writing MCP Servers than using MCP Servers. I think 🤔 So let's learn how to write one in Rust."
+excerpt: "However, I think we can make this better. We can have it be fast, compiled, safe and written in Rust 🦀 (I am fully aware that this just adds to the *'Just rewrite it in Rust'* meme)."
 tags: [rust, mcp, anyhow, llms, kiro]
 image:
   src: /post-content/write-your-mcps-in-rust/header.png
