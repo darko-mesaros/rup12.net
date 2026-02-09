@@ -1,6 +1,6 @@
 ---
 layout: ../../layouts/post.astro
-title: "Can my SPARC server host my website?"
+title: "Can my SPARC server host a website?"
 author: "Darko"
 description: "Can I host a website on a 25 year old server running a CPU architecture almost no one supports?"
 excerpt: "Okay, so how do we get this thing to the internet? Port Forwarding? Dynamic DNS? IPv6? Not a chance! I'm not exposing an IP address of a server in my garage to the internet. 👀 There must be a way to, proxy this! I was thinking of some sort of reverse proxy in the cloud, setting up a server to do something. But..."
@@ -41,7 +41,7 @@ To install the operating system on the Netra I had to use PXE Boot and TFTP/NFS,
 
 OpenBSD works like a charm. Once I was able to boot the system (and run the installer), I ran into almost no issues. Even though it is running on a 25 year old system it still works rather well. Once I had OpenSSH set up, it was using around 55MB of RAM. While I am not as familiar with OpenBSD as I am with Linux, I find working on it to be rather straightforward. Package management is done via the `pkg_*` utility, and there seems to be a plethora of [packages](https://www.openbsdhandbook.com/package-search/) available even for the `Sparc64` architecture (I even got Rust running 🦀). 
 
-![](/post-content/can-my-sparc-server-host-my-website/neofetch.png)
+![](/post-content/can-my-sparc-server-host-my-website/neofetch.webp)
 
 The packages I found necessary for this adventure were: `git`, `vim`, `neofetch`, `htop`, `rsync`. Yes, that's it. To install the packages it is as easy as running:
 ```bash
@@ -95,7 +95,7 @@ Okay, so how do we get this thing to the internet? Port Forwarding? Dynamic DNS?
 
 Yes, there is a *however*. The `cloudflared` [daemon](https://github.com/cloudflare/cloudflared) does not really work on `Sparc64`, and while it is open source and written in Go. I cannot really compile it myself there, as Go (unlike Rust) does not support the `Sparc64` CPU architecture. So how do I get this daemon running on the Netra. Well, that's the neat part, *I don't*.
 
-![](/post-content/can-my-sparc-server-host-my-website/neat.png)
+![](/post-content/can-my-sparc-server-host-my-website/neat.webp)
 
 CloudFlare's tunnel daemon also supports the ability to forward traffic to a remote host. This means I can install `cloudflared` on some more modern host running on the same network, and just forward traffic to the Netra. This can be something as simple as Raspberry Pi, but... wait! I have a entire [Proxmox](https://www.proxmox.com/en/) setup running at home. I'm sure I can make a container to do just this. And after a quick search through the [Proxmox LXC helper scripts](https://community-scripts.github.io/ProxmoxVE/scripts) I found *exactly* what I need. 
 
@@ -123,7 +123,7 @@ Here I just forward all traffic to `192.168.1.248` which is that Netra server, o
 
 In rather simple terms, here is how this architecture looks like:
 
-![](/post-content/can-my-sparc-server-host-my-website/sparc_web.png)
+![](/post-content/can-my-sparc-server-host-my-website/sparc_web.webp)
 
 ## Before we go, some security
 
