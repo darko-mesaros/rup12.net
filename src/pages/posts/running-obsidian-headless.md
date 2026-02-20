@@ -14,38 +14,31 @@ isPinned: true
 
 ## Running Obsidian without x11
 
-These days we are all (trying to use) using Agents! Right? From helping you with your day-to-day coding, to managing social media research, to even helping you plan out your days. Some of us use coding assistants, some of us web interfaces, but there is a number of us that want to build bespoke agents that run on our own little pieces of the internet. Well, I wanted to build one that would do some daily research on certain subreddits and write down its findings inside of my [Obsidian](https://obsidian.md/) notes.
+These days we are all (trying to use) using Agents! **Right?**  From helping you with your day-to-day coding, to managing social media research, to even helping you plan out your days. Some of us use coding assistants, some of us web interfaces, but there is a number of us that want to build *bespoke agents* that run on our own little pieces of the internet. Well, I wanted to build one that would do some daily research on certain subreddits and write down its findings inside of my [Obsidian](https://obsidian.md/) notes. What could go wrong!
 
-Obsidian is an excellent note taking tool that I use extensively for all my personal notes. Projects I build, tasks I need to do. For a small fee it will even sync up my notes across multiple devices. Definitely [the best money ever spent](https://www.makeuseof.com/why-i-pay-for-obsidian-sync/). So I wanted to give my agent access to these notes. (side note: The notes are just locally stored markdown files, nothing fancier than that)
+First off, Obsidian is an excellent note taking tool that I use extensively for all my personal notes. Projects I build, tasks I need to do. For a small fee it will even sync up my notes across multiple devices. Definitely [the best money ever spent](https://www.makeuseof.com/why-i-pay-for-obsidian-sync/). Now I wanted to give my agent access to these notes. (side note: The notes are just locally stored markdown files, nothing fancier than that)
 
-But there was a catch. I wanted to run this in my home lab, on a virtual machine I have for just these kinds of utilities. So what's the catch? Well, to run Obsidian and have it start syncing there are a few steps:
+But there was a catch. I wanted to run this in my home lab, on a virtual machine. So... What's the catch? Well, to run Obsidian and have it start syncing there are a few steps:
 
-1. Install it (duh)
-2. Launch Obsidian
-3. Log in with your sync username and password
+1. **Install** it (duh)
+2. **Launch** Obsidian
+3. **Log in** with your sync username and password
 
 Hmm, so step **number 2** is the problem. I cannot open Obsidian as I have no GUI running on this headless server. I can certainly install it but once I try to start it: 
-```text
-LaunchProcess: failed to execvp:
-xdg-settings
-2026-02-20 04:56:37 Loaded main app package /usr/lib/obsidian/obsidian.asar
-[12699:0219/205637.648400:ERROR:ui/ozone/platform/x11/ozone_platform_x11.cc:249] Missing X server or $DISPLAY
-[12699:0219/205637.648457:ERROR:ui/aura/env.cc:257] The platform failed to initialize.  Exiting.
-```
-
-I am missing that GUI/x11 here. But I really don't want x11 running on this server. How can I start Obsidian to do my login bit?
 
 ![](/post-content/running-obsidian-on-a-headless-server/no-x.png)
+
+I am missing that GUI/x11 here. But I really don't want x11 running on this server. So how can I start Obsidian to do my login bit?
 
 **NOTE:** I run [Arch Linux](https://archlinux.org/) (btw), because I feel very comfortable with it. Your mileage may vary with other distros.
 
 ## SSH x11 forwarding
 
-Ah, the tried and true X11 forwarding. The ability to have a "remote desktop" [purely via SSH](https://en.wikipedia.org/wiki/X_Window_System#Remote_desktop). In essence it enables a local X11 client (my Linux laptop) to execute remote X11 applications running on my server. Even though the server does not have any X11 software installed, nor it has a X Server running.
+Ah, the tried and true **X11 forwarding**. The ability to have a "remote desktop" [purely via SSH](https://en.wikipedia.org/wiki/X_Window_System#Remote_desktop). In essence it enables a local X11 client (my Linux laptop) to execute remote X11 applications running on my server. Even though the server does not have any X11 software installed, nor it has a X Server running.
 
 Cathode Ray Dude, has an [excellent video](https://www.youtube.com/watch?v=XHGKKdyU2bE) adjacent this topic. I do recommend you check it out.
 
-So with X11 forward I will be able to start Obsidian for the first time and set up sync. Let's do this. To get this started you need to do two things:
+So with X11 forwarding I will be able to start Obsidian for the first time and set up sync. Let's do this. To get this started you need to do two things:
 
 1. Install `xauth` on your server (unless it already has it)
 2. Enable `X11Forwarding yes` in your `/etc/ssh/sshd_config` file (on the server)
@@ -61,17 +54,17 @@ ssh -X user@server obsidian
 **Boom** 💥 - Look at that!
 ![](/post-content/running-obsidian-on-a-headless-server/x11-forward.png)
 
-Okay, not log in, set your vault. And you are good to go. Oh and if you are a paid customer, and have the [catalyst licence](https://help.obsidian.md/catalyst) you should also enable the [Command Line version](https://help.obsidian.md/cli) of Obsidian.
+Okay, now log in, set your vault. And you are good to go. Oh and if you are a paid customer, and have the [catalyst licence](https://help.obsidian.md/catalyst) you should also enable the [Command Line version](https://help.obsidian.md/cli) of Obsidian. Just in case.
 
-We are good to go. But now, one more problem. I don't want Obsidian just running like this, via SSH and X11 forwarding. I want it running truly headless, meaning I just run `obisidian` at startup and let it be. Well for that, let's talk about *faking* X11.
+We are almost, good to go. Except, one more problem. I don't want Obsidian just running like this, via SSH and X11 forwarding. I want it running truly headless, meaning I just run `obisidian` at startup and let it be. Well for that, let's talk about *faking* X11.
 
 ## Virtual x11
 
 Enter `Xvfb`: a **virtual frame buffer**, basically a [fake X server](https://en.wikipedia.org/wiki/Xvfb) in memory. Whats great about this tool is that does not require my server to have any sort of display adapter (even though mine has), and it also shows **no display** at all. The applications themselves just thing this is your normal X Server and keep humming along.
 
-By installing and running this, I am able to just kick off Obsidian and not worry. So here is how you do it.
+By installing and running this, I am able to just kick off Obsidian and not worry. 
 
-Install the `xorg-server-xvfb` (or your distro alternative), then you can try to test it manually to see if it works:
+To get this going, first install the `xorg-server-xvfb` (or your distro alternative). Now try to test it manually to see if it works:
 
 ```bash
 xvfb-run --auto-servernum obsidian --no-sandbox
@@ -90,14 +83,14 @@ xdg-settings
 2026-02-20 06:09:08 Latest version is 1.11.7
 2026-02-20 06:09:08 App is up to date.
 ```
-But this should now show us that obsidian is running:
+And `ps` should now show us that obsidian is running:
 ```
 [darko@agentvm ~]$ ps ax | grep obsidian
     913 pts/0    S+     0:00 /bin/sh /usr/bin/xvfb-run --auto-servernum obsidian --no-sandbox
     928 pts/0    Sl+    0:00 /usr/lib/electron39/electron /usr/lib/obsidian/app.asar --no-sandbox
 [...]
 ```
-The `--no-sandbox` flag is used because of the dreaded **electron** framework. It's security sandboxing does not really play nice with some server environment, so I had to use this flag to make it work.
+> The `--no-sandbox` flag is used because of the dreaded **electron** framework. It's security sandboxing does not really play nice with some server environment, so I had to use this flag to make it work.
 
 To further test it, update a file somewhere where you have Obsidian running, and just cat that markdown file on the server to see if the file has been updated! Huzzah! 👏
 
