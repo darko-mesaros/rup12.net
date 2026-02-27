@@ -43,6 +43,12 @@ import Section from './Section.astro';
 					<span class="sr-only">Switch to light / dark version</span>
 				</label>
 			</div>
+			<!-- Desktop Retro Toggle -->
+			<div class="ml-1 hidden flex-col justify-center sm:flex">
+				<button id="retro-toggle-desktop" class="retro-toggle cursor-pointer p-2 text-xs font-bold" title="Toggle retro mode">
+					💾
+				</button>
+			</div>
 
 			<!-- Mobile Menu Button -->
 			<button id="mobile-menu-button" class="p-2 sm:hidden" aria-label="Toggle mobile menu">
@@ -94,6 +100,12 @@ import Section from './Section.astro';
 					<span class="sr-only">Switch to light / dark version</span>
 				</label>
 			</div>
+			<!-- Mobile Retro Toggle -->
+			<div class="flex items-center py-2">
+				<button class="retro-toggle cursor-pointer p-2 text-sm font-bold" title="Toggle retro mode">
+					💾 Retro Mode
+				</button>
+			</div>
 		</nav>
 	</div>
 </Section>
@@ -132,7 +144,17 @@ import Section from './Section.astro';
 		});
 	}
 
-	// Mobile menu toggle functionality
+	// Retro mode toggle
+	const retroToggles = document.querySelectorAll('.retro-toggle');
+	const isRetro = localStorage.getItem('retro') === 'true';
+	if (isRetro) document.documentElement.classList.add('retro');
+
+	retroToggles.forEach((btn) => {
+		btn.addEventListener('click', () => {
+			const active = document.documentElement.classList.toggle('retro');
+			localStorage.setItem('retro', active.toString());
+		});
+	});
 	const mobileMenuButton = document.getElementById('mobile-menu-button');
 	const mobileMenu = document.getElementById('mobile-menu');
 

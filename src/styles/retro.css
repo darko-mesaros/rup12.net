@@ -1,0 +1,54 @@
+/* ===================================
+   RETRO MODE - Times New Roman corporate, circa 1998
+   =================================== */
+
+.retro,
+.retro body,
+.retro.dark,
+.retro.dark body {
+  font-family: "Times New Roman", Times, serif !important;
+  background-color: #d4d0c8 !important;
+  color: #000000 !important;
+}
+
+.retro *,
+.retro.dark * {
+  font-family: "Times New Roman", Times, serif !important;
+  color: #000000 !important;
+  background-color: transparent !important;
+}
+
+.retro pre,
+.retro pre *,
+.retro code,
+.retro.dark pre,
+.retro.dark pre *,
+.retro.dark code {
+  font-family: "Courier New", Courier, monospace !important;
+}
+
+.retro a,
+.retro.dark a {
+  color: #0000cc !important;
+  text-decoration: underline !important;
+}
+
+.retro a:hover,
+.retro.dark a:hover {
+  color: #cc0000 !important;
+}
+
+/* code blocks */
+.retro pre,
+.retro code,
+.retro.dark pre,
+.retro.dark code {
+  background-color: #ffffff !important;
+  border: 1px solid #808080 !important;
+}
+
+/* kill the orange gradient card hover */
+.retro a:hover > div,
+.retro.dark a:hover > div {
+  background: #c8c4bc !important;
+}
