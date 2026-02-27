@@ -47,8 +47,16 @@
   border: 1px solid #808080 !important;
 }
 
+/* card inner background — make it white so it stands out */
+.retro a > div > div,
+.retro.dark a > div > div {
+  background-color: #ffffff !important;
+}
+
 /* kill the orange gradient card hover */
 .retro a:hover > div,
-.retro.dark a:hover > div {
-  background: #c8c4bc !important;
+.retro a:hover > div > div,
+.retro.dark a:hover > div,
+.retro.dark a:hover > div > div {
+  background: #e0ddd8 !important;
 }
