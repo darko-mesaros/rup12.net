@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://nicdun.dev/sitemap-index.xml
+Sitemap: https://rup12.net/sitemap-index.xml
+LLMs: https://rup12.net/llms.txt
