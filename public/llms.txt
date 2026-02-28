@@ -1,6 +1,6 @@
 # rup12.net
 
-> Personal blog by Darko Mesaros — Principal Developer Advocate at AWS.
+> Personal blog by Darko Mesaros: Developer Advocate, Technologists, Tinkerer.
 > Topics: Rust, AWS, serverless, retro computing, homelab, and developer tooling.
 
 ## Blog Posts
