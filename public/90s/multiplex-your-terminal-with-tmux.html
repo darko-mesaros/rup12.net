@@ -1,0 +1,425 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>Multiplex Your Terminal With tmux</title>
+</head>
+<body bgcolor="#ffffff" text="#000000" link="#0000ff" vlink="#800080">
+<font face="Arial,Helvetica">
+
+<table width="600" border="0" cellpadding="4">
+<tr><td>
+<h1><font color="#cc6600">rup12.net</font></h1>
+<font size="-1">[ <a href="index.html">home</a> | <a href="about.html">about</a> | <a href="posts.html">posts</a> ]</font>
+<hr>
+<h2>Multiplex Your Terminal With tmux</h2>
+<font size="-1"><i>2021-04-05 &mdash; Are you tired of your work being lost due to a broken SSH connection? Do you wish you can look at your code and run commands at the same time? Do you just want to look cool? Let's talk about TMUX - the Terminal Multiplexer.</i></font>
+<hr>
+<br>
+<p>I've said this many times, but working on the terminal is just great! You get to</p>
+<p>be very productive, quick and (as a bonus) you look so cool! 😎 But,</p>
+<p>here's the thing, terminals (especially when working over a remote connection)</p>
+<p>can be finicky. My question to you is, have you ever had one of the following</p>
+<p>happen to you:</p>
+<ul>
+<li>The connection to a remote server drops, making you lose all your work</li>
+<li>You need to leave in a hurry but want to leave the remote process running, not</li>
+</ul>
+<p>  fearing it will go away (pesky timeouts 🔥)</p>
+<ul>
+<li>You have a system without a working X11 (or Wayland) environment and wish to</li>
+</ul>
+<p>  multi task?</p>
+<br>
+<p>Yes yes, there are some native tools to help you with all this, but it gets</p>
+<p>tedious to juggle the <code>fg</code> and <code>bg</code> commands all the time.</p>
+<br>
+<p>Allow me to introduce you to a tool that I use to solve all those things - the</p>
+<p><i>Terminal Multiplexer</i> aka <b>tmux</b>.</p>
+<br>
+<h1>tmux or screen?</h1>
+<br>
+<p>Yes, yes, yes. Tmux is not the first piece of software to do this, there is the</p>
+<p>more famous <a href="https://www.gnu.org/software/screen/">GNU screen</a> which has been</p>
+<p>here for ages. Actually, screen is the first one I've seen, but somehow, for some</p>
+<p>reason, I never got into it. I found tmux to be more approachable, more up my</p>
+<p>alley. What am I trying to say with this long-winded intro? This will <b>not</b> be</p>
+<p>a comparison between screen and tmux, nor will I attempt to say which one is</p>
+<p>better. I prefer tmux, but screen is ever present. Let's not turn this into</p>
+<p>another vim vs emacs discussion.</p>
+<br>
+<p>The goal of this post is to set you up and running with tmux and give you a</p>
+<p>glimpse into how I configure and use tmux.</p>
+<br>
+<h1>Installing tmux</h1>
+<br>
+<p>This guide / post is intended to cover the installation of tmux for Linux,</p>
+<p>Mac OS. While you can run this under Windows (in WSL) I will not be giving that</p>
+<p>any special treatment as it is basically the same like under Ubuntu.</p>
+<br>
+<p>So how do I install? Oh, this is pretty straightforward, depending on your</p>
+<p>platform, but here are some options:</p>
+<br>
+<p><b>Arch Linux:</b></p>
+<pre>
+sudo pacman -Syy
+sudo pacman -S tmux
+</pre>
+<br>
+<p><b>Debian/Ubuntu:</b></p>
+<pre>
+sudo apt update
+sudo apt install tmux
+</pre>
+<br>
+<p><b>MacOS / Homebrew:</b></p>
+<pre>
+brew update
+brew install tmux
+</pre>
+<br>
+<p>Or if you wish to install it manually, check out their instructions</p>
+<p><a href="https://github.com/tmux/tmux/wiki/Installing">here</a>. The only dependencies that</p>
+<p>are needed for a manual compilation and install are <code>libevent</code> and</p>
+<p><code>ncurses</code>.</p>
+<br>
+<p>That was pretty simple, and straight forward, so what now? Open up your favorite</p>
+<p>terminal and run <code>tmux</code>. 🚀 </p>
+<br>
+<h1>Keyboard shortcuts</h1>
+<br>
+<p>This is where a lot of people just give up, as tmux is very vague about its</p>
+<p>default keyboard shortcuts and unless you start searching the Internet for the</p>
+<p>exact configuration, you see no difference (besides that green status bar)</p>
+<p>between this or your standard terminal. What now?</p>
+<br>
+<p>uneventful")</p>
+<br>
+<p>Before we get into the weeds of tmux key bindings, I must first explain the</p>
+<p>concept of the <b>prefix</b>. This is a key combination that precedes all other</p>
+<p>keys when interacting with tmux. So it is critical to know it, and to change it</p>
+<p>to something up your alley.</p>
+<br>
+<p>Let's say you wish to do a specific action on tmux - split the screen. What you</p>
+<p>need to do first is, hit the Prefix and then the key that splits your screen.</p>
+<p><b>The default prefix is C-b (Control + b)</b>.</p>
+<br>
+<br>
+<p>elements of your tmux screen.")</p>
+<br>
+<p>Okay, let's start with the common uses of tmux with its default key bindings, and</p>
+<p>I will show you how I configure it myself. <b>Remember the prefix is Control +</p>
+<p>b<b></p>
+<br>
+<p>| What you want to do | Key binding |</p>
+<p>| --------------------| ------------|</p>
+<p>| Splitting the window in half vertically | <code>Prefix + %</code> |</p>
+<p>| Splitting the window in half horizontally | <code> Prefix + "</code> |</p>
+<p>| Creating a new Window | <code> Prefix + c</code> |</p>
+<p>| Switching between windows | <code> Prefix + [0-9] </code> |</p>
+<p>| Switching between panes | <code> Prefix + Arrow keys </code> |</p>
+<p>| Detach from tmux (leave it in the background)| <code> Prefix + d </code> |</p>
+<br>
+<p>And no, there is no big deal in exiting tmux. Just type exit until you have</p>
+<p>closed all your windows and panes.</p>
+<br>
+<p>But let's say you wish to detach tmux, or send it to the background. Well, you</p>
+<p>can do that with the <code>Prefix + d</code>. This will drop you back to your</p>
+<p>tmuxless terminal. But how do you go back? Well, you can have multiple tmux</p>
+<p>sessions available and running on your computer. To list them all just run</p>
+<p><code>tmux ls</code> this should get you something like this (if you have</p>
+<p>multiple sessions running):</p>
+<pre>
+$ tmux ls
+0: 2 windows (created Sun Mar 28 17:24:15 2021)
+1: 1 windows (created Sun Mar 28 18:08:23 2021)
+2: 1 windows (created Sun Mar 28 18:08:27 2021)
+</pre>
+<p>Now to attach to one of these you can either type <code>tmux att</code> which</p>
+<p>will reattach you to your latest session, in my case it would be session <i>2</i>.</p>
+<p>But to attach to a specific session, you can type the following:</p>
+<pre>
+tmux attach-session -t $the_id_of_your_session
+</pre>
+<br>
+<p>This covers the basics on how you interact and work with tmux and using the</p>
+<p>default key bindings. Which are fine, but they could be much much better.</p>
+<br>
+<p>Time to do more with tmux! Let's make it pretty and more functional. Let me show</p>
+<p>you how I configure my tmux, which looks something like this:</p>
+<br>
+<p>much but I like it.")</p>
+<br>
+<h1>Configuring your <code>.tmux.conf</code></h1>
+<br>
+<p>This is the file where all your tmux configuration exists. And by default, tmux</p>
+<p>looks for it at the <i>root of your home directory</i>.</p>
+<br>
+<h2>Basic configuration</h2>
+<br>
+<p>Straight off the bat, let's change that <b>Prefix</b> key! I am not a fan of the</p>
+<p><b>Control+b</b> combination, as it makes me move my hands too much so I will remap</p>
+<p>it to <b>Control+a</b>. To do that, add the following lines to your fresh brand new</p>
+<p><i>.tmux.conf</i>:</p>
+<br>
+<pre>
+## Replace c-B with c-A
+unbind C-b
+set -g prefix C-a
+bind-key -r C-a send-prefix
+</pre>
+<br>
+<p>Time to add some <b>colors</b> to our terminal, and well keep any remote session</p>
+<p>friendly. This is done by enabling the 256-color mode by setting the default</p>
+<p>terminal to <code>screen-256color</code>. There are other options that might</p>
+<p>work for you, but this one has been the most beneficial for me:</p>
+<br>
+<pre>
+## Set 256 color mode
+set-option -g default-terminal "screen-256color"
+</pre>
+<p><b>Window numbers</b> are important, while - yes I know - all arrays start at 0. I prefer</p>
+<p>to have my tmux windows start at 1. Hence the following settings makes it so,</p>
+<p>and it also renumbers the windows, if I happen to close one.</p>
+<br>
+<pre>
+## Number windows starting at 1, renumber as windows are added / removed
+set-option -g base-index 1
+set-option -g renumber-windows on
+</pre>
+<br>
+<p>The <b>copy mode</b> of tmux is very powerful, it gives you the ability to scroll up</p>
+<p>and down across the entirety of the output. And also, the ability to grab text</p>
+<p>from there and yank it into your clipboard. The default key binding for this</p>
+<p>is <code>Prefix + [</code>. The only thing I add to this, is the option to use</p>
+<p>vi key movement as a personal preference.</p>
+<pre>
+## Use vim keybindings in copy mode
+setw -g mode-keys vi
+</pre>
+<br>
+<h2>Performance</h2>
+<br>
+<p>How about some speed and performance improvements? This is specific to my setup</p>
+<p>(as I happen to use neovim), but I am sure you can benefit from this as well.</p>
+<br>
+<p>So, let's configure the <b>title bar refresh interval</b>, the setting that tells</p>
+<p>the tmux title bar how long to wait before updating its content (clock, weather,</p>
+<p>or what-not). And also, let's configure the <b>escape-time</b>, the time in milliseconds</p>
+<p>for which tmux waits after an escape is input to determine if it is part of a</p>
+<p>  function or meta key sequences.  </p>
+<pre>
+## For neovim - escape time interval
+set-option -sg escape-time 0
+
+## Sets the refresh rate of the status bar
+set -g status-interval 60
+</pre>
+<br>
+<h2>My custom key bindings</h2>
+<br>
+<p>In this section we will look at the way I changed some of the default</p>
+<p>key bindings to things that make sense to me. It's not much, but I am so much</p>
+<p>used to this now - that I would not change it.</p>
+<br>
+<p><b>Reloading</b> your tmux configuration with a keystroke is paramount for anyone</p>
+<p>who loves tinkering. So here is a simple key combination I set up just for</p>
+<p>that: <code>Prefix + r</code>:</p>
+<pre>
+## Easy reload
+bind-key r source-file ~/.tmux.conf \; display-message "~/.tmux.conf reloaded"
+</pre>
+<br>
+<p>When it comes to managing windows and panes, I've made some changes in the way I</p>
+<p>transition between different windows and the keys that split my windows into</p>
+<p>panes. </p>
+<br>
+<p>Namely I love the option to <b>quickly switch</b> back and forth between two different</p>
+<p>windows with a single keystroke. So, if I hit <code>Prefix + Ctrl+A</code> I get</p>
+<p>to go back between the current window and the one I was before. Neat!</p>
+<pre>
+## Go back to last window
+bind-key C-a last-window
+
+## More intuitive pane splitting key-bindings, open all in current path
+bind-key - split-window -v  -c '#{pane_current_path}'
+bind-key \\ split-window -h  -c '#{pane_current_path}'
+bind c new-window -c '#{pane_current_path}'
+
+## Kill windows 
+bind-key C-w kill-pane
+</pre>
+<p>Finally, some <b>resizing</b> key bindings are in order. Here I just give me the</p>
+<p>ability to use the arrow keys with the combination of Shift or Control to change</p>
+<p>the size of the panes. As you can see here - there is no Prefix key needed.  </p>
+<br>
+<pre>
+## Easy resizing of panes with fine and coarse adjustment
+bind -n S-Left resize-pane -L 2
+bind -n S-Right resize-pane -R 2
+bind -n S-Down resize-pane -D 1
+bind -n S-Up resize-pane -U 1
+bind -n C-Left resize-pane -L 10
+bind -n C-Right resize-pane -R 10
+bind -n C-Down resize-pane -D 5
+bind -n C-Up resize-pane -U 5
+</pre>
+<br>
+<p>Here is how some of my <b>custom key bindings</b> are setup now:</p>
+<br>
+<p>| What you want to do | Key binding |</p>
+<p>| --------------------| ------------|</p>
+<p>| Reload your tmux configuration file | <code> Prefix + r </code> |</p>
+<p>| Splitting the window in half vertically | <code> Prefix + \ </code> |</p>
+<p>| Splitting the window in half horizontally | <code> Prefix + -</code> |</p>
+<p>| Creating a new Window | <code> Prefix + c</code> |</p>
+<p>| Switching between windows | <code> Prefix + [0-9] </code> |</p>
+<p>| Switching between panes | <code>Ctrl + [h,j,k,l] </code> |</p>
+<p>| Kill window | <code> Prefix + Ctrl + w </code> |</p>
+<p>| Switch back to the previous window | <code> Prefix + Ctrl + a </code> |</p>
+<p>| Resize panes in small steps | <code> Shift + Arrow keys </code> |</p>
+<p>| Resize panes in big steps | <code> Ctrl + Arrow keys </code> |</p>
+<br>
+<h2>Integration with vim</h2>
+<br>
+<p>Here is one thing I need to have in my tmux setup so it would work with vim. Vim</p>
+<p>also supports splitting your screen into panes. In order not to confuse the two</p>
+<p>when working with both, I use one plug in for vim and a few lines of</p>
+<p>configuration for tmux for it to work. <i>If you are not using vim, feel free to</p>
+<p>ignore this<i>.</p>
+<br>
+<p>The first thing you need to do is install</p>
+<p><a href="https://github.com/christoomey/vim-tmux-navigator">this</a> plugin, into your vim</p>
+<p>setup. How you do that is up to you. Either manually or with the use of a vim</p>
+<p>plugin manager, there are instructions on the github page of this plugin.</p>
+<br>
+<p>Now, add the following lines to your tmux configuration file:</p>
+<pre>
+## Seamless aviation using vim-tmux-navigator (github christoomey/vim-tmux-navigator)
+is_vim='echo "#{pane_current_command}" | grep -iqE "(^|\/)g?(view|n?vim?)(diff)?$"'
+bind -n C-h if-shell "$is_vim" "send-keys C-h" "select-pane -L"
+bind -n C-j if-shell "$is_vim" "send-keys C-j" "select-pane -D"
+bind -n C-k if-shell "$is_vim" "send-keys C-k" "select-pane -U"
+bind -n C-l if-shell "$is_vim" "send-keys C-l" "select-pane -R"
+bind -n C-\\ if-shell "$is_vim" "send-keys C-\\" "select-pane -l"
+</pre>
+<p>And now you should be able to seamlessly switch between your vim panes and your</p>
+<p>tmux panes! <b>#productivity</b> 💥 </p>
+<br>
+<h1>Bring some colors into your life 🌈 </h1>
+<br>
+<p>Last, but definitely not least - some colors. Now this is the official <b>Gruvbox</p>
+<p>dark<b> <a href="https://github.com/morhetz/gruvbox">color scheme</a>, but with some minor</p>
+<p>tweaks to the status line. And the status line is pretty simple, no specific</p>
+<p>scripts, plugins or the like (weather, battery ...). I like to keep it light</p>
+<p>like that!</p>
+<br>
+<p>Just a note about the colors here. Tmux is using the 256 color capabilities of</p>
+<p>my terminal. So when it says <code>colour222</code> this refers to the exact</p>
+<p>color in the terminal - so your mileage may vary.</p>
+<br>
+<p><i>BTW: If you wish to see what your colors are, you can run this simple bash</p>
+<p>one-liner:<i></p>
+<pre>
+for COLOR in {1..255}; do echo -en "\e[38;5;${COLOR}m${COLOR} "; done; echo;
+</pre>
+<br>
+<p>Onward to the colorscheme 🚀 </p>
+<br>
+<p>Here is how my status bar looks right now, with he latest changes implemented:</p>
+<p>together with vim")</p>
+<br>
+<p>And this is the part of my <code>.tmux.conf</code> that configures all that, so</p>
+<p>feel free to copy paste it into yours.</p>
+<br>
+<pre>
+# C O L O R S
+## COLORSCHEME: gruvbox dark
+set-option -g status "on"
+
+# default statusbar color
+set-option -g status-style bg=colour237,fg=colour223 # bg=bg1, fg=fg1
+
+# default window title colors
+set-window-option -g window-status-style bg=colour214,fg=colour237 # bg=yellow, fg=bg1
+
+# default window with an activity alert
+set-window-option -g window-status-activity-style bg=colour237,fg=colour248 # bg=bg1, fg=fg3
+
+# active window title colors
+set-window-option -g window-status-current-style bg=red,fg=colour237 # fg=bg1
+
+# pane border
+set-option -g pane-active-border-style fg=colour250 #fg2
+set-option -g pane-border-style fg=colour237 #bg1
+
+# message infos
+set-option -g message-style bg=colour239,fg=colour223 # bg=bg2, fg=fg1
+
+# writing commands inactive
+set-option -g message-command-style bg=colour239,fg=colour223 # bg=fg3, fg=bg1
+
+# pane number display
+set-option -g display-panes-active-colour colour250 #fg2
+set-option -g display-panes-colour colour237 #bg1
+
+# clock
+set-window-option -g clock-mode-colour colour109 #blue
+
+# bell
+set-window-option -g window-status-bell-style bg=colour167,fg=colour235 # bg=red, fg=bg
+
+## Theme settings mixed with colors (unfortunately, but there is no cleaner way)
+set-option -g status-justify "left"
+set-option -g status-left-style none
+set-option -g status-left-length "80"
+set-option -g status-right-style none
+set-option -g status-right-length "80"
+set-window-option -g window-status-separator ""
+
+## Status Bar
+set-option -g status-left "#[fg=colour250, bg=colour241] #S #[fg=colour241, bg=colour237, nobold, noitalics, nounderscore]"
+set-option -g status-right "#[fg=colour239, bg=colour237, nobold, nounderscore, noitalics]#[fg=colour246,bg=colour239] %Y-%m-%d #[fg=colour230,bg=colour244] %H:%M #[fg=colour248, bg=colour239, nobold, noitalics, nounderscore]#[fg=colour237, bg=colour255] darko@#h "
+
+set-window-option -g window-status-current-format "#[fg=colour237, bg=colour214, nobold, noitalics, nounderscore]#[fg=colour239, bg=colour221] #I #[fg=colour239, bg=colour214, bold] #W #[fg=colour214, bg=colour237, nobold, noitalics, nounderscore]"
+set-window-option -g window-status-format "#[fg=colour237,bg=colour239,noitalics]#[fg=colour223,bg=colour239] #I #[fg=colour223, bg=colour239] #W #[fg=colour239, bg=colour237, noitalics]"
+</pre>
+<br>
+<h1>Wrap up and links to stuff!</h1>
+<br>
+<p>Ever since I've started using tmux (about 6 years ago), it has changed the way I</p>
+<p>approach working with terminals. Long gone are the days of multiple different</p>
+<p>open terminal windows across the desktop. I've even stopped using the built-in</p>
+<p>tabbing capabilities of some modern terminal emulators. And now have the ability</p>
+<p>to jump on a system, and even without access to a fancy X11 Graphics environment,</p>
+<p>am able to multi task and be much more productive. This has proved to be</p>
+<p>especially useful when working on remote systems with SSH.</p>
+<br>
+<p>On top of all that, just the fact that you can split your screen into multiple</p>
+<p>different terminals, and arrange them to your liking. Gives you the ability to</p>
+<p>make your vim setup into a proper Development Environment.</p>
+<br>
+<p>Hopefully this post has given you some inspiration to use tmux, and that the</p>
+<p>configuration shared here can help you make your tmux environment just the way</p>
+<p>you want it.</p>
+<br>
+<h3>Resources Mentioned in this blog post</h3>
+<br>
+<ul>
+<li>💾 <a href="https://gist.github.com/darko-mesaros/928936d2a9c93c384f027ae8ae256f05">Link</a></li>
+</ul>
+<p>to the full <code>.tmux.conf</code> used in this blog post.</p>
+<ul>
+<li>Vim <a href="https://github.com/christoomey/vim-tmux-navigator">plugin</a> that I use</li>
+</ul>
+<p>  with tmux.</p>
+<br>
+<hr>
+
+<hr>
+<font size="-1">rup12.net &mdash; Darko Mesaros</font>
+</td></tr>
+</table>
+
+</font>
+</body>
+</html>

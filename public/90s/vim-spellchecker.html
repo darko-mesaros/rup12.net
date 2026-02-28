@@ -1,0 +1,133 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>Check your spelling in vim</title>
+</head>
+<body bgcolor="#ffffff" text="#000000" link="#0000ff" vlink="#800080">
+<font face="Arial,Helvetica">
+
+<table width="600" border="0" cellpadding="4">
+<tr><td>
+<h1><font color="#cc6600">rup12.net</font></h1>
+<font size="-1">[ <a href="index.html">home</a> | <a href="about.html">about</a> | <a href="posts.html">posts</a> ]</font>
+<hr>
+<h2>Check your spelling in vim</h2>
+<font size="-1"><i>2021-03-06 &mdash; Did you know that vim has a built-in spell checker?</i></font>
+<hr>
+<h1>Intro</h1>
+<br>
+<p>Vim is a great text editor. I won't say it's the best just for the sake of not</p>
+<p>starting that discussion again, but it has truly changed the way I work, the way</p>
+<p>I operate my computer, the way I write my code (and even this blog post). Until</p>
+<p>recently I would rely on vim for all but a specific subset of tasks - what are</p>
+<p>those tasks you may ask? Email and content writing - why? - well because English</p>
+<p>is not my native language, I tend to rely on spell checkers to ensure that my</p>
+<p>spelling is good. And to my knowledge vim was not a good tool for that. </p>
+<br>
+<p><b>BUT WAIT</b> it actually is! 👏</p>
+<br>
+<h1>Native</h1>
+<br>
+<p><i>"OK, OK Darko, we know that there are millions of plug-ins for vim out there.</p>
+<p>You did not tell us anything we most likely did not know"<i>. Well dear reader,</p>
+<p>this is not a plug-in I want to shill, oh no - this is <i>BUILT IN</i> to vim. Yes, a</p>
+<p>native feature not so often talked about. And that makes me happy.</p>
+<br>
+<h1>Getting started</h1>
+<br>
+<p>How to enable this lovely feature in your vim editor? Well just type the</p>
+<p>following in NORMAL mode (the one where you are not inserting text):</p>
+<br>
+<pre>
+:setlocal spell
+</pre>
+<p>This will enable the spell checker in your currently opened file. Awesome, now</p>
+<p>you can see some words being underlined if they are misspelled.</p>
+<br>
+<p>misspelling the word 'language' on line 15")</p>
+<br>
+<p>So what do you do with that? Is that it? Can vim tell me how to spell stuff?</p>
+<p>Well indeed it can. Just head on over to that word (move your cursor on the</p>
+<p>word) and (in normal mode) type <b><i>z=</b></i>, now this gets you a nice list of</p>
+<p>potential words to replace your misspelled one:</p>
+<br>
+<br>
+<p>options I got for the wrong word I entered before")</p>
+<br>
+<p>Choose the correct spelling by entering a number, and hit enter - say hello to</p>
+<p>correct English spelling.</p>
+<br>
+<h1>Taking it a step further</h1>
+<br>
+<p>Okay, let's do a bit more. Say you are me, and you suck at writing English. So</p>
+<p>your entire blog post is full of mistakes. There is an easy way to go through</p>
+<p>the entire document and fix these things.</p>
+<p>Do the following:</p>
+<ul>
+<li>Position yourself on the beginning of the document by hitting <b><i>gg</b></i> (this will</li>
+</ul>
+<p>  take you all the way to the top)</p>
+<ul>
+<li>Then enter <b><i>]s</b></i> (in normal mode). </li>
+</ul>
+<p>This takes you to the next badly written word in your document, here you can</p>
+<p>just go and hit <b><i>z=</b></i> to find the good word, and repeat this step for every other</p>
+<p>word out there!</p>
+<br>
+<br>
+<p>You also might get a bunch of false positives - for example vim's spell checker</p>
+<p>does not treat the word 'blog' as a correct word. How about that. Well - you can</p>
+<p>easily add those words to the "OK list" so they wont show up anymore.</p>
+<p>How? Just position yourself on top of the word and hit 'zg' - this will add the</p>
+<p>word your local good word list.</p>
+<br>
+<p>the word 'vim' to the list of good words")</p>
+<br>
+<h1>Making it stick</h1>
+<br>
+<p>You have seen how to make this lovely little feature work for you - amazing! But</p>
+<p>as soon as you close down vim, the spell checker will be disabled again. And</p>
+<p>it's  no fun to have to remember to enable it each and every time.</p>
+<br>
+<p>What you need to do then is give you the ability to either, enable it for all</p>
+<p>times or setup a keyboard shortcut to enable it when you need it. I prefer the</p>
+<p>keyboard shortcut as I would love to have the spell checker available to me</p>
+<p>on-demand. </p>
+<br>
+<p>Open up your <code>.vimrc</code> file and add the following line:</p>
+<pre>
+" enable or disable the spell checker
+nnoremap &lt;C-E&gt;&lt;C-S&gt; :setlocal spell!&lt;CR&gt;
+</pre>
+<p>What this has done is set you a keyboard shortcut to enable and disable the</p>
+<p>spell checker at your discretion. To do that just hit the CTLR+E and CTRL+S one</p>
+<p>after another (I just keep CTLR pressed while I hit 'E' and 'S' - get it</p>
+<p>'E'nable 'S'pellchecker).</p>
+<br>
+<p>One more thing to do is to set the default language for the spell checker - I</p>
+<p>have chosen US English in this case, but there is a slew of languages supported.</p>
+<p>You can check them out <a href="http://ftp.vim.org/vim/runtime/spell/">here</a> and they</p>
+<p>are automatically downloaded by vim when needed (so make sure to set this</p>
+<p>before going offline).</p>
+<br>
+<p>So to set the language to en_US, just add the following to your <code>.vimrc</code>:</p>
+<pre>
+" sets the spell checker language to en_us
+set spelllang=en_us
+</pre>
+<p>And you are done!</p>
+<br>
+<h1>Conclusion</h1>
+<br>
+<p>Now you can (like me) go ahead and keep on using vim for more than just writing</p>
+<p>code. You can write proper emails, documents, and even blog posts. All that</p>
+<p>while being sure that your spelling remains good.</p>
+
+<hr>
+<font size="-1">rup12.net &mdash; Darko Mesaros</font>
+</td></tr>
+</table>
+
+</font>
+</body>
+</html>

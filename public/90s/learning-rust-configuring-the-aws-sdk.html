@@ -1,0 +1,273 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>Learning Rust: Getting started with the AWS SDK for Rust!</title>
+</head>
+<body bgcolor="#ffffff" text="#000000" link="#0000ff" vlink="#800080">
+<font face="Arial,Helvetica">
+
+<table width="600" border="0" cellpadding="4">
+<tr><td>
+<h1><font color="#cc6600">rup12.net</font></h1>
+<font size="-1">[ <a href="index.html">home</a> | <a href="about.html">about</a> | <a href="posts.html">posts</a> ]</font>
+<hr>
+<h2>Learning Rust: Getting started with the AWS SDK for Rust!</h2>
+<font size="-1"><i>2025-12-22 &mdash; Complete guide to configuring AWS SDK for Rust: credentials, regions, and localstack integration with practical examples.</i></font>
+<hr>
+<blockquote>TL;DR: <a href="https://gist.github.com/darko-mesaros/9d27070d46ab784904bdef1e2259357a">CODE</a></blockquote>
+<blockquote></blockquote>
+<blockquote>Unlike Python's Boto3, the AWS SDK for Rust requires explicit configuration setup with aws-config and async runtime (tokio). This guide covers the essential setup steps, credential/region configuration patterns, and how to integrate with LocalStack for local development.</blockquote>
+<br>
+<p>Okay, you've decided to dip your toes into Rust! Excellent choice! Oh and you want to build something in the cloud using AWS? How delightful! 👏 Wait what's that? You need the AWS SDK? Sure, that is not a problem, it's <a href="https://aws.amazon.com/sdk-for-rust/">right here</a>. However, there are a few things you need to know when it comes to using this SDK. Unlike the <a href="https://boto3.amazonaws.com/v1/documentation/api/latest/index.html">Boto3 SDK</a> (the SDK for Python) there are a few additional steps you need to take before invoking those API calls. In this post let's explore how you can configure the AWS Rust SDK and how you can use that SDK with tools such as <a href="https://www.localstack.cloud/">LocalStack</a>.</p>
+<br>
+<p>Oh, and I've also made a little video about this:</p>
+<br>
+<p>&lt;div class="flex justify-center"&gt;</p>
+<p>&lt;iframe</p>
+<p>  width="560"</p>
+<p>  height="315"</p>
+<p>  src="https://www.youtube.com/embed/3nupUNtQ77k"</p>
+<p>  title="YouTube video player"</p>
+<p>  frameborder="0"</p>
+<p>  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"</p>
+<p>  allowfullscreen&gt;</p>
+<p>&lt;/iframe&gt;</p>
+<p>&lt;/div&gt;</p>
+<br>
+<h2>The basics</h2>
+<br>
+<p>To work with the AWS SDK for Rust you need install the appropriate Rust crates. For <i>almost any</i> project you will work with you need to have <a href="https://crates.io/crates/tokio">tokio</a>, <a href="https://crates.io/crates/aws-config">aws-config</a> (we will talk about it in a bit), and the actual AWS SDK <a href="https://crates.io/search?q=aws-sdk">package you need</a>. Unlike in Boto3 each service has its own SDK crate. So if you want to work with <a href="https://aws.amazon.com/dynamodb/">AWS DynamoDB</a> you need the <code>aws-sdk-dynamodb</code> crate.</p>
+<br>
+<p>Here is an example of how I typically set up my new Rust project that will use the AWS SDK for some <a href="https://aws.amazon.com/s3/">Amazon S3</a> shenanigans. This sets up all the needed packages and enables the required features:</p>
+<pre>
+cargo add tokio aws-config aws-sdk-s3 \
+    --features tokio/full,aws-config/behavior-version-latest,aws-config/credentials-login
+</pre>
+<br>
+<p>Let's modify our <code>main.rs</code> to set up the SDK and the Amazon S3 client:</p>
+<pre>
+#[tokio::main] // Macro to set up the main function for Tokio
+async fn main() {
+    // Configure the SDK with defaults:
+    let sdk_config = aws_config::from_env().load().await;
+    // Configure the client with the SDK config
+    let s3_client = aws_sdk_s3::Client::new(&amp;sdk_config);
+}
+</pre>
+<br>
+<blockquote>A quick note on <code>tokio</code>: The AWS SDK for Rust, requires an <i>async runtime</i>. Hence the need on the <code>full</code> feature flag. </blockquote>
+<br>
+<p>That's it. Yes! Ready to write to those S3 buckets! 🥳</p>
+<br>
+<h2>Configuring the Region and Credentials</h2>
+<br>
+<p>What credentials and region would be used if we just ran the application like this? I'll add some tracing and let's test it out.</p>
+<br>
+<pre>
+cargo add tracing tracing_subscriber --features tracing_subscriber/env-filter
+</pre>
+<br>
+<p>Here is what the modified <code>main.rs</code> should look like:</p>
+<pre>
+use tracing_subscriber::EnvFilter;
+
+#[tokio::main]
+async fn main() {
+    // Configure tracing:
+    tracing_subscriber::fmt()
+        .with_env_filter(
+            EnvFilter::from_default_env()
+                .add_directive(tracing::Level::INFO.into())
+        )
+        .with_writer(std::io::stderr)
+        .with_ansi(true)
+        .init();
+
+    // Configure the SDK:
+    let sdk_config = aws_config::from_env().load().await;
+    // Configure the client
+    let s3_client = aws_sdk_s3::Client::new(&amp;sdk_config);
+
+    // Get the current region used:
+    tracing::info!("Region selected: {:?}", sdk_config.region().unwrap());
+
+    // Running any SDK call so the SDK would emit what credentials are used
+    let _buckets = s3_client.list_buckets().send().await;
+}
+</pre>
+<br>
+<p>If we run this with <code>cargo run</code>, we should see something like this in the output:</p>
+<pre>
+2025-12-22T19:54:31.056334Z  INFO sdk_creds: Region selected: Region("us-west-2")
+2025-12-22T19:54:31.056967Z  INFO aws_config::profile::credentials: constructed abstract provider from config file chain=ProfileChain { base: LoginSession { login_session_arn: "arn:aws:iam::FAKEACCOUNTID:user/darkomesaros" }, chain: [] }
+2025-12-22T19:54:31.057306Z  INFO aws_config::profile::credentials: loaded base credentials creds=Credentials { provider_name: "Login", access_key_id: "ASIXXXXXXXXXXXXXX", secret_access_key: "** redacted **", expires_after: "2025-12-22T20:06:20Z", account_id: "FAKEACCOUNTID", property_0: TypeErasedBox[Clone]:[CredentialsProfileLogin] }
+</pre>
+<br>
+<p>Got it! 👏 We are using <b>us-west-2</b> as the region and it's using my <b>login</b> credentials. Both of these settings were obtained by the <a href="https://docs.aws.amazon.com/signin/latest/userguide/command-line-sign-in.html">new feature</a> of <code>aws login</code>.</p>
+<br>
+<p>However, if we had environment variables like <code>AWS_REGION</code>, <code>AWS_ACCESS_KEY_ID</code>, and <code>AWS_SECRET_ACCESS_KEY</code> set. Those <b>would take preference. Actually here is the order of preference the SDK takes for your credentials and region:</p>
+<br>
+<p><b>🔐 Credentials:</b></p>
+<p>1. Environment variables</p>
+<p>2. Shared config (<code>~/.aws/config</code>, <code>~/.aws/credentials</code>)</p>
+<p>3. Web Identity Tokens</p>
+<p>4. ECS (IAM Roles for Tasks) &amp; General HTTP credentials </p>
+<p>5. <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configuring-instance-metadata-service.html">EC2 IMDSv2</a></p>
+<br>
+<p><b>🌍 Region:</b></p>
+<p>1. Environment variables</p>
+<p>2. Shared config (<code>~/.aws/config</code>, <code>~/.aws/credentials</code>)</p>
+<p>3. <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configuring-instance-metadata-service.html">EC2 IMDSv2</a></p>
+<br>
+<p>Let's make changes to what it uses. For this, we will be configuring the AWS Region by passing a command line parameter with <a href="https://crates.io/crates/clap">clap</a> and by selecting a specific profile for our credentials. Please <b>note</b>, this does not make a lot of sense in a real world scenario, as you would likely get these parameters from the same place (ie the profile), but I'll be extra verbose here so you see the approaches. </p>
+<br>
+<p>To configure the <b>region</b>, we will be using a <code>RegionProviderChain</code>. This allows us to select a region from a series of region providers. Namely we first attempt to load a region from a variable (or a command line parameter in our case), then from the default provider chain, and if all that fails, we fall back to good ol' "us-east-1". </p>
+<br>
+<p>Here is the code that does that:</p>
+<pre>
+let region = Some(String::from("us-west-2"));
+let region_provider = RegionProviderChain::first_try(region.map(Region::new))
+    .or_default_provider() // Env -&gt; Profile -&gt; EC2 IMDSv2
+    .or_else(Region::new("us-east-1"));
+</pre>
+<br>
+<p>Now we pass this <code>region_provider</code> variable (a <code>RegionProviderChain</code>) to the <code>sdk_config</code> creation process by adding some additional parameters:</p>
+<pre>
+let sdk_config = aws_config::from_env()
+    .region(region_provider) // &lt;- Select the Region
+    .load().await;
+</pre>
+<p>We have now selected the region. To expand this, and now select a different <b>credentials profile</b> let's add one more parameter:</p>
+<pre>
+let sdk_config = aws_config::from_env()
+    .region(region_provider)
+    .profile_name("personal") // &lt;- Set the profile you wish to use
+    .load().await;
+</pre>
+<p>Let's implement this in our <code>main.rs</code>, here is the fully modified file:</p>
+<pre>
+use tracing_subscriber::EnvFilter;
+use clap::Parser;
+use aws_config::{Region, meta::region::RegionProviderChain};
+
+#[derive(Parser)]
+struct Opt {
+    region: Option&lt;String&gt;
+}
+
+#[tokio::main]
+async fn main() {
+    // Configure tracing:
+    tracing_subscriber::fmt()
+        .with_env_filter(
+            EnvFilter::from_default_env()
+                .add_directive(tracing::Level::INFO.into())
+        )
+        .with_writer(std::io::stderr)
+        .with_ansi(true)
+        .init();
+
+    // Parsing command line parameters
+    let Opt {
+        region
+    } = Opt::parse();
+
+    // Configure the region provider chain
+    let region_provider = RegionProviderChain::first_try(region.map(Region::new))
+        .or_default_provider() // Env -&gt; Profile -&gt; EC2 IMDSv2
+        .or_else(Region::new("us-east-1"));
+
+    // Configure the SDK:
+    let sdk_config = aws_config::from_env() 
+        .region(region_provider)  // &lt;- Select the region
+        .profile_name("personal") // &lt;- Set the profile you wish to use
+        .load().await;
+
+    // Configure the client
+    let s3_client = aws_sdk_s3::Client::new(&amp;sdk_config);
+
+    // Get the current region used:
+    tracing::info!("Region selected: {:?}", sdk_config.region().unwrap());
+
+    // Running any SDK call so the SDK would emit what credentials are used
+    let _buckets = s3_client.list_buckets().send().await;
+}
+</pre>
+<p>To run the application and pass it on the region parameter use the following command:</p>
+<pre>
+cargo run "eu-west-1"
+</pre>
+<p>Barring having entered the wrong region name, or not having a given profile, you should get output similar to this:</p>
+<br>
+<pre>
+2025-12-22T20:27:52.251894Z  INFO sdk_creds: Region selected: Region("eu-west-1")
+2025-12-22T20:27:52.252756Z  INFO aws_config::profile::credentials: constructed abstract provider from config file chain=ProfileChain { base: LoginSession { login_session_arn: "arn:aws:iam::OTHERFAKEACCOUNTID:user/grunf" }, chain: [] }
+2025-12-22T20:27:52.253169Z  INFO aws_config::profile::credentials: loaded base credentials creds=Credentials { provider_name: "Login", access_key_id: "AYYYYYYYYYYYYYYYY", secret_access_key: "** redacted **", expires_after: "2025-12-22T20:41:47Z", account_id: "OTHERFAKEACCOUNTID", property_0: TypeErasedBox[Clone]:[CredentialsProfileLogin] }
+</pre>
+<br>
+<p>Huzzah! 🥳</p>
+<br>
+<h2>Calling the LocalStack endpoint</h2>
+<br>
+<p>I'm gonna leave you with one more tip. Making a call to a different API endpoint. By default the AWS SDK makes the API calls to AWS (duh!), but what if you were doing some testing and local development with a tool like <a href="https://www.localstack.cloud/">LocalStack</a>? Could you make those API calls to there? Absolutely yes!</p>
+<br>
+<p>I won't get into the details on how to use LocalStack, there are <a href="https://docs.localstack.cloud/aws/getting-started/quickstart/">excellent resources</a> for that. But what I will show you is how to modify the <code>SdkConfig</code> object in the AWS SDK for Rust.</p>
+<br>
+<p>It's really quite simple - just modify our <code>sdk_config</code> variable and include one additional parameter:</p>
+<br>
+<pre>
+let sdk_config = aws_config::from_env()
+    .region(region_provider)
+    .profile_name("personal")
+    .endpoint_url("http://localhost:4566") // For LocalStack
+    .load().await;
+</pre>
+<br>
+<p>This will now target our local LocalStack instance. When using LocalStack, the region does not really matter. Ie the requests do not get routed to the defined region, and will always display results from <code>us-east-1</code>. I'll just add the following line to display all the buckets I list:</p>
+<pre>
+// Running any SDK call so the SDK would emit what credentials are used
+let buckets = s3_client.list_buckets().send().await.unwrap();
+println!("Buckets: {:#?}", buckets.buckets());
+</pre>
+<p>Let's run it:</p>
+<br>
+<pre>
+cargo run us-west-2
+</pre>
+<p>You should get something like this:</p>
+<br>
+<pre>
+2025-12-22T20:45:14.484685Z  INFO sdk_creds: Region selected: Region("us-west-2")
+2025-12-22T20:45:14.485379Z  INFO aws_config::profile::credentials: constructed abstract provider from config file chain=ProfileChain { base: LoginSession { login_session_arn: "arn:aws:iam::503716878456:user/darkomesaros" }, chain: [] }
+2025-12-22T20:45:14.485753Z  INFO aws_config::profile::credentials: loaded base credentials creds=Credentials { provider_name: "Login", access_key_id: "ASIAXKR65TB4NUTJXKST", secret_access_key: "** redacted **", expires_after: "2025-12-22T20:52:51Z", account_id: "503716878456", property_0: TypeErasedBox[Clone]:[CredentialsProfileLogin] }
+Buckets: [
+    Bucket {
+        name: Some(
+            "local-bucket",
+        ),
+        creation_date: Some(
+            2025-12-22T20:43:53Z,
+        ),
+        bucket_region: Some(
+            "us-east-1",
+        ),
+        bucket_arn: None,
+    },
+]
+</pre>
+<p>Look at that sweet sweet local bucket! 😍</p>
+<br>
+<h2>Whats next?</h2>
+<br>
+<p>Well, first off you can check out the <a href="https://gist.github.com/darko-mesaros/9d27070d46ab784904bdef1e2259357a">full code listing</a>. Second, you may notice a lot of <code>.unwrap()</code> methods being invoked here. Now, this is all great for development, but be careful with those when going into production. Stay tuned, for an upcoming blog post on that topic.</p>
+<br>
+<p>Keep learning Rust, it does pay off in the end! 🦀 💘</p>
+
+<hr>
+<font size="-1">rup12.net &mdash; Darko Mesaros</font>
+</td></tr>
+</table>
+
+</font>
+</body>
+</html>

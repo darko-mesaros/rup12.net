@@ -1,0 +1,31 @@
+========================================
+RUP12.NET
+========================================
+[ home: index.txt | about: about.txt | posts: posts.txt ]
+----------------------------------------
+All Posts
+----------------------------------------
+ALL POSTS
+---------
+  * Running Obsidian on a headless server (2026-02-19) -> running-obsidian-headless.txt
+  * Can my SPARC server host a website? (2026-02-09) -> can-my-sparc-server-host-my-website.txt
+  * Learning Rust: Getting started with the AWS SDK for Rust! (2025-12-22) -> learning-rust-configuring-the-aws-sdk.txt
+  * Write your MCP servers in Rust (2025-12-11) -> write-your-mcps-in-rust.txt
+  * Learning Rust: Download and deserialize 10 000 files in 9.833 seconds (2025-11-26) -> download-and-deserialize-10000-files-in-10-seconds.txt
+  * Learning Rust: Custom Error types that actually work! (2025-11-16) -> learning-rust-custom-errors.txt
+  * Amazon Q Developer CLI 1.7.3 - Now with VIM!  (2025-04-10) -> q-developer-cli-173-update.txt
+  * How do I focus (sometimes)? (2021-07-29) -> how-do-i-focus-sometimes.txt
+  * For the love of PROD: Test your code! (Part 1) (2021-06-28) -> for-the-love-of-prod-test-your-code.txt
+  * Getting and restoring a Sun Ultra 1 Workstation (2021-05-10) -> adventures-with-sun-ultra-1-workstation.txt
+  * My experience with the Apple M1 Macbook Air (2021-05-08) -> my-experiences-with-the-apple-m1-laptop.txt
+  * Awesome vim plugins: quick-scope (2021-04-21) -> awesome-vim-plugins-quickscope.txt
+  * Awesome vim plugins: vim-plug (2021-04-16) -> awesome-neovim-plugins-vimplug.txt
+  * Multiplex Your Terminal With tmux (2021-04-05) -> multiplex-your-terminal-with-tmux.txt
+  * Do awesome things with Infrastructure as Code (PART 1) (2021-03-23) -> do-awesome-things-with-iac-part1.txt
+  * Installing Windows 2000 on real hardware in 2021 (2021-03-15) -> win2k-on-real-hw.txt
+  * ARCHIVE - My Work From Home Setup (2021-03-11) -> old-my-current-setup.txt
+  * Add some color to your terminal with lolbanner (2021-03-09) -> colorful-banners-with-lolbanner.txt
+  * Check your spelling in vim (2021-03-06) -> vim-spellchecker.txt
+
+----------------------------------------
+rup12.net -- Darko Mesaros
