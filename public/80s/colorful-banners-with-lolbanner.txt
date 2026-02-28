@@ -1,0 +1,147 @@
+========================================
+RUP12.NET
+========================================
+[ home: index.txt | about: about.txt | posts: posts.txt ]
+----------------------------------------
+Add some color to your terminal with lolbanner
+----------------------------------------
+Add some color to your terminal with lolbanner
+2021-03-09 -- You did not know you want this in your life until you see it! Colorful banners for your terminal
+
+*** Intro ***
+
+Here's a quick one for you: Terminals are wonderful, the best tool for many
+different kinds of work. But, let's be honest - it mostly looks very dull and
+boring. All those black and grays (or black and green if you are the adventurous
+type).
+What if I told you, you can do this little thing just to add more colors and
+flare to your terminals - especially when you wish to demo stuff in it?
+Introducing lolbanner.
+
+*** Lolbanner (lolcat + figlet) ***
+
+Yeah yeah, this is nothing new. I have not invented or developed anything
+remarkable. I just found a way to combine two of my favorite tools into one
+awesome utility I like to call lolbanner.
+
+So what does it do? Allow me to demonstrate:
+
+of its RGB glory")
+
+Awesome - now, how do you get to do that? Okay let's start with the things you
+need:
+  * figlet
+  * figlet fonts
+  * lolcat
+
+Okay installing these things is usually straightforward (depending on your
+operating system)
+
+=== Installing figlet ===
+
+If you are running a Mac, it's as simple as using homebrew
+to get it:
+---
+  brew install figlet
+---
+For any Debian based distribution, it should be available in your package
+manager, so just go ahead and install it:
+---
+  sudo apt update -y
+  sudo apt install figlet
+---
+Offtopic: I just find it so amazing that figlet is available for a variety of
+platforms. On they official website they offer builds for MS-DOS, Amiga, Apple
+II, Atari ST, NextStep, BeOS, and a few more. Amazing
+
+=== Getting those figlet fonts ===
+
+This one is easy, quick and universal. As mentioned in the list, you can grab
+the figlet fonts from the git repository. Now, that can be done by either
+cloning the repository or just getting the zip file.
+I like to keep these fonts in my home directory under ~/.local/share/fonts/.
+So lets do that:
+---
+  # create the directory for the fonts
+  mkdir -p ~/.local/share/fonts/figlet-fonts/
+  # clone it with git to that directory
+  git clone https://github.com/xero/figlet-fonts.git ~/.local/share/fonts/figlet-fonts/
+---
+You should now be good with those fonts.
+
+=== lolcat - yes that is the name of the package ===
+
+Okay so this is the thing that gives you those lovely colors. I would say this
+is crucial. So, how do we go about getting this? 
+Again, for Apple Mac users, you can just go ahead and use homebrew:
+---
+  brew install lolcat
+---
+And if you are running Linux and using snap you can install it by getting
+the snap:
+---
+  sudo snap install lolcat
+---
+Ultimately if all else fails, you can grab lolcat as a Ruby
+gem via the gem
+command:
+---
+  gem install lolcat
+---
+
+Once these packages are installed and available on your system you can run it to
+get that sweet, sweet colorful text:
+---
+  figlet -c -f ~/.local/share/fonts/figlet-fonts/3d.flf "yay colors" | lolcat
+---
+This command will produce the same output as the one from the first screen shot.
+That was easy! Yay 
+
+But as the wise infomercials always say: "There's gotta be a better way ..."
+
+*** The better way ***
+
+Instead of just manually typing out that series of commands and changing the
+strings you want output, how about we make this into a script - NO - better
+yet, let's make it into a shell function. This will make it easy for us to
+execute at any point and we can keep it just in our shell configuration
+repository.
+
+I will give you three examples on how I set this up in Bash, ZSH, and Fish:
+
+For Bash just add the following lines into your .bashrc file:
+---
+  function lolbanner() {
+    figlet -c -f ~/.local/share/fonts/figlet-fonts/3d.flf $@ | lolcat
+  }
+---
+Source your .bashrc file (or restart your shell) and you are ready.
+
+For ZSH it is very similar, just a slight difference, add the following
+function to your .zshrc file:
+---
+  function lolbanner {
+    figlet -c -f ~/.local/share/fonts/figlet-fonts/3d.flf $@ | lolcat
+  }
+---
+
+And finally, the odd one out. The command line shell "built for the 90s" - fish.
+Add this function to your fish configuration directory - or your
+config.fish file (it's usually in ~/.config/fish/):
+---
+  function lolbanner
+      echo
+      figlet -c -f ~/.local/share/fonts/figlet-fonts/3d.flf $argv | lolcat
+      echo
+  end
+---
+
+*** EOF ***
+
+There you go, now you have the ability to add some fancy banner messages to your
+terminal. Now this can be used (like me) for demos and presentations, or you can
+spice up your system admin's life by giving them wonderful (and colorful)
+messages every time they log in (but that is a topic for another blog post).
+
+----------------------------------------
+rup12.net -- Darko Mesaros

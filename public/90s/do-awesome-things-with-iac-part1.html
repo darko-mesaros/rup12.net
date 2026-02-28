@@ -1,0 +1,327 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>Do awesome things with Infrastructure as Code (PART 1)</title>
+</head>
+<body bgcolor="#ffffff" text="#000000" link="#0000ff" vlink="#800080">
+<font face="Arial,Helvetica">
+
+<table width="600" border="0" cellpadding="4">
+<tr><td>
+<h1><font color="#cc6600">rup12.net</font></h1>
+<font size="-1">[ <a href="index.html">home</a> | <a href="about.html">about</a> | <a href="posts.html">posts</a> ]</font>
+<hr>
+<h2>Do awesome things with Infrastructure as Code (PART 1)</h2>
+<font size="-1"><i>2021-03-23 &mdash; Clicking is no fun if you have to do it over and over again. Let's avoid clicking and start using code to define, describe and create our infrastructure. Let's start talking about doing awesome things with Infrastructure as Code</i></font>
+<hr>
+<p>"Photo by Andre Iv on Unsplash")</p>
+<br>
+<p>Picture yourself like this: You are a System Administrator, a Devops Admin</p>
+<p>(whatever that means), an Architect. You work with a team that is using the</p>
+<p>cloud. And from time to time you get a request to create something on said cloud</p>
+<p>let's say a web server with its own separate network, load balancer and external</p>
+<p>object storage (eg. Amazon Simple Storage Service aka S3). You go ahead and</p>
+<p>configure that server to run your favorite version of Apache or nginx. Oh how</p>
+<p>about a database? Yeah, there are a lot of available fully managed databases on</p>
+<p>AWS that make your life so much easier.</p>
+<br>
+<p>All this takes you, let's say 3 hours. With good documentation this may be even</p>
+<p>shorter.That is not too hard to do right? Well, no, not at all! You've worked so</p>
+<p>long for so many years you are bound to be very experienced in all of this. You</p>
+<p>are enjoying building stuff, this is your dream job after all.</p>
+<br>
+<p><i>Now ... Do that <b>500</b> more times.</i></p>
+<br>
+<p>Tell me how much you enjoy it now. Tell me how many more times you wish to do</p>
+<p>this. Also, yes, tell me how many times you've made a mistake. Because, let's be</p>
+<p>real, you did make a mistake, we are all human and we make mistakes especially</p>
+<p>when a task is very repetitive and you assume you are running on autopilot.</p>
+<p>Mistakes creep in that is never fun. Especially if you have people waiting for</p>
+<p>their infrastructure.</p>
+<br>
+<p>Even if you are doing a simple task, such as launching a single EC2 instance for</p>
+<p>a web server. It too takes at least <b>49 seconds</b> to do. Multiply that by 500</p>
+<p>times you get <b>408.34 minutes of work</b>.</p>
+<br>
+<p>wanna do this 500 more times")</p>
+<br>
+<p>There must be a better way to approach this than to keep on clicking on that</p>
+<p>console, spending all that precious time and, yes, even making mistakes. Well</p>
+<p>dear reader, there is and I will talk about it here. In the upcoming multi-part</p>
+<p>blog series, please, allow me to introduce you to, and talk at lengths about</p>
+<p><b>Infrastructure as Code</b>.</p>
+<br>
+<hr>
+<br>
+<br>
+<h1>Infrastructure as Code?</h1>
+<br>
+<p><i>"Okay Darko, so, what is this infrastructure as code that you are yapping</p>
+<p>about?"<i></p>
+<br>
+<p>Ah, well picture it like this. Instead going on the AWS Console and clicking</p>
+<p>around and telling AWS Which API calls to make (yes every time you click on the</p>
+<p>AWS console it makes an API call to AWS), to launch your EC2 instance and your</p>
+<p>VPC. Or instead SSHing to your EC2 instance and running all of those <code>yum</p>
+<p>install -y nginx<code> commands to configure your server and your application.</p>
+<p>Imagine if you could just write it down in a text file that will do it all for</p>
+<p>you! 💥</p>
+<br>
+<p><i>"But, Darko, that is scripting! You are not blowing anyones mind with that here</p>
+<p>..."<i></p>
+<br>
+<p>Ah, no no, I am not talking about scripting. I am talking about defining every</p>
+<p>bit of your infrastructure through code. But instead of having imperative code in</p>
+<p>the form of scripts ( that make a bunch of API calls ), we will have a ...</p>
+<p>Cooking recipe of sorts. Just a list of things we need, and how we need them</p>
+<p>configured. A proper <b>declarative <i>(or imperative, sometimes)</i> approach</b>.</p>
+<br>
+<p>Let's say we need that EC2 Instance here what we can do is just tell it like so:</p>
+<pre>
+# this is PSEUDO CODE
+myWebServer
+  What: EC2 Instance
+  Configuration:
+    - Size: t2.large
+    - AMI: amazon linux 2
+    - VPC: myVpc
+    - Configuration Commands: yum install -y nginx
+</pre>
+<p>Wow, that saved you a bunch of clicks. Because you can apply this template 500</p>
+<p>more times with the same (or even less) amount of effort. How about that. And</p>
+<p>the fun part is, you don't even have to worry about what API calls need to made.</p>
+<p>This Infrastructure as Code service does it all for you! Wonderful!</p>
+<br>
+<p>On top of all this, you can have some additional benefits:</p>
+<ul>
+<li>Have a <b>predictable</b> deployment and change strategy.</li>
+<li>Use the <b>same tooling and best practices</b> that you use for other code</li>
+</ul>
+<p>  deploys/versioning/testing.</p>
+<ul>
+<li>Easily <b>replicate</b> Production environments into Staging, Dev or whatever.</li>
+<li>Make your infrastructure parts into <b>modules</b>, that are easily used in other</li>
+</ul>
+<p>  deployments.</p>
+<br>
+<p>Let's talk about these. (or if you just want to view a</p>
+<p><a href="https://www.youtube.com/watch?v=0jrdv_3Iuck">video</a> about it).</p>
+<br>
+<h1>Predictable changes</h1>
+<br>
+<p>One of the most overlooked things in declarative IaC is the fact that you can</p>
+<p>easily predict what changes, updates, creations or deletions will occur when you</p>
+<p>execute. Unlike when you go ahead an click on the console a few times, and stuff</p>
+<p>happens. Here you actually see in lovely text form what is supposed to happen</p>
+<p>and how it may affect what you currently have running.</p>
+<br>
+<p>Let me give you a few examples, Let's say you are using</p>
+<p><a href="https://www.terraform.io/">Terraform</a> as your IaC of choice (<i>post on than</p>
+<p>pending<i>), you have the ability to see what Terraform is going to create, before</p>
+<p>it does. </p>
+<br>
+<p>For example, look at this code. This code will create an EC2 instance on AWS, it</p>
+<p>is fairly easy to read and you should be able to deduce by just looking at it,</p>
+<p>what it will do. Launch an <b>EC2 instance</b>, with a size of <b>t3.micro</b>,</p>
+<p>running the <b>Ubuntu</b> operating system.</p>
+<pre>
+data "aws_ami" "ubuntu" {
+  most_recent = true
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
+  }
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+  owners = ["099720109477"] # Canonical
+}
+
+resource "aws_instance" "web" {
+  ami           = data.aws_ami.ubuntu.id
+  instance_type = "t3.micro"
+  tags = {
+    Name = "HelloWorld"
+  }
+}
+</pre>
+<p>But, what if you already have resources and changing something, or adding</p>
+<p>something? There is actually a much better way of doing this, and actually</p>
+<p>seeing what Terraform will do when it goes ahead and creates our resources. We</p>
+<p>can get that by running the <code>terraform plan</code> command.</p>
+<br>
+<p>This wonderful command is used to create an execution plan. This execution plan</p>
+<p>shows all the changes Terraform is planning to make. Or if there are no changes,</p>
+<p>it will indicate as such.</p>
+<br>
+<p>Here is some example output of a Terrafrom plan operaton:</p>
+<pre>
+  # aws_vpc.tfVPC will be created
+  + resource "aws_vpc" "tfVPC" {
+      + arn                              = (known after apply)
+      + assign_generated_ipv6_cidr_block = false
+      + cidr_block                       = "10.0.0.0/16"
+      + default_network_acl_id           = (known after apply)
+      + default_route_table_id           = (known after apply)
+      + default_security_group_id        = (known after apply)
+      + dhcp_options_id                  = (known after apply)
+      + enable_classiclink               = (known after apply)
+      + enable_classiclink_dns_support   = (known after apply)
+      + enable_dns_hostnames             = (known after apply)
+      + enable_dns_support               = true
+      + id                               = (known after apply)
+      + instance_tenancy                 = "default"
+      + ipv6_association_id              = (known after apply)
+      + ipv6_cidr_block                  = (known after apply) main_route_table_id              = (known after apply) owner_id                         = (known after apply)
+      + tags                             = {
+          + "Name" = "TFVPC"
+        }
+    }
+
+Plan: 7 to add, 0 to change, 0 to destroy.
+</pre>
+<p>This is even better, now you can see what and with what settings (well sorta)</p>
+<p>will be applied to the resources once created.</p>
+<br>
+<p>So this is great, having the ability to see what your infrastructure will look</p>
+<p>like before it is created helps us avoid unwanted resource creation or</p>
+<p>configuration. This can, also, reduce some potential unwanted costs that may incur if</p>
+<p>things you don't need are launched.</p>
+<br>
+<p>On top of all this, there is this another hidden feature. <b>Infrastructure as</p>
+<p>Code is self writing documentation<b>. Yes! Anything you write, create, deploy is</p>
+<p>all nicely written down in these text files. That means, instead you writing</p>
+<p>some parallel complex document detailing what you need to do to provision your</p>
+<p>infrastructure, its all right there in that YAML document! ♥️</p>
+<br>
+<p>By using Infrastructure as Code you will never wonder <b>"Oooh, what does this</p>
+<p>button do?!"<b></p>
+<br>
+<br>
+<h1>Using existing tooling</h1>
+<br>
+<p>Okay, and how about this: Infrastructure code is, effectively, just like any</p>
+<p>other code, right? Why not use the same, already existing, tooling that you have</p>
+<p>for all your other projects? Well yes! You can use all of your <b>version</p>
+<p>  control<b>, </b>testing<b>, </b>orchestration<b>, and </b>deployment<b> tooling already</p>
+<p>  in place, not just your application code, but also your infrastructure code.</p>
+<br>
+<p>This shows you a couple of side benefits to managing your infrastructure as</p>
+<p>code. The same benefits that apply to your traditional software delivery</p>
+<p>practices:</p>
+<ul>
+<li>Versioning of Code/Infrastructure.</li>
+<li>Testing of infrastructure before it is deployed.</li>
+<li>Automated deployments and rollbacks.</li>
+</ul>
+<br>
+<p>Let's, for example, look at some testing we can do with IaC, in this case I will</p>
+<p>take <a href="https://aws.amazon.com/cdk/">AWS Cloud Development Kit</a> as a poster child</p>
+<p>for proper testing. As CDK is using generic programming languages to deploy its</p>
+<p>  infrastructure. This means that you can apply the Test Driven Development</p>
+<p>  practices when creating infrastructure. Let's have a look.</p>
+<br>
+<p>Say you are using <b>TypeScript</b> to write your IaC with CDK, and you are</p>
+<p>creating a <i>CloudWatch Alarm</i>. But you wish to be sure that this is the case,</p>
+<p>and that you are creating it with all the required configuration parameters.</p>
+<p>Here is an example of some CloudWatch alarms being created by CDK:</p>
+<br>
+<pre>
+// Add the alarm
+this.messagesInQueueAlarm = new cloudwatch.Alarm(this, 'Alarm', {
+  alarmDescription: 'There are messages in the Dead Letter Queue',
+  evaluationPeriods: 1,
+  threshold: 1,
+  metric: this.metricApproximateNumberOfMessagesVisible(),
+});
+</pre>
+<p>By using the JavaScript testing framework <a href="https://jestjs.io/">jest</a> you can</p>
+<p>write your typical unit tests that verify if certain properties are set in the</p>
+<p>way you want them.  In this example test are asserting if the stack created by</p>
+<p>AWS CDK does in fact contain the CloudWatch alarm or not. If there is no</p>
+<p>CloudWatch alarm in that stack, the test will fail.</p>
+<br>
+<pre>
+import '@aws-cdk/assert/jest';
+
+// ...
+test('dlq creates an alarm', () =&gt; {
+  const stack = new Stack();
+
+  new dlq.DeadLetterQueue(stack, 'DLQ');
+
+  expect(stack).toHaveResource('AWS::CloudWatch::Alarm', {
+    MetricName: "ApproximateNumberOfMessagesVisible",
+    Namespace: "AWS/SQS",
+    Dimensions: [
+      {
+        Name: "QueueName",
+        Value: { "Fn::GetAtt": [ "DLQ581697C4", "QueueName" ] }
+      }
+    ],
+  });
+});
+
+</pre>
+<p>I will talk about different ways you can test IaC in some future posts, but this</p>
+<p>should show you the power of bringing in Test Driven Development practices to</p>
+<p>infrastructure development. As it allows you to write high quality code, have</p>
+<p>the assurance that only good code will go to production, and well - if some bad</p>
+<p>code sneaks in, you can roll back to the previous good version.</p>
+<br>
+<h1>Summary</h1>
+<br>
+<p>Today we discussed the importance of using Infrastructure as Code to</p>
+<p>programmatically create and deploy infrastructure in the cloud. How by investing</p>
+<p>time to develop your infrastructure code you can save time by not having to</p>
+<p>repeat yourself over and over again.</p>
+<br>
+<p>We also seen some of the benefits behind this approach. Benefits such as having</p>
+<p>a predictable way of deploying infrastructure changes. By just simply looking at</p>
+<p>the code you have written or by actually using the IaC framework's capabilities</p>
+<p>to give you a preview of what is being created.</p>
+<br>
+<p>And as this is code like any other, you can apply the best practices and tooling</p>
+<p>behind software versioning,testing and delivery. To have a safe and</p>
+<p>rollback-friendly way of deploying your infrastructure.</p>
+<br>
+<p>Join me in <b>PART 2</b> where we further discuss some awesome things that</p>
+<p>Infrastructure as Code can do, things such as making your infrastructure</p>
+<p>modular, how to do proper replication, and how it can make your life a bit</p>
+<p>easier.</p>
+<br>
+<p><i>To Be Continued</i></p>
+<br>
+<hr>
+<br>
+<h3>Resources mentioned in this post</h3>
+<br>
+<ul>
+<li>My <a href="https://www.youtube.com/watch?v=0jrdv_3Iuck">YouTube</a> video on the topic</li>
+</ul>
+<p>  of Infrastructure as Code.</p>
+<ul>
+<li>Planning deployments with</li>
+</ul>
+<p>  <a href="https://www.terraform.io/docs/cli/commands/plan.html">Terraform</a>.</p>
+<ul>
+<li>Getting started with Terraform</li>
+</ul>
+<p>  <a href="https://youtube.com/playlist?list=PLCo2qyjyBlAS29BP4RdkaH7suCeGnRhcg">playlist</a>.</p>
+<ul>
+<li>How to do <a href="https://aws.amazon.com/blogs/developer/testing-infrastructure-with-the-aws-cloud-development-kit-cdk/">Testing</a></li>
+</ul>
+<p>  your code with AWS CDK.</p>
+<ul>
+<li>My <a href="https://www.youtube.com/watch?v=j_vCOVTJubM">video</a> on testing AWS CDK.</li>
+</ul>
+
+<hr>
+<font size="-1">rup12.net &mdash; Darko Mesaros</font>
+</td></tr>
+</table>
+
+</font>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>Awesome vim plugins: quick-scope</title>
+</head>
+<body bgcolor="#ffffff" text="#000000" link="#0000ff" vlink="#800080">
+<font face="Arial,Helvetica">
+
+<table width="600" border="0" cellpadding="4">
+<tr><td>
+<h1><font color="#cc6600">rup12.net</font></h1>
+<font size="-1">[ <a href="index.html">home</a> | <a href="about.html">about</a> | <a href="posts.html">posts</a> ]</font>
+<hr>
+<h2>Awesome vim plugins: quick-scope</h2>
+<font size="-1"><i>2021-04-21 &mdash; Vim is all about speed and efficiency! Movement in a text file is the thing that can slow you down. Let's have a look at a plugin that solves the horizontal movement bit. Quick-Scope</i></font>
+<hr>
+<p>Vim is all about speed, efficiency and the pure joy of editing text files. While</p>
+<p>I can talk about macros (and I will) all day long, let's chat about going fast.</p>
+<p>Moving through the file is something you need to do often! Move up, down, left</p>
+<p>and right - and well, in vim that is pretty fast. But what about if you can do</p>
+<p>it even faster? </p>
+<br>
+<p>Let's have an example, here look at this sentence:</p>
+<pre>
+The spread of civilisation may be likened to a fire; first, a feeble spark, next
+a flickering flame, then a mighty blaze, ever increasing in speed and power.
+</pre>
+<p>And say you wish to change the word <i>'likened'</i> to something else. How would you</p>
+<p>go about it? You can press the <code>w</code> key <i>6 times</i>, but that is way too</p>
+<p>much keystrokes. What if you could do it in 2? Let's talk about <b>quick-scope</b> a</p>
+<p>lovely plugin that makes horizontal movement in vim that much better.</p>
+<br>
+<p>The quick-scope vim plugin is simple as it gets. It just makes it very usable to</p>
+<p>use the <code>f</code> and <code>F</code> family of commands. What it does is</p>
+<p>highlights the needed character that you need to press to jump straight to that</p>
+<p>word. That's it! Very simple, and I love it.</p>
+<br>
+<h2>Installation</h2>
+<br>
+<p>To install this plugin it is very simple: just use your favorite plugin manager.</p>
+<p>Here are some of the examples from their</p>
+<p><a href="https://github.com/unblevable/quick-scope">github</a> page:</p>
+<pre>
+" Your .vimrc
+Plug 'unblevable/quick-scope'       " When using vim-plug
+NeoBundle 'unblevable/quick-scope'  " xor NeoBundle
+Plugin 'unblevable/quick-scope'     " xor Vundle
+</pre>
+<br>
+<p>And that should be it! If you are looking for a way how to setup vim-plug, you</p>
+<p>can check out my [blog post on that</p>
+<p>topic](https://www.rup12.net/posts/2021/awesome-neovim-plugins-vimplug/).</p>
+<br>
+<h2>Configuration</h2>
+<br>
+<p>Lastly we need to add some things to your <code>.vimrc</code> file (or wherever</p>
+<p>your hold your vim configuration) so this works as it should. Without this</p>
+<p>configuration it will keep on highlighting characters at all times.</p>
+<br>
+<p>Enter the following into your <code>.vimrc</code> file:</p>
+<pre>
+" Trigger a highlight in the appropriate direction when pressing these keys:
+let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
+
+" Trigger a highlight only when pressing f and F.
+let g:qs_highlight_on_keys = ['f', 'F']
+</pre>
+<p>There are few more things you can configure, but this should get you going.</p>
+<br>
+<h2>Usage</h2>
+<br>
+<p>How do you go about using this? Let's have a look:</p>
+<br>
+<p>to press to jump to a specific word")</p>
+<br>
+<p>The same example as stated at the beginning, let's jump to a specific word in</p>
+<p>the sentence. You can see there are a few characters that are highlighted in red</p>
+<p>and blue. If you hit any of these keys, you will jump to that word - well sort</p>
+<p>of. Because quick-scope uses the native vim movement (the f and F keys), and it</p>
+<p>just helps with the highlighting, there is no magic here to help you skip to a</p>
+<p>specific word if all of its characters are already existing before it - hence,</p>
+<p>the red characters. Let's say you wish to jump to the <i>to</i> word. We can see the</p>
+<p>character is red - so just hit the letter <code>t</code> and then the semi-colon</p>
+<p><code>;</code> and there you are, on that word ready to do whatever you do!</p>
+<br>
+<p>jumping to the 'to' word, in 3 key presses")</p>
+<br>
+<h2>Summary</h2>
+<br>
+<p>Vim enables us to be very fast. Moving around the file, making changes, doing</p>
+<p>stuff for us. Quick-scope is an awesome little plugin that helps us with</p>
+<p>horizontal navigation by highlighting characters we can jump on to.</p>
+
+<hr>
+<font size="-1">rup12.net &mdash; Darko Mesaros</font>
+</td></tr>
+</table>
+
+</font>
+</body>
+</html>

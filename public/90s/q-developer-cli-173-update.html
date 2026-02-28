@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>Amazon Q Developer CLI 1.7.3 - Now with VIM! 😍</title>
+</head>
+<body bgcolor="#ffffff" text="#000000" link="#0000ff" vlink="#800080">
+<font face="Arial,Helvetica">
+
+<table width="600" border="0" cellpadding="4">
+<tr><td>
+<h1><font color="#cc6600">rup12.net</font></h1>
+<font size="-1">[ <a href="index.html">home</a> | <a href="about.html">about</a> | <a href="posts.html">posts</a> ]</font>
+<hr>
+<h2>Amazon Q Developer CLI 1.7.3 - Now with VIM! 😍</h2>
+<font size="-1"><i>2025-04-10 &mdash; Amazon Q Developer CLI1.7.3 introduces five key improvements: just type `q` to launch; granular tool permission controls with `/tools trust/untrust` commands; VIM integration via `/editor` command for complex prompts; multi-line editing with Ctrl+J; and enhanced context management through the `/context` command.</i></font>
+<hr>
+<blockquote><b>TL;DR</b> <a href="https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/command-line.html?trk=dad343da-c131-4cd9-a323-ecf121d818d4&amp;sc_channel=el">Amazon Q Developer CLI</a> 1.7.3 introduces five key improvements: just type <code>q</code> to launch; granular tool permission controls with <code>/tools trust/untrust</code> commands; VIM integration via <code>/editor</code> command for complex prompts; multi-line editing with Ctrl+J; and enhanced context management through the <code>/context</code> command. </blockquote>
+<br>
+<hr>
+<br>
+<p>Hey there! 👋 Amazon Q developer CLI 1.7.3 is out, and this new version has a couple of really neat goodies that I really want to share with you.</p>
+<br>
+<h2>1. Simplified Command</h2>
+<br>
+<p>Super simple but incredibly convenient - if you want to use Q CLI right now, you can just type <code>q</code>. Yep, that's it! No longer need to type <code>q chat</code> which is great. Saves me five characters, and makes it super snappy to kick off! 🥳</p>
+<br>
+<p>&lt;img width="100%" style="width:100%" src="https://rup12.net/devto/q173/q_launch.gif"&gt;</p>
+<br>
+<h2>2. New Tools Permissions Dialog</h2>
+<br>
+<p>This is really neat. Amazon Q Developer now has the a tools permissions/control dialog. If you do <code>/tools</code>, it's going to give you the current available tools - these are the tools available to Q CLI (stuff that can read from disk, write to disk, use AWS API, and execute bash commands).</p>
+<br>
+<p>You can now enter <code>/tools</code> and then something like <code>untrust</code> and <code>trust</code> and <code>trustall</code>. Simply put, when you <code>untrust</code> a tool, that tool needs to ask for confirmation to do anything. So I can do:</p>
+<br>
+<pre>
+/tools untrust fs_read
+</pre>
+<br>
+<p>Now the FS read tool has per-request permissions. Anytime Q CLI tries to read something off the disk, it's going to ask me "Can I read this off the disk?" It's a really cool way for you to granularly control the permissions. Wonderful!</p>
+<br>
+<p>&lt;img width="100%" style="width:100%" src="https://rup12.net/devto/q173/tools.gif"&gt;</p>
+<br>
+<h2>3. VIM Integration </h2>
+<br>
+<p>This one I <i>really</i> like. Say, you want to enter a more complicated prompt - something with multiple lines, bullet points, or something you'd normally edit somewhere else and paste in. 🤔 What if you could use <b>objectively the best text editor in the world</b>: VIM, VI, Neovim (call it what you want) right in Amazon Q CLI? 👏</p>
+<br>
+<p>Now you can use the <code>/editor</code> command. This brings up your default set editor (in my case, it's vim), and I can just come here and literally paste or type out something inside. Once you are done save and quit (if you know how 😈), and once that's done, it automatically goes into the prompt and Q CLI can use it. Beautiful!</p>
+<br>
+<p>To configure a custom editor (emacs, nano, joe, ed ... whatever). You can do so with the <code>export</code> command. <b>But make sure you do it in <code>bash</code>, as Q CLI is using Bash</b>:</p>
+<br>
+<pre>
+export EDITOR=joe
+</pre>
+<br>
+<p>&lt;img width="100%" style="width:100%" src="https://rup12.net/devto/q173/editor.gif"&gt;</p>
+<br>
+<h2>4. Multi-line Editing</h2>
+<br>
+<p>Speaking of multi-line editing, you can now do this in Amazon Q Developer. Instead of entering the editor using <code>/editor</code> you can just hit <code>Ctrl + j</code> and it will append a new line to your input. Hitting <code>Enter</code> at the end of it will submit the prompt!</p>
+<br>
+<p>You can do multi-line things now within the actual command line. Love it!</p>
+<br>
+<p>&lt;img width="100%" style="width:100%" src="https://rup12.net/devto/q173/ctrlj.gif"&gt;</p>
+<br>
+<h2>5. Enhanced Context Controls</h2>
+<br>
+<p>Lastly, there are additional controls when it comes to managing the context. Within <code>q</code> type <code>/context</code>, and you can actually see additional commands and more clarifications about the context rules that are part of Q developer CLI.</p>
+<br>
+<br>
+<p>By typing <code>/context show</code> it will show you how the current <i>global</i> and <i>profile</i> contexts are configured.</p>
+<br>
+<br>
+<p>This isn't anything new, but it's a cleaner way of having you work with your context now and looks way nicer inside of Q CLI.</p>
+<br>
+<h2>Try it Today! 🚀</h2>
+<br>
+<p>So if you have not been using Amazon Q CLI up until now, <i>now</i> is the perfect time to try it. Go ahead and use Amazon Q Developer CLI to build tools, automate stuff, deploy stuff, to even convert weird audio formats into <code>.wav</code> or anything like that. (yes it can do that too).</p>
+
+<hr>
+<font size="-1">rup12.net &mdash; Darko Mesaros</font>
+</td></tr>
+</table>
+
+</font>
+</body>
+</html>

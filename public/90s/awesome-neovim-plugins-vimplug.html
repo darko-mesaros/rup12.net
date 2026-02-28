@@ -1,0 +1,165 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>Awesome vim plugins: vim-plug</title>
+</head>
+<body bgcolor="#ffffff" text="#000000" link="#0000ff" vlink="#800080">
+<font face="Arial,Helvetica">
+
+<table width="600" border="0" cellpadding="4">
+<tr><td>
+<h1><font color="#cc6600">rup12.net</font></h1>
+<font size="-1">[ <a href="index.html">home</a> | <a href="about.html">about</a> | <a href="posts.html">posts</a> ]</font>
+<hr>
+<h2>Awesome vim plugins: vim-plug</h2>
+<font size="-1"><i>2021-04-16 &mdash; Do you find managing vim plugins frustrating? Do you think there needs to be a better way for that? Well then, let's talk about vim-plug. The plugin manager that plugs in plugins!</i></font>
+<hr>
+<p>Alright, time for a new segment on this blog called "Awesome vim plugins"</p>
+<p>🎉 (or whatever ...). Yes, in these kinds of posts I will present and</p>
+<p>explain some of the most useful neovim/vim plugins out there. Of course, I will</p>
+<p>start with the plugins I use every day, but may expand this on to other plugins.</p>
+<p>These posts will be short and to the point, so you may get to using these</p>
+<p>plugins as soon as you can.  Think of it as those YouTube minecraft videos - Mod</p>
+<p>spotlights, but this time Plugin Spotlighs! Ooh that is even a better name.</p>
+<br>
+<p>Let's start with the most important plugin of them all. The plugin to plugin in</p>
+<p>all the plugins (yes I know). A plugin that enables you to easily get and manage</p>
+<p>other plugins you see out there. The plugin that makes plugin management,</p>
+<p>easier. Let's talk about <b>vim-plug</b>!</p>
+<br>
+<p>According to their <a href="https://github.com/junegunn/vim-plug">Github</a> page, vim-plug</p>
+<p>is a minimalistic plugin manager.  Simple as that! Now just to explain why is</p>
+<p>this important: manual plugin management can be a mess. You need to clone the</p>
+<p>repositories of your favorite plugins the right location, delete the</p>
+<p>repositories when you no longer hava need for them, and just keeping all that</p>
+<p>tracked is what frustrates me. Enter - <i>Plugin managers!</i> Vim plugin managers,</p>
+<p>allow you to simply (with a single line of code) add or remove new plugins to</p>
+<p>your vim setup - yes thats it. But it is very important, as it helps us lazy</p>
+<p>people. There are many vim plugin managers, but I decieded to talk about this,</p>
+<p>one as it suits my needs best.</p>
+<br>
+<h2>Installation</h2>
+<br>
+<p>How to get started with vim-plug, well this is the plugin you <b>actually need</b></p>
+<p>to install manually. But hey, better one than ten. So, how do you go about doing</p>
+<p>that? It's all explained on their [github</p>
+<p>page](https://github.com/junegunn/vim-plug), but let me give you the gist of it.</p>
+<br>
+<ul>
+<li>Download</li>
+</ul>
+<p>  <a href="https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim">plug.vim</a></p>
+<ul>
+<li>Place this file into your <code>autoload</code> directory - it's usually in</li>
+</ul>
+<p>  <code>$HOME/.vim/autoload/</code></p>
+<br>
+<p>Thats it? Well almost, we just need to modify our <code>.vimrc</code> file so we</p>
+<p>load vim-plug at the start. Let me show you how I do it, but beware that the</p>
+<p><b>paths may differ on your setup</b>. Here is how I have it configured:</p>
+<br>
+<pre>
+" auto-install vim-plug
+if empty(glob('~/.config/nvim/autoload/plug.vim'))
+  silent !curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs
+    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  autocmd VimEnter * PlugInstall | source $MYVIMRC
+endif
+
+call plug#begin('~/.config/nvim/autoload/plugged')
+
+" THIS IS WHERE THE PLUGINS GO
+
+call plug#end()
+
+" Automatically install missing plugins on startup
+autocmd VimEnter *
+  \  if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
+  \|   PlugInstall --sync | q
+  \| endif
+</pre>
+<br>
+<p>Okay there are a a few things to unpack here, as this is not your standard</p>
+<p>installation. I've added a few bells and whistles to it. Let's talk about it.</p>
+<br>
+<h2>Configuration</h2>
+<br>
+<p>The first part of my configuration of vim-plug is related to automatic</p>
+<p>installation of the same. Wait what? Yes, I did not even need to download</p>
+<p>vim-plug and place it in the right directory. This little snippet of</p>
+<p>configuration is verifying if vim-plug is installed. and if it is not, it</p>
+<p>downloads it into the right directory. 💥 </p>
+<br>
+<pre>
+" auto-install vim-plug
+if empty(glob('~/.config/nvim/autoload/plug.vim')) " check if installed 
+  " if not: download it with curl
+  silent !curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs
+    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  " run PlugInstall at the end
+  autocmd VimEnter * PlugInstall | source $MYVIMRC
+endif
+</pre>
+<br>
+<p>Now, on to the actual configuration of vim-plug. Here you can see two calls</p>
+<p>being made <code>plug#begin</code> and <code>plug#end</code>. This is where the</p>
+<p>magic happens. Between these two lines you define which plugins are going to be</p>
+<p>installed. Remmember, the plugins you wish to install, <b>need</b> to be between</p>
+<p>these two lines.</p>
+<br>
+<p>Yep, thats it. Just add each of the plugins line by line, and let vim-plug</p>
+<p>handle the rest. How it works is by prefixing the github-username/repo-name with</p>
+<p>the <code>Plug</code> prefix. You can also add some additional things to be done</p>
+<p>after the installation is done (eg. run a specific command).</p>
+<br>
+<pre>
+call plug#begin('~/.config/nvim/autoload/plugged')
+
+" THIS IS WHERE THE PLUGINS GO
+    " FZF
+    Plug 'junegunn/fzf', { 'do': { -&gt; fzf#install() } }
+    Plug 'junegunn/fzf.vim'
+    " vim tmux navigator
+    Plug 'christoomey/vim-tmux-navigator'
+
+call plug#end()
+</pre>
+<br>
+<p>And Finally - let's add a feature to automatically install newly added plugins.</p>
+<p>This snippet just runs the <code>PlugInstall</code> command everytime vim is</p>
+<p>loaded. This goes over all the installed and defined plugins in the</p>
+<p>configuration file. If something is missing it installs it. And if something is</p>
+<p>removed it gets rid of the files.</p>
+<br>
+<pre>
+" Automatically install missing plugins on startup
+autocmd VimEnter *
+  \  if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
+  \|   PlugInstall --sync | q
+  \| endif
+</pre>
+<br>
+<p>If you do not wish to have vim-plug install these automatically, you can execute</p>
+<p>it by running <code>:PlugInstall</code> from within vim.</p>
+<br>
+<p>where I install a new plugin with just a single line of code")</p>
+<br>
+<h2>Summary</h2>
+<br>
+<p>That's it - the first of many plugins for vim that you should use. Make sure</p>
+<p>to have vim-plug as a mainstay of your vim configuration, as it makes plugin</p>
+<p>management so much easier.</p>
+<br>
+<p>Stay tuned for more Awesome Plugin posts!</p>
+<br>
+<p>Do check out my neovim configuration files</p>
+<p><a href="https://github.com/darko-mesaros/nvim">here</a>.</p>
+
+<hr>
+<font size="-1">rup12.net &mdash; Darko Mesaros</font>
+</td></tr>
+</table>
+
+</font>
+</body>
+</html>

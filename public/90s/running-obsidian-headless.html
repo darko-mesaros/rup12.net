@@ -1,0 +1,156 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>Running Obsidian on a headless server</title>
+</head>
+<body bgcolor="#ffffff" text="#000000" link="#0000ff" vlink="#800080">
+<font face="Arial,Helvetica">
+
+<table width="600" border="0" cellpadding="4">
+<tr><td>
+<h1><font color="#cc6600">rup12.net</font></h1>
+<font size="-1">[ <a href="index.html">home</a> | <a href="about.html">about</a> | <a href="posts.html">posts</a> ]</font>
+<hr>
+<h2>Running Obsidian on a headless server</h2>
+<font size="-1"><i>2026-02-19 &mdash; How to run Obsidian on a headless Linux server using X11 forwarding and Xvfb for agent automation and note syncing</i></font>
+<hr>
+<h2>Running Obsidian without x11</h2>
+<br>
+<p>These days we are all (trying to use) using Agents! <b>Right?</b>  From helping you with your day-to-day coding, to managing social media research, to even helping you plan out your days. Some of us use coding assistants, some of us web interfaces, but there is a number of us that want to build <i>bespoke agents</i> that run on our own little pieces of the internet. Well, I wanted to build one that would do some daily research on certain subreddits and write down its findings inside of my <a href="https://obsidian.md/">Obsidian</a> notes. What could go wrong!</p>
+<br>
+<p>First off, Obsidian is an excellent note taking tool that I use extensively for all my personal notes. Projects I build, tasks I need to do. For a small fee it will even sync up my notes across multiple devices. Definitely <a href="https://www.makeuseof.com/why-i-pay-for-obsidian-sync/">the best money ever spent</a>. Now I wanted to give my agent access to these notes. (side note: The notes are just locally stored markdown files, nothing fancier than that)</p>
+<br>
+<p>But there was a catch. I wanted to run this in my home lab, on a virtual machine. So... What's the catch? Well, to run Obsidian and have it start syncing there are a few steps:</p>
+<br>
+<p>1. <b>Install</b> it (duh)</p>
+<p>2. <b>Launch</b> Obsidian</p>
+<p>3. <b>Log in</b> with your sync username and password</p>
+<br>
+<p>Hmm, so step <b>number 2</b> is the problem. I cannot open Obsidian as I have no GUI running on this headless server. I can certainly install it but once I try to start it: </p>
+<br>
+<br>
+<p>I am missing that GUI/x11 here. But I really don't want x11 running on this server. So how can I start Obsidian to do my login bit?</p>
+<br>
+<p><b>NOTE:</b> I run <a href="https://archlinux.org/">Arch Linux</a> (btw), because I feel very comfortable with it. Your mileage may vary with other distros.</p>
+<br>
+<h2>SSH x11 forwarding</h2>
+<br>
+<p>Ah, the tried and true <b>X11 forwarding</b>. The ability to have a "remote desktop" <a href="https://en.wikipedia.org/wiki/X_Window_System#Remote_desktop">purely via SSH</a>. In essence it enables a local X11 client (my Linux laptop) to execute remote X11 applications running on my server. Even though the server does not have any X11 software installed, nor it has a X Server running.</p>
+<br>
+<p>Cathode Ray Dude, has an <a href="https://www.youtube.com/watch?v=XHGKKdyU2bE">excellent video</a> adjacent this topic. I do recommend you check it out.</p>
+<br>
+<p>So with X11 forwarding I will be able to start Obsidian for the first time and set up sync. Let's do this. To get this started you need to do two things:</p>
+<br>
+<p>1. Install <code>xauth</code> on your server (unless it already has it)</p>
+<p>2. Enable <code>X11Forwarding yes</code> in your <code>/etc/ssh/sshd_config</code> file (on the server)</p>
+<br>
+<p>The <code>xauth</code> package <b>does not</b> come as standard on Arch Linux. So I have to install it otherwise the server cannot generate <i>X11 Authentication cookies</i>, and I kept geting some cryptic errors alluding to this. Depending on what OS you are running for your server, you may not need to install this.</p>
+<br>
+<p>Restart the SSH server, and run the following:</p>
+<br>
+<pre>
+# replace your username and server with the correct values
+ssh -X user@server obsidian
+</pre>
+<p><b>Boom</b> 💥 - Look at that!</p>
+<br>
+<p>Okay, now log in, set your vault. And you are good to go. Oh and if you are a paid customer, and have the <a href="https://help.obsidian.md/catalyst">catalyst licence</a> you should also enable the <a href="https://help.obsidian.md/cli">Command Line version</a> of Obsidian. Just in case.</p>
+<br>
+<p>We are almost, good to go. Except, one more problem. I don't want Obsidian just running like this, via SSH and X11 forwarding. I want it running truly headless, meaning I just run <code>obisidian</code> at startup and let it be. Well for that, let's talk about <i>faking</i> X11.</p>
+<br>
+<h2>Virtual x11</h2>
+<br>
+<p>Enter <code>Xvfb</code>: a <b>virtual frame buffer</b>, basically a <a href="https://en.wikipedia.org/wiki/Xvfb">fake X server</a> in memory. Whats great about this tool is that does not require my server to have any sort of display adapter (even though mine has), and it also shows <b>no display</b> at all. The applications themselves just thing this is your normal X Server and keep humming along.</p>
+<br>
+<p>By installing and running this, I am able to just kick off Obsidian and not worry. </p>
+<br>
+<p>To get this going, first install the <code>xorg-server-xvfb</code> (or your distro alternative). Now try to test it manually to see if it works:</p>
+<br>
+<pre>
+xvfb-run --auto-servernum obsidian --no-sandbox
+</pre>
+<br>
+<p>This may net you something like this in the console:</p>
+<pre>
+[darko@agentvm ~]$ xvfb-run --auto-servernum obsidian --no-sandbox
+Ignored: Error: ENOENT: no such file or directory, open '/home/darko/.config/obsidian/obsidian.json'
+LaunchProcess: failed to execvp:
+xdg-settings
+2026-02-20 06:09:08 Loaded main app package /usr/lib/obsidian/obsidian.asar
+2026-02-20 06:09:08 Checking for update using Github
+[959:0219/220908.705898:ERROR:components/viz/service/main/viz_main_impl.cc:189] Exiting GPU process due to errors during initialization
+2026-02-20 06:09:08 Success.
+2026-02-20 06:09:08 Latest version is 1.11.7
+2026-02-20 06:09:08 App is up to date.
+</pre>
+<p>And <code>ps</code> should now show us that obsidian is running:</p>
+<pre>
+[darko@agentvm ~]$ ps ax | grep obsidian
+    913 pts/0    S+     0:00 /bin/sh /usr/bin/xvfb-run --auto-servernum obsidian --no-sandbox
+    928 pts/0    Sl+    0:00 /usr/lib/electron39/electron /usr/lib/obsidian/app.asar --no-sandbox
+[...]
+</pre>
+<blockquote>The <code>--no-sandbox</code> flag is used because of the dreaded <b>electron</b> framework. It's security sandboxing does not really play nice with some server environment, so I had to use this flag to make it work.</blockquote>
+<br>
+<p>To further test it, update a file somewhere where you have Obsidian running, and just cat that markdown file on the server to see if the file has been updated! Huzzah! 👏</p>
+<br>
+<p>Lastly, to make this more permanent, let's <b>set up a local service</b> to run this. Since we are running this under my user (and my own vault), this will be a <b>user</b> <code>systemd</code> service. </p>
+<br>
+<pre>
+# Create systemd user service
+mkdir -p ~/.config/systemd/user
+cat &gt; ~/.config/systemd/user/obsidian.service &lt;&lt; 'EOF'
+[Unit]
+Description=Obsidian (headless via Xvfb)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=xvfb-run --auto-servernum obsidian --no-sandbox
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=default.target
+EOF
+
+# Enable and start
+systemctl --user daemon-reload
+systemctl --user enable --now obsidian.service
+</pre>
+<br>
+<p><b>VERY IMPORTANT</b>: To keep the user services running after we have closed our SSH sessions, you need to <code>enable-linger</code> for your user. To do this just run:</p>
+<br>
+<pre>
+# loginctl should be part of your systemd system
+sudo loginctl enable-linger $USER
+</pre>
+<br>
+<p>Okay, let's verify the service with:</p>
+<pre>
+systemctl --user status obsidian.service
+</pre>
+<br>
+<br>
+<p>And just like that, we have Obsidian running as a service on a remote headless server. You may choose to run this in your Home Lab, or on an <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts.html">AWS EC2</a> instance, maybe some <a href="https://docs.digitalocean.com/products/droplets/how-to/create/">VPS Hosting</a>. Or whatever you decide to choose!</p>
+<br>
+<h2>What's next</h2>
+<br>
+<p>Let me bring it back to the first paragraph. Why this? Why would you do this at all? One way to look at this is having something keep a constant locally copy of all your notes, in case your laptop explodes at the same time Obsidian's servers disappear. In reality, the reason I set this up for myself is because I built that agent. </p>
+<br>
+<p>An agent, powered by an LLM, is running daily on my headless server. Using the <a href="https://github.com/adhikasp/mcp-reddit">Reddit MCP</a> it fetches information from some subreddit and summarizes it for me. But for it to be practical, it also uses the <a href="https://github.com/bitbonsai/mcp-obsidian">Obsidian MCP</a> to store that summary in a daily note.</p>
+<br>
+<br>
+<p>I am looking forward for the wonderful folks over at Obsidian to make a full version of the obsidian CLI that does not require any GUI. Please Obsidian, make my post irrelevant! 🙏</p>
+<br>
+<p>See you in the next post 👋</p>
+
+<hr>
+<font size="-1">rup12.net &mdash; Darko Mesaros</font>
+</td></tr>
+</table>
+
+</font>
+</body>
+</html>

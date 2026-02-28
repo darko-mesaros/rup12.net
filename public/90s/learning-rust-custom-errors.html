@@ -1,0 +1,211 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>Learning Rust: Custom Error types that actually work!</title>
+</head>
+<body bgcolor="#ffffff" text="#000000" link="#0000ff" vlink="#800080">
+<font face="Arial,Helvetica">
+
+<table width="600" border="0" cellpadding="4">
+<tr><td>
+<h1><font color="#cc6600">rup12.net</font></h1>
+<font size="-1">[ <a href="index.html">home</a> | <a href="about.html">about</a> | <a href="posts.html">posts</a> ]</font>
+<hr>
+<h2>Learning Rust: Custom Error types that actually work!</h2>
+<font size="-1"><i>2025-11-16 &mdash; Tired of writing the same verbose error handling boilerplate in your Axum handlers? Me too! 🙄 By creating a custom `AppError` newtype that wraps `anyhow::Error` and implements `IntoResponse` + `From<E>`, you can ditch all those ugly match statements and embrace the beautiful `?` operator.</i></font>
+<hr>
+<blockquote><b>TL;DR:</b> <a href="https://github.com/darko-mesaros/webone">GITHUB REPO</a>. Tired of writing the same verbose error handling boilerplate in your Axum handlers? Me too! 🙄 By creating a custom <code>AppError</code> newtype that wraps <code>anyhow::Error</code> and implements <code>IntoResponse</code> + <code>From&lt;E&gt;</code>, you can ditch all those ugly match statements and embrace the beautiful <code>?</code> operator. Your handler functions go from messy error-matching shenanigans to clean, readable code that automatically converts any error into proper HTTP responses. It's like magic, but with more crabs! 🦀 </blockquote>
+<br>
+<hr>
+<br>
+<p>Recently I've been digging a lot into the <a href="https://crates.io/crates/axum">axum</a> crate for any of my Rust web projects. There are plenty of options out there for Rust web applications, but it seems that <a href="https://www.arewewebyet.org/">we</a> have all settled on <b>Axum</b> as the go to crate. Before you even start reading this, if you have not checked it out yet - <i>do so now</i> ... I'll wait. </p>
+<br>
+<p>Okay, you're back! Love it? YES! 🥳 Now, let's talk about a learning project I am working on. Ever since I've discovered <a href="https://htmx.org/">htmx</a> I've been immersing myself in the world of web development with <a href="https://en.wikipedia.org/wiki/HATEOAS">HATEOAS</a> as my priority. Just the neatness of using hypermedia gives me a rush, and helps me with all that <a href="https://medium.com/@ericclemmons/javascript-fatigue-48d4011b6fc4">JavaScript fatigue</a>. I do suggest you go and give <a href="https://hypermedia.systems/">hypermedia systems</a> a read, a thing I have been doing over the past couple of weeks.</p>
+<br>
+<p>So, in the spirit of this book, I was following along with building some hypermedia driven system. But instead of using Python and Flask as stated in the book, I've opted to put my crab hat on, and do it in Rust. Like the big boy I am. In this post I wont explain how I did that (link to a post from the future will go here), but rather explain how I used the amazing features of Rust to eliminate a lot of boilerplate code on my side.</p>
+<br>
+<h2>Errors Errors</h2>
+<br>
+<p>In order to be a good web builder, you want to make sure to return the proper HTTP status codes. (I'm looking at you <code>200 OK</code> with an error message). So in my <a href="https://docs.rs/axum/0.8.7/axum/#handlers">handler</a> functions I make sure to explicitly return the Status code as part of my return tuple. Something like so:</p>
+<br>
+<pre>
+Ok((StatusCode::OK, Html("&lt;h1&gt;Hello World&lt;/h1&gt;")))
+// Or an Error:
+Err((StatusCode::INTERNAL_SERVER_ERROR, format!("Error processing hello world")))
+</pre>
+<br>
+<p>This would signal back to the user (and axum) that the request was either <code>200 OK</code>, and here is the HTML, or <code>500 Internal Server Error</code> and an angry string. Nifty!</p>
+<br>
+<p>With the glory of Rust's <a href="https://doc.rust-lang.org/rust-by-example/error/result.html">Result</a> enum, we are equipped to handle any errors our back end may throw at us. So, I just <code>match</code> on call that can fail, and return something back depending on that <code>Result</code>.</p>
+<p>In practice, say in this handler function that finds a <code>Contact</code> by its ID in the database, it would look something like this:</p>
+<br>
+<pre>
+#[axum::debug_handler]
+async fn get_edit_contact(
+    State(state): State&lt;AppState&gt;,
+    Path(id): Path&lt;i64&gt;,
+    // The function signature tells us what we expect back
+) -&gt; Result&lt;(StatusCode, Html&lt;String&gt;), (StatusCode, String)&gt; {
+
+    // This call can fail so let's match its Result
+    let contact = match Contact::find_by_id(&amp;state.db, id).await {
+        // We're good return back the `Contact` into the `contact` variable
+        Ok(contact) =&gt; contact, 
+        // We're NOT good, return the tuple with a status code of 500
+        Err(e) =&gt; {
+            return Err(
+                (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                format!("Failed to find contact: {e}")
+                )
+            )
+        }
+    };
+
+    let edit_template = EditContactTemplate { contact };
+
+    // This can also fail, but we dont need to store it into a variable,
+    // we just need to return.
+    match edit_template.render() {
+        // Looks good, return the HTML and 200 OK
+        Ok(html) =&gt; Ok((StatusCode::OK, Html(html))),
+        // Again 500 Bad, be angry here
+        Err(e) =&gt; {
+            Err(
+                (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                format!("Failed to render template: {e}")
+                )
+            )
+        }
+    }
+}
+</pre>
+<br>
+<p>That is a <i>lot</i> of boilerplate code. While I do enjoy the verbosity of Rust (makes me feel all safe and cozy), this gets real old real fast. Especially when you have multiple handler functions, that invoke multiple different calls that can fail. Let's bring in another amazing feature of rust the <i>newtype pattern</i>, and simplify this 👏</p>
+<br>
+<h2>Building my own Error type</h2>
+<br>
+<p>I wont go too much into newtypes, as there is an <a href="https://www.howtocodeit.com/articles/ultimate-guide-rust-newtypes">excellent guide</a> that I encourage all of you to read. Simply put, they are thin wrappers that allow you to extend functionality of existing Types not native to your crate. And I am gonna use it to extend the implement the <code>IntoResponse</code> trait into a type I dubbed <code>AppError</code>. And then allow it (what ever the Error is) to be converted into <a href="https://crates.io/crates/anyhow">anyhow::Error</a>.</p>
+<br>
+<p>Let's first create this wrapper newtype:</p>
+<pre>
+pub struct AppError(anyhow::Error);
+</pre>
+<p>Here I am wrapping <code>anyhow::Error</code> into a new type called <code>AppError</code>. I could do the same for any other type, and just create a wrapper around it (ie. a <code>Vec&lt;T&gt;</code> wrapper: <code>struct Wrapper(Vec&lt;T&gt;)</code>). Now comes the fun part, implementing certain traits.</p>
+<br>
+<p>To implement the <code>IntoResponse</code> trait from <a href="https://docs.rs/axum/latest/axum/response/trait.IntoResponse.html">axum</a> into this new type, we only need to implement the <code>into_response</code> function, which needs to return a <code>Response&lt;Body&gt;</code> type. Let's look at some code:</p>
+<pre>
+impl IntoResponse for AppError { // 1
+    fn into_response(self) -&gt; Response { // 2
+        (StatusCode::INTERNAL_SERVER_ERROR, self.0.to_string()).into_response() // 3 
+    }
+}
+</pre>
+<p>And just like that we've implemented our own way of returning an error response from a handler function. Let me explain the code a bit:</p>
+<p>1) The implementation block for <code>IntoResponse</code> for <code>AppError</code></p>
+<p>2) This is the only function needed for <code>IntoResponse</code> and we are simply returning a <code>Response</code> from the axum crate</p>
+<p>3) We just return a tuple of a <code>StatusCode</code> and a <code>String</code> coming from element 0 of the <code>AppError</code> struct. Oh, and convert all that into a <code>Response</code></p>
+<br>
+<p>Here is a bit more <b>complicated</b> version of the same code, this one uses a templating engine to return some nicely formatted web pages. This version just expands the above, but should demonstrate that this all works really nicely with the rest of your codebase.</p>
+<pre>
+impl IntoResponse for AppError {
+    fn into_response(self) -&gt; axum::response::Response {
+        // Returning a HTML page for an error
+        let template = Error5xxTemplate { // 1
+            // Select element 0, as that is our anyhow::Error string and convert it so it works with our template
+            error: self.0.to_string(),
+        };
+        match template.render() { // 2
+            // If the template render is successful, return the HTML page with the error
+            Ok(html) =&gt; (StatusCode::INTERNAL_SERVER_ERROR, Html(html)).into_response(),
+            // The render has failed catastrophically - just return some string
+            Err(_) =&gt; (StatusCode::INTERNAL_SERVER_ERROR, "Internal Server Error").into_response(),
+        }
+    }
+}
+</pre>
+<p>Okay, there is a lot more going on here. Most of it is the same as before, but let me break it down:</p>
+<br>
+<p>1) Somewhere in my code base I have a <code>Error5xxTemplate</code> struct that I use with the <a href="https://crates.io/crates/askama">askama</a> templating crate</p>
+<p>2) I make sure the template renders okay, if so - return the 5xx error page, if not I just give a <code>500</code> error and the string back.</p>
+<br>
+<br>
+<p>Now that we have an <code>IntoResponse</code> implemented. Let's give our <code>AppError</code> the ability to take errors from anywhere.</p>
+<br>
+<h2>Converting other error types</h2>
+<br>
+<p>To make <code>AppError</code> a bit more flexible, I wanted to be able to automatically convert any<i> (</i>I'll come back to this in a bit) error type. Let's look at some code and make sense of it:</p>
+<pre>
+impl&lt;E&gt; From&lt;E&gt; for AppError // 1
+where
+    E: Into&lt;anyhow::Error&gt; // 2 
+{
+    fn from(err: E) -&gt; Self { // 3
+        Self(err.into())
+    }
+}
+</pre>
+<p>We are taking advantage of a <i>very</i> powerful crate here, <a href="https://crates.io/crates/anyhow">anyhow</a>. Which allows us to work with errors in Rust way more efficiently. In our case we are using it's popularity and other crates ability to convert into this Error type.</p>
+<br>
+<p>Let me explain this line by line:</p>
+<br>
+<p>1) We are implementing <code>From&lt;E&gt;</code> for <code>AppError</code>. By using the generic type <code>E</code> we can have a wider implementation. This would be the equivalent of <code>impl From&lt;sqxl::Error&gt; for AppError</code>. Which converts the <code>sqlx::Error</code> type into <code>AppError</code></p>
+<p>2) This is the <i>critical bit</i>, and why it actually limits us to certain errors. By having this <code>where</code> clause, we only allow the generic type <code>E</code> to be the ones that already support the <code>Into</code> trait from <code>anyhow::Error</code>. Basically limiting us to types that already support the conversion into this error type. </p>
+<p>3) We only need to implement the <code>from</code> function that takes an error and returns itself back. By using the support mentioned above, we can just take the error and run an <code>.into()</code> conversion.</p>
+<br>
+<p>By using this generic trait approach we are essentially creating the following Rust code:</p>
+<pre>
+// SQLX:
+impl From&lt;sqlx::Error&gt; for AppError {
+    fn from(err: sqlx::Error) -&gt; Self {
+        Self(err.into()) // sqlx::Error -&gt; anyhow::Error -&gt; AppError
+    }
+}
+// serde_json
+impl From&lt;serde_json::Error&gt; for AppError {
+    fn from(err: serde_json::Error) -&gt; Self {
+        Self(err.into()) // serde_json::Error -&gt; anyhow::Error -&gt; AppError
+    }
+}
+// reqwest
+impl From&lt;reqwest::Error&gt; for AppError {
+    fn from(err: reqwest::Error) -&gt; Self {
+        Self(err.into()) // reqwest::Error -&gt; anyhow::Error -&gt; AppError
+    }
+}
+// ...
+</pre>
+<p>And so on ... You get the picture!</p>
+<br>
+<br>
+<h2>Actual implementation</h2>
+<br>
+<p>Okay, so we have our newtype <code>AppError</code>, it has all the things it needs to be converted to our Error type. How does it actually work? Well, let's go back to our <code>get_edit_contact</code> handler function from before, and see what has changed:</p>
+<pre>
+#[axum::debug_handler]
+async fn get_edit_contact(
+    State(state): State&lt;AppState&gt;,
+    Path(id): Path&lt;i64&gt;,
+) -&gt; Result&lt;(StatusCode, Html&lt;String&gt;), AppError&gt; {
+    let contact = Contact::find_by_id(&amp;state.db, id).await?; // sqlx::Error -&gt; AppError
+    let edit_template = EditContactTemplate { contact };
+    let html = edit_template.render()?; // askama::Error -&gt; AppError
+    Ok((StatusCode::OK, Html(html)))
+}
+</pre>
+<br>
+<p>Whoa, that is way tighter than before. Yes, we are using the <code>?</code> <a href="https://doc.rust-lang.org/std/result/index.html">operator</a> we <i>propagate the errors up the call stack</i>. Meaning the value of the <code>Result</code> returned by both <code>Contact::find_by_id</code> and <code>.render()</code> are returned back to axum as <code>AppError</code> newtypes. </p>
+<br>
+<p>This means we no longer have to deal with error handling within the function itself, and we are just returning the same error type back. Since it is the same error type, both function handler and axum are happy with receiving it! 🥳 Huzzah!</p>
+<br>
+<p>If you want to see the full codebase in action, you can check out my GitHub repo <a href="https://github.com/darko-mesaros/webone">here</a>. And please ignore the mess, this is just a learning repo! 🙏</p>
+
+<hr>
+<font size="-1">rup12.net &mdash; Darko Mesaros</font>
+</td></tr>
+</table>
+
+</font>
+</body>
+</html>

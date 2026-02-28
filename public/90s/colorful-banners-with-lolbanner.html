@@ -1,0 +1,161 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>Add some color to your terminal with lolbanner</title>
+</head>
+<body bgcolor="#ffffff" text="#000000" link="#0000ff" vlink="#800080">
+<font face="Arial,Helvetica">
+
+<table width="600" border="0" cellpadding="4">
+<tr><td>
+<h1><font color="#cc6600">rup12.net</font></h1>
+<font size="-1">[ <a href="index.html">home</a> | <a href="about.html">about</a> | <a href="posts.html">posts</a> ]</font>
+<hr>
+<h2>Add some color to your terminal with lolbanner</h2>
+<font size="-1"><i>2021-03-09 &mdash; You did not know you want this in your life until you see it! Colorful banners for your terminal</i></font>
+<hr>
+<h1>Intro</h1>
+<br>
+<p>Here's a quick one for you: Terminals are wonderful, the best tool for many</p>
+<p>different kinds of work. But, let's be honest - it mostly looks very dull and</p>
+<p>boring. All those black and grays (or black and green if you are the adventurous</p>
+<p>type).</p>
+<p>What if I told you, you can do this little thing just to add more colors and</p>
+<p>flare to your terminals - especially when you wish to demo stuff in it?</p>
+<p>Introducing <b>lolbanner</b>.</p>
+<br>
+<h1>Lolbanner (lolcat + figlet)</h1>
+<br>
+<p>Yeah yeah, this is nothing new. I have not invented or developed anything</p>
+<p>remarkable. I just found a way to combine two of my favorite tools into one</p>
+<p>awesome utility I like to call <b>lolbanner</b>.</p>
+<br>
+<p>So what does it do? Allow me to demonstrate:</p>
+<br>
+<p>of its RGB glory")</p>
+<br>
+<p>Awesome - now, how do you get to do that? Okay let's start with the things you</p>
+<p>need:</p>
+<ul>
+<li><a href="http://www.figlet.org/">figlet</a></li>
+<li><a href="https://github.com/xero/figlet-fonts">figlet fonts</a></li>
+<li><a href="https://github.com/busyloop/lolcat">lolcat</a></li>
+</ul>
+<br>
+<p>Okay installing these things is usually straightforward (depending on your</p>
+<p>operating system)</p>
+<br>
+<h2>Installing figlet</h2>
+<br>
+<p>If you are running a Mac, it's as simple as using <a href="https://brew.sh/">homebrew</a></p>
+<p>to get it:</p>
+<pre>
+brew install figlet
+</pre>
+<p>For any Debian based distribution, it should be available in your package</p>
+<p>manager, so just go ahead and install it:</p>
+<pre>
+sudo apt update -y
+sudo apt install figlet
+</pre>
+<p><i>Offtopic: I just find it so amazing that figlet is available for a variety of</p>
+<p>platforms. On they official website they offer builds for MS-DOS, Amiga, Apple</p>
+<p>II, Atari ST, NextStep, BeOS, and a few more. Amazing<i></p>
+<br>
+<h2>Getting those figlet fonts</h2>
+<br>
+<p>This one is easy, quick and universal. As mentioned in the list, you can grab</p>
+<p>the figlet fonts from the git repository. Now, that can be done by either</p>
+<p>cloning the repository or just getting the zip file.</p>
+<p>I like to keep these fonts in my home directory under <b>~/.local/share/fonts/</b>.</p>
+<p>So lets do that:</p>
+<pre>
+# create the directory for the fonts
+mkdir -p ~/.local/share/fonts/figlet-fonts/
+# clone it with git to that directory
+git clone https://github.com/xero/figlet-fonts.git ~/.local/share/fonts/figlet-fonts/
+</pre>
+<p>You should now be good with those fonts.</p>
+<br>
+<h2>lolcat - yes that is the name of the package</h2>
+<br>
+<p>Okay so this is the thing that gives you those lovely colors. I would say this</p>
+<p>is crucial. So, how do we go about getting this? </p>
+<p>Again, for Apple Mac users, you can just go ahead and use homebrew:</p>
+<pre>
+brew install lolcat
+</pre>
+<p>And if you are running Linux and using <a href="https://snapcraft.io/">snap</a> you can install it by getting</p>
+<p>the snap:</p>
+<pre>
+sudo snap install lolcat
+</pre>
+<p>Ultimately if all else fails, you can grab lolcat as a Ruby</p>
+<p><a href="https://rubygems.org/gems/lolcat/versions/42.24.0">gem</a> via the gem</p>
+<p>command:</p>
+<pre>
+gem install lolcat
+</pre>
+<br>
+<p>Once these packages are installed and available on your system you can run it to</p>
+<p>get that sweet, sweet colorful text:</p>
+<pre>
+figlet -c -f ~/.local/share/fonts/figlet-fonts/3d.flf "yay colors" | lolcat
+</pre>
+<p>This command will produce the same output as the one from the first screen shot.</p>
+<p>That was easy! Yay 👏</p>
+<br>
+<p>But as the wise infomercials always say: <i>"There's gotta be a better way ..."</i></p>
+<br>
+<h1>The better way</h1>
+<br>
+<p>Instead of just manually typing out that series of commands and changing the</p>
+<p>strings you want output, how about we make this into a script - <b>NO</b> - better</p>
+<p>yet, let's make it into a shell function. This will make it easy for us to</p>
+<p>execute at any point and we can keep it just in our shell configuration</p>
+<p>repository.</p>
+<br>
+<p>I will give you three examples on how I set this up in Bash, ZSH, and Fish:</p>
+<br>
+<p>For <b>Bash</b> just add the following lines into your <b><i>.bashrc</b></i> file:</p>
+<pre>
+function lolbanner() {
+  figlet -c -f ~/.local/share/fonts/figlet-fonts/3d.flf $@ | lolcat
+}
+</pre>
+<p>Source your <b><i>.bashrc</b></i> file (or restart your shell) and you are ready.</p>
+<br>
+<p>For <b>ZSH</b> it is very similar, just a slight difference, add the following</p>
+<p>function to your <b><i>.zshrc</b></i> file:</p>
+<pre>
+function lolbanner {
+  figlet -c -f ~/.local/share/fonts/figlet-fonts/3d.flf $@ | lolcat
+}
+</pre>
+<br>
+<p>And finally, the odd one out. The command line shell "built for the 90s" - fish.</p>
+<p>Add this function to your fish configuration directory - or your</p>
+<p><b><i>config.fish</b></i> file (it's usually in <b><i>~/.config/fish/</b></i>):</p>
+<pre>
+function lolbanner
+    echo
+    figlet -c -f ~/.local/share/fonts/figlet-fonts/3d.flf $argv | lolcat
+    echo
+end
+</pre>
+<br>
+<h1>EOF</h1>
+<br>
+<p>There you go, now you have the ability to add some fancy banner messages to your</p>
+<p>terminal. Now this can be used (like me) for demos and presentations, or you can</p>
+<p>spice up your system admin's life by giving them wonderful (and colorful)</p>
+<p>messages every time they log in (but that is a topic for another blog post).</p>
+
+<hr>
+<font size="-1">rup12.net &mdash; Darko Mesaros</font>
+</td></tr>
+</table>
+
+</font>
+</body>
+</html>

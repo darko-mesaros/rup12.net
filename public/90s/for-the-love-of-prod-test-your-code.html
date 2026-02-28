@@ -1,0 +1,287 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>For the love of PROD: Test your code! (Part 1)</title>
+</head>
+<body bgcolor="#ffffff" text="#000000" link="#0000ff" vlink="#800080">
+<font face="Arial,Helvetica">
+
+<table width="600" border="0" cellpadding="4">
+<tr><td>
+<h1><font color="#cc6600">rup12.net</font></h1>
+<font size="-1">[ <a href="index.html">home</a> | <a href="about.html">about</a> | <a href="posts.html">posts</a> ]</font>
+<hr>
+<h2>For the love of PROD: Test your code! (Part 1)</h2>
+<font size="-1"><i>2021-06-28 &mdash; </i></font>
+<hr>
+<p>In the old days, software release cycles were slower then they are today. When</p>
+<p>you would release [Super Mario</p>
+<p>Brothers](https://en.wikipedia.org/wiki/Super_Mario_Bros.) on the NES, there was</p>
+<p>no backsies!  You could not patch the game (well at least not in any cost</p>
+<p>efficient way), bring new features or even fix bugs that have crept in during</p>
+<p>development. Yes, yes. Nintendo was delivering their products on read only</p>
+<p>cartridges, and that made it very difficult to update anything. But even if we</p>
+<p>look forward to companies that delivered software on floppy disks, yes they</p>
+<p>could send you a new disk with the patches needed (or maybe you download them</p>
+<p>from a <a href="https://en.wikipedia.org/wiki/Bulletin_board_system">BBS</a>), but it was</p>
+<p>still quite complex.</p>
+<br>
+<p>What does that mean? Why the long intro? I want to point out that, back in those</p>
+<p>days, delivering software had to be very slow and very precise. Testing software</p>
+<p>and Quality Assurance (QA) was of the utmost importance. Hence, if there was a</p>
+<p>new version or revision of your software it came with a lot of time in between.</p>
+<p>Developers were very careful and deliberate when making this software.</p>
+<br>
+<p>Let me ask you this: How often does your food delivery app get an update? How</p>
+<p>much data does your phone eat up just on downloading updates? (I am even gonna</p>
+<p>get into the discussion on Video game patches that are 60+GB in size). It seems</p>
+<p>that every other day there is a new version, revision or a bug fix? Are there</p>
+<p>more bugs in our code today? Are the developers careless? NO and NO! We just</p>
+<p>have more opportunities to improve your customer experience and keep delivering</p>
+<p>new and exciting stuff! </p>
+<br>
+<p>by all the new features of your code")</p>
+<br>
+<p>But here is the thing: Even if we have the ability to keep on pushing code and</p>
+<p>fixes and all the updates in the world, to our customer base, You need to be</p>
+<p>sure that the code being delivered is good. That it is not broken, bad</p>
+<p>performing, or just plain bad!</p>
+<br>
+<p>In this multi-part series I will take You through a journey on how to implement</p>
+<p>different testing strategies for your code. What tools to use and how to best</p>
+<p>benefit from them.</p>
+<br>
+<h2>Why do we test?</h2>
+<br>
+<p>You may be an excellent developer. You may be very intimate with your</p>
+<p>application, and have a full grasp of each and every aspect of it. And you,</p>
+<p>also, may have long time industry experience and have seen it all.</p>
+<br>
+<p>But ... </p>
+<br>
+<p>does...")</p>
+<br>
+<p>Yes, everything does fail all the time. And this is though no fault of your own.</p>
+<p>These things just happen. A slight oversight, or a change in a dependency, or,</p>
+<p>maybe, your user base is just trying out different ways to break your</p>
+<p>application. This means that you need to be ready, be ready to test and proof</p>
+<p>everything that leaves your fingerprints towards the green green fields of PROD.</p>
+<br>
+<h2>Where do we test?</h2>
+<br>
+<p><b>EVERYWHERE!</b></p>
+<br>
+<p>Yes, everywhere. From your text editor, to your first commit into the version</p>
+<p>control system. In the build stage, in the test stage, and yes - even once in</p>
+<p>production.</p>
+<br>
+<p><i>"But Darko, why don't you catch all your issues just before production? Why</p>
+<p>complicate things"<i> -someone</p>
+<br>
+<p>Well, dear reader, think of it this way: It' doesn't cost the same amount of</p>
+<p>money to have bad code - to fail - in your text editor, or once in production.</p>
+<p>There are a lot more moving parts involved in the later stages of your pipeline,</p>
+<p>lot more services need to be spun up, APIs triggered, data retrieved. Hence, it</p>
+<p>is more expensive to run tests the further your go down your CI/CD pipeline. But</p>
+<p>I am getting ahead of myself.</p>
+<br>
+<p>Let's start with the first part, where do we start testing? Where is our first</p>
+<p>test run and what is it?</p>
+<br>
+<h2>Testing where you type</h2>
+<br>
+<p>This may seem like I am saying something very obvious (and I am), but the first</p>
+<p>test ever performed on your code is the one in your text editor. Yes, the syntax</p>
+<p>highlighting, linting and compilation errors are all little tests that tell you</p>
+<p>does your code work the way you want it to (to an extent).</p>
+<br>
+<p>The amount of testing and information gotten back really depends on the</p>
+<p>development environment you are using and its abilities. If you are writing your</p>
+<p>code in notepad or in (an unmodified) vim - you may not get as much information</p>
+<p>on the quality and the correctness of your code right there. But when moving up</p>
+<p>the ladder and you start upgrading your development experiences with fully</p>
+<p>fledged Integrated Development Environments (IDEs) like: [Visual</p>
+<p>Studio](https://visualstudio.microsoft.com/), [JetBrains</p>
+<p>IDEs](https://www.jetbrains.com/), <a href="https://www.eclipse.org/ide/">Eclipse</a>, or</p>
+<p>even a spiced up <a href="https://code.visualstudio.com/">VSCode</a> (or vim, emacs, atom,</p>
+<p>sublime, notepad++ ... The list goes on) for that matter. Here is where things</p>
+<p>start to get fun!</p>
+<br>
+<p>If you start including some plugins and frameworks like [AWS</p>
+<p>SAM](https://aws.amazon.com/serverless/sam/) or the [AWS</p>
+<p>Toolkit](https://aws.amazon.com/webstorm/), you have the ability to perform even</p>
+<p>more tests on your workstation in your IDE. AWS SAM gives you the ability to</p>
+<p>test your Serverless Lambda functions locally (among other things), and with the</p>
+<p>AWS Toolkit you have access to AWS Resources directly from the IDE. You can</p>
+<p>directly work with Lambda functions, get your CloudWatch logs, or even work with</p>
+<p>your <a href="https://aws.amazon.com/step-functions">AWS Step Functions</a> work flows.</p>
+<br>
+<p>me using AWS SAM with WebStorm and the AWS Toolkit for it.")</p>
+<br>
+<p>What I am trying to say here is that you should set-up your tool chain, in such a</p>
+<p>way, that gives you access to all the necessary elements to verify if your code</p>
+<p>works, quickly and seamlessly.</p>
+<br>
+<p>So, what kind of tools do I use for my local testing? Well ... It depends! It</p>
+<p>really does! As I may use some different tools for each different language,</p>
+<p>project or framework I am working on. But, because people like lists, here is my</p>
+<p>list of some of the tools I use of development and testing code fast:</p>
+<br>
+<ul>
+<li>As my text editor/IDE I mostly use vim ( I will have a separate article on how</li>
+</ul>
+<p>  I configure vim ).</p>
+<ul>
+<li>For code completion, and intellisense (and catching of errors) I use a vim</li>
+</ul>
+<p>  plugin called [Conquest of Completion -</p>
+<p>  coc](https://github.com/neoclide/coc.nvim) it works with most languages and</p>
+<p>  frameworks out there and just works great.</p>
+<ul>
+<li>I use a slew of linters for different frameworks:</li>
+</ul>
+<p>  - <a href="https://www.npmjs.com/package/jslint-cli">JSLint</a></p>
+<p>  - <a href="https://www.pylint.org">PyLint</a></p>
+<p>  - <a href="https://github.com/aws-cloudformation/cfn-lint">Cfn-lint</a> (for CloudFormation)</p>
+<p>  - <a href="https://github.com/terraform-linters/tflint">tflint</a> (for Terraform)</p>
+<ul>
+<li>For Cloudformation specifically I use</li>
+</ul>
+<p>  <a href="https://github.com/stelligent/cfn_nag">cfn-nag</a> for some best practice</p>
+<p>  suggestions straight in the cli.</p>
+<ul>
+<li>When working with Lambda functions for my Serverless projects, I like to spin</li>
+</ul>
+<p>  up a proper big IDE like <a href="https://www.jetbrains.com/pycharm/">PyCharm</a> as it</p>
+<p>  gives the ability to use <a href="https://aws.amazon.com/pycharm/">AWS Toolkit</a>, as</p>
+<p>  explained above this gives me a lot of neat features when working with AWS</p>
+<p>  resources.</p>
+<ul>
+<li>Unit testing frameworks - yes you can run unit tests locally for some [Test</li>
+</ul>
+<p>  Driven Development](https://en.wikipedia.org/wiki/Test-driven_development)</p>
+<br>
+<h2>The rubber ducky method</h2>
+<br>
+<p>Unsplash")</p>
+<br>
+<p>Your code is written! The IDE says it's all green, the local unit tests are run,</p>
+<p>and your linter is happy. What happens now? </p>
+<pre>
+git commit -am "My code must work"
+git push origin feature_branch
+</pre>
+<p>This is how you take your code further, you commit it to a [code</p>
+<p>repository](https://en.wikipedia.org/wiki/Comparison_of_source-code-hosting_facilities).</p>
+<p>You do use version control, right? Right? 👀 If you are a not a user of</p>
+<p>version control, please consider becoming one. By using version control systems</p>
+<p>such as GIT or SVN, you gain so many benefits. I am not going to list them all</p>
+<p>here, but in the modern world of development, you cannot and <b>should not</b> be</p>
+<p>without version control. Feel free to check out services such as</p>
+<p><a href="https://github.com">Github</a>, [AWS</p>
+<p>CodeCommit](https://aws.amazon.com/codecommit/),</p>
+<p><a href="https://about.gitlab.com">GitLab</a>, or</p>
+<p><a href="https://bitbucket.org/product">BitBucket</a> (there are many more out there as</p>
+<p>well).</p>
+<br>
+<p>I'll wait until you migrate to git or SVN ...⌚ </p>
+<br>
+<p>Done? Good! Let's talk about what does a <b>code repository have to do with</p>
+<p>testing code.<b> I did mention the rubber ducky method in the title of this</p>
+<p>section, did I? Well, let me then explain what is [the rubber ducky</p>
+<p>method](https://en.wikipedia.org/wiki/Rubber_duck_debugging), aka the <b>rubber</p>
+<p>ducky debugging<b>:</p>
+<br>
+<p>This is the approach to debugging your code by explaining what each part of your</p>
+<p>code does, to a small rubber duck. You carry around this small duck with you,</p>
+<p>and use it any time you run into a problem with your code. Just the mere action</p>
+<p>of explaining what your code does, can lead to some amazing discoveries on</p>
+<p>optimization, fixing and improving your code. But that is not testing right?</p>
+<p>Well, sorta.</p>
+<br>
+<p>When I talk about the rubber ducky method in the context of testing code, I am</p>
+<p>talking about, instead of using a rubber duck, you get your colleague next to</p>
+<p>you to have a look at the code for your. <b>aka Code Reviews.</b></p>
+<br>
+<p>Here is the workflow: </p>
+<p>1) You finish writing your amazing piece of code</p>
+<p>2) Now you commit said code to your local repository and push it onwards to a specific branch on</p>
+<p>your remote repository. </p>
+<p>3) You make a Pull request. That is, to merge this specific branch with another</p>
+<p>one.</p>
+<p>4) The Pull requests initiates a code review process. Where one or more of your</p>
+<p>peers needs to have a peek at your code.</p>
+<p>5) They go over it, look at it, give you their comments</p>
+<p>6) Rinse and repeat until your code is ready to go.</p>
+<br>
+<p>That's it! Now, how is this different from you looking and running a self-review</p>
+<p>of your code. Well, as with a lot of things in life, other people have different</p>
+<p>perspectives into things. You have spent so much time writing and focusing on a</p>
+<p>given code, that now you may not even notice certain things. But your colleague</p>
+<p>might. She may have run into a similar issue or a way to do a certain thing,</p>
+<p>that she may recommend you have this or that approach. And the best part is -</p>
+<p>they never even have to run/execute your code. It's not a software review, it's</p>
+<p>code review.</p>
+<br>
+<br>
+<p>Let me give you an <b>example</b> of how I benefited from this: I was a young Premium</p>
+<p>Support Engineer at AWS. And I've had this great idea on a feature I would live</p>
+<p>to have implemented in one of our services. Many customers have asked for it,</p>
+<p>and I kinda gave them the workaround with manual configuration. But can and</p>
+<p>should be part of the service. So, I reached out to the service team to suggest</p>
+<p>this change - they told me: <i>"Make the change yourself, here are the rights to</p>
+<p>the repo, and here is the wiki"<i> 💥 Wow, I can do that? After some back and</p>
+<p>forth in working on my code, I made my first commit - then I made 10 more</p>
+<p>commits, as code reviews made me fix my code 10 more times! But hey! For</p>
+<p>someone who has never written anything production grade in Java, I felt pretty</p>
+<p>confident because someone with a lot of experience told me my code was good (at</p>
+<p>the end). 🚀 </p>
+<br>
+<p>This is awesome as it gives you the ability to double check your work, to use 10</p>
+<p>(or more) minutes of your colleagues, time to have that bit more of certainty in</p>
+<p>your code. It's more expensive than running tests by yourself in the middle of</p>
+<p>the night, but it's that much better!</p>
+<br>
+<p>So remember, 4 eyes is better than 2 - and be nice to your colleagues, they</p>
+<p>will be looking over your code!</p>
+<br>
+<hr>
+<br>
+<h2>Part 1: tl;dr</h2>
+<br>
+<p>Okay, I will make a break here and talk about the rest in future parts. But</p>
+<p>let's quickly give a recap of what did we talk about today:</p>
+<br>
+<p>Testing your code is important, it is important that we get good quality code</p>
+<p>out there in production. No matter how cheap and fast it is to make code changes</p>
+<p>today, we still want to make sure to catch those errors. And it is important to</p>
+<p>catch those errors early - the earlier you catch them the cheaper it is. <b>The</p>
+<p>further you move up your delivery pipeline, the tests (and failures) become more</p>
+<p>expensive!<b></p>
+<br>
+<p>soon as possible.")</p>
+<br>
+<p>We start the testing way back where your code stars - in Your text editor/IDE.</p>
+<p>By using syntax checks, intellisense, code linters, and even some local testing</p>
+<p>tools (like the AWS Toolkit). You get the ability to catch if your code works or</p>
+<p>not pretty fast!</p>
+<br>
+<p>From there on we go to the second big test: The "let's bother my colleague to</p>
+<p>look at some code test" - aka. Code Reviews. This, is a great way to catch</p>
+<p>errors, bad practices and bad looking code early on. And it only requires a code</p>
+<p>versioning system and a good friend/colleague!</p>
+<br>
+<p>In future parts we will talk more in depth on Unit, Integration, Functional,</p>
+<p>Smoke ... <i>.</i> testing! But do stay tuned for that!</p>
+<br>
+<p><i>(oh yeah, and if you wish to view a talk I gave on this topic, you can check it</p>
+<p>out <a href="https://www.rup12.net/slidedecks/for-the-love-of-prod-test-your-code/">here</a><i></p>
+
+<hr>
+<font size="-1">rup12.net &mdash; Darko Mesaros</font>
+</td></tr>
+</table>
+
+</font>
+</body>
+</html>

@@ -1,0 +1,22 @@
+========================================
+RUP12.NET
+========================================
+[ home: index.txt | about: about.txt | posts: posts.txt ]
+----------------------------------------
+About
+----------------------------------------
+$(whoami)
+
+My name is Darko Mesaros (also Darko Meszaros, or Darko Mesaros -- depends who you ask).
+
+I am a Principal Developer Advocate based in Seattle, WA. My goal is to share my passion and technological know-how with Engineers, Developers, Builders, and tech enthusiasts across the world. My focus is towards Cloud, DevOps, Developer Productivity and Management Tools -- click less and code more. Lately I've been deep into Coding Assistants, Agents, and Rust.
+
+I also collect old technology and try to make it do what it should not. Like deploy AWS infrastructure through a Commodore 64 or a teletype. Ask me about an old computer you loved -- I likely have it at home!
+
+
+Links:
+  GitHub:   https://github.com/darko-mesaros
+  Twitch:   https://twitch.tv/rup12
+  LinkedIn: https://linkedin.com/in/darko-mesaros
+----------------------------------------
+rup12.net -- Darko Mesaros

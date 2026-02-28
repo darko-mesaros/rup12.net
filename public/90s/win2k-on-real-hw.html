@@ -1,0 +1,319 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>Installing Windows 2000 on real hardware in 2021</title>
+</head>
+<body bgcolor="#ffffff" text="#000000" link="#0000ff" vlink="#800080">
+<font face="Arial,Helvetica">
+
+<table width="600" border="0" cellpadding="4">
+<tr><td>
+<h1><font color="#cc6600">rup12.net</font></h1>
+<font size="-1">[ <a href="index.html">home</a> | <a href="about.html">about</a> | <a href="posts.html">posts</a> ]</font>
+<hr>
+<h2>Installing Windows 2000 on real hardware in 2021</h2>
+<font size="-1"><i>2021-03-15 &mdash; Getting Windows 2000 to run on actual hardware! How hard can it be?</i></font>
+<hr>
+<p>Let's step 21 years back in time. To the year 2000 to be exact! The time of</p>
+<p>non-bloated user interfaces, people realizing Y2K was not a problem, and me</p>
+<p>being just 12 years old, not even owning a PC. What a time to be alive - well if</p>
+<p>you ignore all the bluescreens, expensive hardware and the overall lack of said</p>
+<p>hardware standards - but let's move along. </p>
+<br>
+<p>So, I have this old PC that was used as a cash register somewhere in Germany,</p>
+<p>and it is rocking a Intel Celeron 1.2Ghz CPU, a integrated Intel graphics</p>
+<p>adapter, and a whopping 512MB of SDRAM (which is way more than anything at that</p>
+<p>time period). Let's see how we can make this run Windows 2000 SP4 (or can it?).</p>
+<br>
+<p>Time to start with the most critical of all, the ...</p>
+<br>
+<h1>The hardware</h1>
+<br>
+<p>The hardware I will be using is on the edge between Windows XP and Windows 2000,</p>
+<p>but what the heck, it's close enough, and I have Windows XP planned for another</p>
+<p>old computer I got. </p>
+<br>
+<p>Here is the list of what I have for this:</p>
+<ul>
+<li>Wincor-Nixdorf Beetle /M (yes <i>forward-slash</i> M) - OEM system mostly used as a</li>
+</ul>
+<p>  cash register in stores</p>
+<ul>
+<li>CPU: Intel Celeron 1.2Ghz, 256Kb L2 cache, 100Mhz FSB</li>
+<li>RAM: Hyundai 512 MB SDDDR (PC133) RAM</li>
+<li>Graphics: Integrated Intel</li>
+<li>Hard disk: 20GB Seagate ST320014A IDE (Ultra-ATA/100)</li>
+</ul>
+<br>
+<p>small form factor glory")</p>
+<br>
+<p>The rest does not really matter. Now, this system was running Windows 98 when I</p>
+<p>first got it, but that was just not cutting it for me. For a few reasons:</p>
+<ul>
+<li>It was bloated with all kinds of cash register software</li>
+<li>It was in German</li>
+</ul>
+<br>
+<p>Where do we start then? Dust off! Time to clean it up from the inside.</p>
+<p>Surprisingly enough it was not as dusty as I would have expected an old PC</p>
+<p>sitting under the counter at some retail store to be. Just took some canned air</p>
+<p>and a good brush to get it much cleaner.</p>
+<br>
+<h2>CPU</h2>
+<br>
+<p>On to clean the CPU - that is, let's just replace the paste and be done with it.</p>
+<p>Taking the tiny CPU cooler was as simple as pushing down on the little metal</p>
+<p>hinge, and pulling up with a bit of force.</p>
+<br>
+<p>I've replaced the existing, well what remained of the existing, thermal paste</p>
+<p>with some spanking new Arctic MX-4 thermal paste, this should be more than</p>
+<p>sufficient to cool this old CPU. </p>
+<br>
+<h2>Hard drive</h2>
+<br>
+<br>
+<p>Oh boy, this is a doozy! Just look at it - its all beaten up, written on, and I</p>
+<p>swear I heard it clicking when it was running. Now, I can either grab another</p>
+<p>IDE Hard disk of ebay - or I can just be smart about it and use these fancy IDE</p>
+<p>to SD card adapters! This gives me the ability to have something much faster than</p>
+<p>an IDE disk, while much much more reliable that this existing Seagate disk. As a</p>
+<p>bonus I can just easily replace, clone and restore the disk on my main PC.</p>
+<br>
+<p>That was very easy, just plug it into the power molex cable, the IDE cable (I</p>
+<p>forgot how much I hate IDE cables) into their respective sockets, and we are</p>
+<p>good to go. The only slight issue is that I have no way to properly mount this</p>
+<p>on the existing mount holes - but Okay, I will let it dangle like this for a</p>
+<p>while until I decide to stick it with some double sided tape. Best</p>
+<p>  <a href="https://www.amazon.de/-/en/Kalea-Informatique-Adaptor-Secure-Digital/dp/B00JLAK0RS/ref=sr_1_3?dchild=1&amp;keywords=ide+auf+sd&amp;qid=1615843588&amp;sr=8-3">purchase</a></p>
+<p>  ever!</p>
+<br>
+<p>older computers! Well that is, if you can do without the lovely HDD noise.")</p>
+<br>
+<hr>
+<br>
+<p>Excellent the hardware is ready, clean and all plugged in! Time to deal with</p>
+<p>installing Windows 2000 Professional SP4. Oh wait ... I have no CD-ROM on this</p>
+<p>device. Windows 2000 and XP do not take kindly in being installed via USB drive,</p>
+<p>or do they?</p>
+<br>
+<h1>The software</h1>
+<br>
+<p>Here's the thing, installing Windows 2000 via USB was never a thing Microsoft</p>
+<p>intended to be done. Back then most computers could no even boot of an USB</p>
+<p>drive. So what was I to do? I could go and get a DVD-ROM device and plug it into</p>
+<p>the desktop, oh but that would require me to have a IDE DVD Drive, and I have</p>
+<p>none of those, nor are they fun to lug around. Maybe a quick Google search on</p>
+<p>installing Windows 2000 will help - <b>BINGO</b>!</p>
+<br>
+<p>There actually is a way to install Windows 2000/XP/2003 onto a computer via USB,</p>
+<p>and it is rather simple. It's using this lovely piece of software called</p>
+<p><a href="http://www.winsetupfromusb.com/">WinSetupFromUSB</a> - yeah that is how its called</p>
+<p>and its just amazing. </p>
+<br>
+<p><i>"But way just there Darko, why cant I just stick the ISO of Windows 2000 to an</p>
+<p>USB disk and just boot like that?"<i></p>
+<br>
+<p>Well here is the problem with these older Operating Systems is that they are</p>
+<p>having issues with storage drivers when being booted off non optical storage.</p>
+<p>They treat these flash disks as actual disks and get freaked out or something -</p>
+<p>don't quote me on that, but I would end up missing some storage drivers when</p>
+<p>trying to do this without WinSetupFromUSB.</p>
+<br>
+<p>Okay we need a few things:</p>
+<ul>
+<li>Windows 2000 Professional SP4 Setup Files</li>
+<li>USB flash disk of at least 4GB</li>
+<li>WinSetupFromUSB </li>
+</ul>
+<br>
+<p>You can get the Windows 2000 ISO from <a href="https://winworldpc.com/product/windows-nt-2000/final">here</a>, and you just need to extract the</p>
+<p>ISO to a separate directory, because WinSetupFromUSB needs to access the setup</p>
+<p>files not the ISO itself.</p>
+<br>
+<h2>Installing it from the USB</h2>
+<br>
+<p>We will be using this tool to configure our USB stick and add the necessary</p>
+<p>files and formats. </p>
+<br>
+<p>Make sure you have your USB device plugged in, and run the WinSetupFromUSB tool.</p>
+<p>Once the disk has been selected (double check that you have selected the USB disk</p>
+<p>you want, so you don't format something by mistake) go ahead and hit the</p>
+<p><b>RMPrepUSB</b> button. </p>
+<br>
+<p>On this page couple of things are important:</p>
+<ul>
+<li>Select the volume in the list on top</li>
+<li>Make sure to use the <b>XP/BartPE bootable [NTLDR}</b> boot loader option</li>
+<li>Select NTFS for and <b>Boot as HDD</b> for the file system</li>
+</ul>
+<br>
+<p>Hit <b>Prepare Drive</b> and you should be good to go.</p>
+<br>
+<p>Now, select the location of your Windows 2000 setup files under the <b>Windows</p>
+<p>2000/XP/2003 Setup<b>, remember - not the ISO file but the extracted directory</p>
+<p>containing setup.exe. Smash the <b>GO button</b> and you should be good to boot the</p>
+<p>system off this USB.</p>
+<br>
+<h2>Booting and running the installer</h2>
+<br>
+<p>This was pretty straightforward, the system will actually boot into Grub4DOS,</p>
+<p>and there it will present us the options to run the Windows 2000/XP/2003 setup.</p>
+<p>The only important thing is that you select the "First part" first, and then</p>
+<p>once the first reboot happens - select the "Second Part". This ensures that the</p>
+<p>correct sequence of the setup process will happen.</p>
+<br>
+<p>What a lovely installer this is - privacy breaching questions. No "Please opt</p>
+<p>into this" or "You need to log-in with some ridiculous on line account". Nothing!</p>
+<p>Just pure setup.exe taking you to your Windows 2000 experience. </p>
+<br>
+<p>Now, Bask in some of the screen shots (actually they are monitor photos - but</p>
+<p>should be good enough:</p>
+<br>
+<p>installation begins - the Grub4DOS part.")</p>
+<p>on a given day.")</p>
+<p>in 16 colors.")</p>
+<p>the 'classic' theme - well not really classic then.")</p>
+<p>real questions here - not the collection of personal data ones.")</p>
+<p>of copying the files - lucky for me its faster as I am not using a HDD.")</p>
+<br>
+<h2>First boot</h2>
+<br>
+<p>There it is. Our first boot! This was much easier than I thought, the setup went</p>
+<p>fine without any hiccups, and here we are. The first boot after it's all over.</p>
+<p>Okay what do we have here. Actually, what are we missing here - yes the colors!</p>
+<p>As you can see, we are only showing 16 colors and a resolution of 640x480, which</p>
+<p>we definitely need to fix.</p>
+<br>
+<p>screen. Well, we seem to be missing some colors.")</p>
+<br>
+<p>Time to get some drivers installed. Which is easier said than done. This machine</p>
+<p>has been out of production for a good 20 years. But lucky for me, it was made by</p>
+<p>Wincor-Nixdorf. And they kept an archive all drivers and software. I just needed</p>
+<p>to make sure which exact model do I have. </p>
+<br>
+<p>According to the stickers on the machine, it is a <b>Wincor-Nixdorf /M</b> model. Which</p>
+<p>does not help me too much, as they did not have drivers for this model. But if I</p>
+<p>find out what board is it running I may be able to get what I need.</p>
+<br>
+<p>After some digging around the Internet, I found that this is running a <b>D2</b></p>
+<p>board - what ever that is. This is enough to grab me some drivers. <i>By the way,</p>
+<p>if you are looking for the driver set I have used - you can grab them from</p>
+<p>  <a href="">here</a>.<i></p>
+<br>
+<p>First off - the Intel Graphics drivers, as I want it all to look nice before I</p>
+<p>do anything else. I was really fortunate here that this model of device has USB</p>
+<p>  and Windows 2000 PRO supports USB out of the box (I still remember my voes</p>
+<p>  with Windows 95 and Windows 98). I just used my USB disk to transfer these</p>
+<p>  driver installation packages to the Windows 2000 PC.</p>
+<br>
+<p>back. Just look at the dithering!")</p>
+<br>
+<p>Okay - here is something! Let's try to get this little clunker onto the network</p>
+<p>(and maybe even the Internet). Again, I am fortunate that this thing has an</p>
+<p>on board Ethernet adapter, so the only thing that is left is to install the Intel</p>
+<p>Ethernet driver package.</p>
+<br>
+<p>buttons.")</p>
+<br>
+<p>Is that it? Are we good to go? Indeed we are, let me just fire up the ol'</p>
+<p>Internet Explorer 5, and boom! Look at me - surfing the World Wide Web like it's</p>
+<p>1999. </p>
+<br>
+<p>really! At least theoldnet.com works.")</p>
+<br>
+<p><b>DISCLAIMER: DO NOT USE WINDOWS 2000 ON THE INTERNET IN 2021+</b> <i>(thanks.)</i></p>
+<br>
+<h1>The Peripherals</h1>
+<br>
+<p>How can we make this even more <i>"The Year 2000"</i>? We can add some Britney</p>
+<p>Spears and The Backstreet Boys, but let's stick to technology here! What piece</p>
+<p>of outdated technology do I own that would be perfect for this scenario - AHA! A</p>
+<p>Iomega ZIP drive! The perfect outdated bit of tech that just screams Year 2000!</p>
+<br>
+<p>it")</p>
+<br>
+<p>You may be wondering, what actually is an Iomega [Zip</p>
+<p>drive](https://en.wikipedia.org/wiki/Zip_drive). It was the successor to the</p>
+<p>floppy disk. It was a late 90s removable storage system that could store up to</p>
+<p>750MB on these "Diskettes". And they actually resembled floppy disks, just less</p>
+<p>floppy and more chunky. This storage medium was never popular enough so that it</p>
+<p>may replace the ever-present 3 1/2 inch floppy disk. They were plagued with</p>
+<p>issues with misaligned heads that lead to the so called ["Click of</p>
+<p>death"](https://en.wikipedia.org/wiki/Click_of_death) which caused many cases of</p>
+<p>lost data, as a misaligned head write would render all the data on the disk</p>
+<p>unreadable.</p>
+<br>
+<p>Regarding the amount of data they could store, it ranged from a "measly" 100MB</p>
+<p>to 250MB, and then finally 750MB. Which was a lot for a removable re-writable</p>
+<p>media in the late 1990s.</p>
+<br>
+<p>curvier sibling")</p>
+<br>
+<p>What do I need to do to get this puppy to work on my Windows 2000 machine? Not a</p>
+<p>lot, a Parallel port cable and some drivers. Lucky for me the cable came with</p>
+<p>this machine I got off ebay for ~ 30 euros. And the drivers were easy enough to</p>
+<p>find.</p>
+<br>
+<p>Once the drivers are installed, the machine is rebooted (of course), all I need</p>
+<p>to do is fire up Windows Explorer - and boom. Here it is, in all its early 2000s</p>
+<p>glory! A weird icon representing removable disks. I guess today we consider</p>
+<p>removable disks to be something vastly different.</p>
+<br>
+<p>were back in the year 2000.")</p>
+<br>
+<p>And would you look at that, a new removable device ready in my machine. Time to</p>
+<p>find out what wonders of ancient data lie on the bunch of old Zip Disks I have. </p>
+<br>
+<p>... Well nothing special, so excel document, some PDFs in German, and weirdly</p>
+<p>enough some PHP code. Oh well, at least we got to hear it's wonderful operation.</p>
+<br>
+<p>it?")</p>
+<br>
+<h1>Some minor fixes</h1>
+<br>
+<p>Of course I made a boo boo. In my infinite wisdom of working on an actively</p>
+<p>running computer, I managed to get my screwdriver stuck into the CPU Fan and I</p>
+<p>got off by breaking one of the fins. The CPU is still cooled pretty good, but</p>
+<p>now the fan starts to be insanely loud after a while, and well - I wont take</p>
+<p>that. </p>
+<br>
+<br>
+<p>This requires a modern solution - a <a href="https://noctua.at/en/products/fan">Noctua</a></p>
+<p>fan! These are just wonderful! Very powerful but at the same time really really</p>
+<p>quiet.I wont comment on the choice of colors for Noctua, but it has already</p>
+<p>become such a big part of their brand that I am starting to like it.</p>
+<p>It is a tad bit taller than the previous one, but it works good and fits</p>
+<p>perfectly.</p>
+<br>
+<p>colors?")</p>
+<br>
+<h1>EOF</h1>
+<br>
+<p>Now the big question - <b>why all this Darko?</b> I mean why not? I've grown up in</p>
+<p>a place where I could nowhere near afford this type of hardware at the time (I</p>
+<p>was actually running my Commodore 64 as my full time computer until 2001.) So</p>
+<p>this is kinda reliving the fantasies of my younger self (some fantasies I had</p>
+<p>...)</p>
+<br>
+<p>And also, this was a fun weekend project. Tinkering around with old hardware to</p>
+<p>see if will work is kind of a thing I like to do. Now will I be using this</p>
+<p>computer for anything special - no, I don't believe so - it may be just my</p>
+<p>Windows 2000 workstation for anything that comes up. I may get more older</p>
+<p>hardware to see if I can plug it into this.</p>
+<br>
+<p>Even some parts of this blog post were written on Windows 2000 - because, again:</p>
+<p><i>why the funk not!</i></p>
+<br>
+<p>you may believe.")</p>
+<br>
+<p>I hope you have enjoyed this little read and walk down with me, on setting up</p>
+<p>Windows 2000, 21 years too late.</p>
+
+<hr>
+<font size="-1">rup12.net &mdash; Darko Mesaros</font>
+</td></tr>
+</table>
+
+</font>
+</body>
+</html>

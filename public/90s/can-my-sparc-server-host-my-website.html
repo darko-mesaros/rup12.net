@@ -1,0 +1,150 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>Can my SPARC server host a website?</title>
+</head>
+<body bgcolor="#ffffff" text="#000000" link="#0000ff" vlink="#800080">
+<font face="Arial,Helvetica">
+
+<table width="600" border="0" cellpadding="4">
+<tr><td>
+<h1><font color="#cc6600">rup12.net</font></h1>
+<font size="-1">[ <a href="index.html">home</a> | <a href="about.html">about</a> | <a href="posts.html">posts</a> ]</font>
+<hr>
+<h2>Can my SPARC server host a website?</h2>
+<font size="-1"><i>2026-02-09 &mdash; Can I host a website on a 25 year old server running a CPU architecture almost no one supports?</i></font>
+<hr>
+<blockquote><b>TL;DR:</b> I'm hosting a website on a 25-year-old Sun Netra X1 SPARC server running OpenBSD 7.8. The setup includes: Noctua fan mods for quiet operation, <code>httpd</code> serving static HTML/CSS, OpenBSD's <code>pf</code> firewall with default-deny rules, and Cloudflare tunnels to expose it safely without port forwarding. The server pulls ~55MB of RAM and serves pages from my garage. Check it out live at <a href="https://sparc.rup12.net">sparc.rup12.net</a> - because why not?</blockquote>
+<br>
+<hr>
+<br>
+<h2>What?!</h2>
+<br>
+<p>Here's a crazy idea, can I expose and host a website on a 2001 <a href="https://en.wikipedia.org/wiki/Sun_Microsystems">Sun MicroSystems</a> <a href="https://www.filibeto.org/sun/lib/hardware/datasheets/sun_netra_x1.pdf">Netra X1</a> SPARC Server? <a href="https://sparc.rup12.net">Yes, yes I can</a>. Let's get into how I set this up.</p>
+<br>
+<h2>Hardware</h2>
+<br>
+<br>
+<p>Not so long ago, I ordered from eBay a <a href="https://dogemicrosystems.ca/wiki/Sun_Fire_V100">Sun Fire V100</a> server. But somehow, the seller made a mistake, and sent me a Netra X1. Now, these systems are quite similar, and to be honest I did not mind. (the seller did give me a discount on the next system I buy ️♥️). The Netra X1 is a more commodity grade server, this means it completely headless (no video output), and uses standard SD-RAM (ECC) and runs a pair of IDE Hard Disks. At the center of this server is a 500 Mhz UltraSparcIIe CPU and a whopping 1GB of said SD-RAM. This was a <i>lot</i> of RAM back then, but I guess it makes sense for its server-esque purpose.</p>
+<br>
+<br>
+<p>Oh, and I did some HDD archeology, it seems this is a decommissioned server from Ford (the car company). I am not sure what it used to do, but the disks were obviously not wiped. Rest assured, the data is gone and both drives were formatted by me.</p>
+<br>
+<p>To go along with this server, I have a nice Sun rack in my garage, as well as a <a href="https://www.cisco.com/c/en/us/support/switches/catalyst-2960-s-series-switches/series.html">Cisco 2960-S</a> network switch. However, at the time of writing, both of them are sitting on my workbench, humming along as I test some hardware modifications I made to both of them. Yes, I <b>made some tweaks</b>. Namely, both the Cisco switch and the Netra were quite loud. Not, aircraft taking off loud, but still loud for having them be in a place I record videos in. To remedy that, I replaced most of their internal fans with <a href="https://www.noctua.at/en">Noctua</a> 40mm fans. For the Cisco I even had to 3D print a <a href="https://www.thingiverse.com/thing:6275275">part</a> to replace one big blower fan with 2 smaller ones. Now both these devices are almost completely quiet, at the cost of some higher temperatures.</p>
+<br>
+<br>
+<p>To install the operating system on the Netra I had to use PXE Boot and TFTP/NFS, as it had no optical drive and it cannot boot from USB. Oh, and I will explain how I did that in a <b>future post</b>. While I was hoping to use Solaris here, I realized it is just too ancient. Exposing such an OS to the internet would cause all kinds of issues. I opted for the tried and true <b><a href="https://www.openbsd.org/">OpenBSD</a></b>, as a secure and optimal choice (NetBSD was also something I was considering, but decided to go with OpenBSD due to their security-first philosophy). Let's get into it.</p>
+<br>
+<h2>Software</h2>
+<br>
+<p>OpenBSD works like a charm. Once I was able to boot the system (and run the installer), I ran into almost no issues. Even though it is running on a 25 year old system it still works rather well. Once I had OpenSSH set up, it was using around 55MB of RAM. While I am not as familiar with OpenBSD as I am with Linux, I find working on it to be rather straightforward. Package management is done via the <code>pkg_<i></code> utility, and there seems to be a plethora of <a href="https://www.openbsdhandbook.com/package-search/">packages</a> available even for the <code>Sparc64</code> architecture (I even got Rust running 🦀). </p>
+<br>
+<br>
+<p>The packages I found necessary for this adventure were: <code>git</code>, <code>vim</code>, <code>neofetch</code>, <code>htop</code>, <code>rsync</code>. Yes, that's it. To install the packages it is as easy as running:</p>
+<pre>
+pkg_add neofetch
+</pre>
+<br>
+<p>The web server of choice here was <code>httpd</code>, even though <code>nginx</code> was available (and I was more used to that one), <code>httpd</code> seems to be a common choice on OpenBSD so I went with that. As I was a bit unfamiliar with the configuration of the server I turned to, wherever else, but my coding assistant. Working with <a href="https://kiro.dev">Kiro</a> I worked out the <code>httpd</code> configuration file in <code>/etc/httpd.conf</code> and made a few tweaks (removed directory listing). And set it up so that I just use only the features I need. No CGI, no PHP, no caching. Oh and, the <code>httpd</code> package already natively comes with OpenBSD. 👏</p>
+<br>
+<pre>
+types { include "/usr/share/misc/mime.types" }
+
+server "default" {
+    listen on * port 80
+    root "/htdocs"
+
+    # Disable directory listings
+    directory no auto index
+
+    # Drop requests for hidden files
+    location "/**/.*" {
+        block return 404
+    }
+}
+</pre>
+<br>
+<p>What's great about <code>httpd</code> is that it's <code>www</code> user is chrooted into <code>/var/www</code> so it makes it slightly more secure. And since I am exposing a server in my house, I need it to be as secure as I can.</p>
+<br>
+<p>One <code>rcctl start httpd</code> later, and I have a web server running! 🥳 Huzzah! Now, it's time to build my <b>web application</b>! </p>
+<br>
+<h2>The website</h2>
+<br>
+<p>To make this plausible (and secure), I wanted to make the application as simple as possible. So, basic HTML and CSS it is! It also fits the 2001 aesthetic, back when The Internet was a lot more human and <i>marquees</i> ruled the roost. The web page I decided to make is a simple <i>about</i> page, pulling inspiration (and content) from my <a href="https://rup12.net/about">actual about page</a>. While I could easily cobble up an <code>index.html</code> together, after all it's just HTML and CSS, and I've been writing that for almost as long as this server is old. I've decided to test out something new.</p>
+<br>
+<p>Recently, more and more coding assistants have implemented a feature where they can call up a <i>sub</i> or a <i>specialized agent</i> to do certain tasks. The reasoning behind this, as far as I am able to figure out is that you do not want to give your main agent <b>all</b> the tools, MCP servers and prompts. We're still dealing with prompt economics after all. And this <a href="https://kiro.dev/docs/cli/chat/subagents/#custom-subagents">sub agent</a> can have additional special instructions on how to perform it's tasks. My main agent (I call it <code>oxide</code>) is configured in such a way that it has access to tools and prompts so it is able to help me learn and write real good Rust code. But it has nothing special that can help it work with front-end web creation. Say hello to <code>front-end-specialist</code>.</p>
+<br>
+<p>Now this agent has access to a few MCP Servers and a wonderful prompt that tells it what kind of front end web I like. Simple, as vanilla as possible, minimal JS, and <code>htmx</code> where possible. So how does this work? Well the workflow is the following:</p>
+<br>
+<h3>Step 1:</h3>
+<p>I tell my main agent (<code>oxide</code>) that I am building a retro inspired server (with all the Sun/OpenBSD details) and that I want to build a simple <code>index.html</code> that would use the data from my <a href="https://rup12.net/about">about</a> page as well as would outline a bit from this server. Oh, and it would show the output from <code>neofetch</code> as content in a <code>&lt;pre&gt;</code> tag.</p>
+<br>
+<h3>Step 2:</h3>
+<p>Then, the main agent would <code>fetch</code> the data from my page, and prompt the <code>front-end-specialist</code> with the information and instructions. As well as the request to write down the <code>index.html</code> in the current directory. </p>
+<br>
+<p>And just like that, we got <a href="https://sparc.rup12.net">this</a>. Wow!</p>
+<br>
+<h2>Tunneling</h2>
+<br>
+<p>Okay, so how do we get this thing to the internet? Port Forwarding? Dynamic DNS? IPv6? Not a chance! I'm not exposing an IP address of a server in my garage to the internet. 👀 There must be a way to, proxy this! I was thinking of some sort of reverse proxy in the cloud, setting up a server to do something. But, then I've learned of something wonderful! CloudFlare's <a href="https://developers.cloudflare.com/cloudflare-one/networks/connectors/cloudflare-tunnel/">tunnels</a> 😍.</p>
+<br>
+<p><b>Simply put:</b> This is a way to create a <i>tunnel</i> between CloudFlare and a system running the <code>cloudflared</code> daemon. This creates an <i>outbound</i> connection, so technically I am not exposing any ports at all. The biggest security benefit here is that there are no inbound connections to my network.</p>
+<br>
+<p>Yes, there is a <i>however</i>. The <code>cloudflared</code> <a href="https://github.com/cloudflare/cloudflared">daemon</a> does not really work on <code>Sparc64</code>, and while it is open source and written in Go. I cannot really compile it myself there, as Go (unlike Rust) does not support the <code>Sparc64</code> CPU architecture. So how do I get this daemon running on the Netra. Well, that's the neat part, <i>I don't</i>.</p>
+<br>
+<br>
+<p>CloudFlare's tunnel daemon also supports the ability to forward traffic to a remote host. This means I can install <code>cloudflared</code> on some more modern host running on the same network, and just forward traffic to the Netra. This can be something as simple as Raspberry Pi, but... wait! I have a entire <a href="https://www.proxmox.com/en/">Proxmox</a> setup running at home. I'm sure I can make a container to do just this. And after a quick search through the <a href="https://community-scripts.github.io/ProxmoxVE/scripts">Proxmox LXC helper scripts</a> I found <i>exactly</i> what I need. </p>
+<br>
+<p>Just run this command in the shell of your Proxmox host, and it will install the <code>cloudflared</code> daemon, and everything it needs to be running.</p>
+<pre>
+# This goes in the VM Host shell
+### 🚨 WARNING: Never run Bash scripts of the internet without checking, even if it was me who shared them
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/ct/cloudflared.sh)"
+### 🚨 WARNING: Never run Bash scripts of the internet without checking, even if it was me who shared them
+</pre>
+<br>
+<p>To configure the daemon, you need to edit the configuration file in <code>/usr/local/etc/cloudflared/config.yaml</code>:</p>
+<br>
+<pre>
+tunnel: sparc # Name of the tunnel
+credentials-file: /root/.cloudflared/&lt;UUID&gt;.json
+
+ingress:
+  - hostname: sparc.rup12.net
+    service: http://192.168.1.248:80 # The Netra X1
+  - service: http_status:404
+</pre>
+<br>
+<p>Here I just forward all traffic to <code>192.168.1.248</code> which is that Netra server, on port <b>80</b>. Boom 💥 done! I'll leave <a href="https://developers.cloudflare.com/cloudflare-one/networks/connectors/cloudflare-tunnel/get-started/create-remote-tunnel/">instructions</a> from my friends over at Cloudflare on how to set up tunnels, but this is rather straightforward. Lastly, I need to configure a <b>DNS CNAME</b> to point to a specific URL that features the <i>UUID</i> of my Tunnel: <code>&lt;uuid&gt;.cfargotunnel.com</code></p>
+<br>
+<p>In rather simple terms, here is how this architecture looks like:</p>
+<br>
+<br>
+<h2>Before we go, some security</h2>
+<br>
+<p>I love OpenBSD's security-first philosophy. So to play that part I did the following to improve this servers security.</p>
+<br>
+<p>Since this server is exposed to the internet, I implemented several layers of security:</p>
+<ul>
+<li><b>Firewall</b>: Configured OpenBSD's <code>pf</code> with default-deny rules. Only SSH from my local networks (192.168.1.0/24 and 10.0.1.0/24) and HTTP exclusively from the Cloudflare tunnel container (10.0.1.210)</li>
+<li><b>Minimal attack surface</b>: Disabled all unnecessary services - only running <code>httpd</code>, <code>sshd</code>, and essential system daemons</li>
+<li><b>Static content only</b>: Like I said, no CGI, no scripting, no dynamic content - just HTML and CSS served by <code>httpd</code></li>
+<li><b>Network isolation</b>: The Cloudflare tunnel creates an outbound-only connection, so no inbound ports are exposed on my home network</li>
+<li><b>Current software</b>: Running OpenBSD 7.8 with plans to upgrade to new releases when they are out</li>
+</ul>
+<br>
+<h2>Done?</h2>
+<br>
+<p>Yeah, that's it. You can go and see the website <b>RIGHT NOW</b> 👏 (unless it's down for some reason). Is this something the world needs? Not really. Is this something I need? <i>absolutely</i>! I have a few more things to fix up, namely figure out how to track the visitors on my website (I want to see if I actually get some hits), and put the server back in the rack so it can live out it's days where it belongs! </p>
+<br>
+<p>Here:</p>
+<br>
+
+<hr>
+<font size="-1">rup12.net &mdash; Darko Mesaros</font>
+</td></tr>
+</table>
+
+</font>
+</body>
+</html>

@@ -1,0 +1,630 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>Write your MCP servers in Rust</title>
+</head>
+<body bgcolor="#ffffff" text="#000000" link="#0000ff" vlink="#800080">
+<font face="Arial,Helvetica">
+
+<table width="600" border="0" cellpadding="4">
+<tr><td>
+<h1><font color="#cc6600">rup12.net</font></h1>
+<font size="-1">[ <a href="index.html">home</a> | <a href="about.html">about</a> | <a href="posts.html">posts</a> ]</font>
+<hr>
+<h2>Write your MCP servers in Rust</h2>
+<font size="-1"><i>2025-12-11 &mdash; There is more people writing MCP Servers than using MCP Servers. I think 🤔 So let's learn how to write one in Rust.</i></font>
+<hr>
+<blockquote>TL;DR: <a href="https://github.com/darko-mesaros/example-rust-mcp-server">CODE</a>. You can build really robust MCP servers in Rust using the <code>rmcp</code> crate. Things you need to know is: tool_router, tool_handler, and  tool parameters! </blockquote>
+<br>
+<h2>What and why MCP? </h2>
+<br>
+<p>MCP, the <b>Model Context Protocol</b>, is an open protocol that makes standard how applications provide context, tools and resources to Large Language Models. You best experience MCP through the use of <a href="https://modelcontextprotocol.io/docs/getting-started/intro">MCP Servers</a> inside of your coding assistants (and other LLM power tools). In a practical sense they provide your tools additional context and functionality. From giving you the latest access to docs (like in the <a href="https://awslabs.github.io/mcp/servers/aws-documentation-mcp-server">AWS Docs</a> MCP server) to allowing you to create and interact with databases (like with the <a href="https://neon.com/docs/ai/neon-mcp-server">Neon</a> MCP Server). All in all they can be <i>critical</i> for productivity work.</p>
+<br>
+<p>...</p>
+<br>
+<p>So why are they being built in Python? 🤔</p>
+<br>
+<p>Don't get me wrong, making MCP servers in Python is a breeze. Check out this example using <a href="https://github.com/jlowin/fastmcp">FastMCP</a>:</p>
+<pre>
+from mcp.server import FastMCP
+
+# Create an MCP server
+mcp = FastMCP("Calculator Server")
+
+# Define a tool
+@mcp.tool(description="Calculator tool which performs calculations")
+def calculator(x: int, y: int) -&gt; int:
+    return x + y
+
+# Run the server with SSE transport
+mcp.run(transport="sse")
+</pre>
+<br>
+<p>That's it. The MCP server is ready to accept MCP clients and do its thing! 🚀 </p>
+<br>
+<p>However, I think we can make this better. We can have it be fast, compiled, safe and written in Rust 🦀 (I am fully aware that this just adds to the <i>"Just rewrite it in Rust"</i> meme).</p>
+<br>
+<h2>Okay, why Rust?</h2>
+<br>
+<p>Let me keep this segment brief.</p>
+<br>
+<p><b>Python 🐍:</b></p>
+<br>
+<p><b>Rust 🦀:</b></p>
+<br>
+<p>Not only that, (with the risk of going meta here) I do find that using coding assistants with Rust <i>feels</i> way more productive. Errors and issues are caught very early on, due to the compiler being what it is.</p>
+<br>
+<p>This example is of a MCP server called <a href="https://github.com/darko-mesaros/grimoire-mcp">Grimoire-MCP</a> that does a bunch of filesystem operations in which it writes and reads files off a local disk. While the original was written in Rust I've used some <a href="https://kiro.dev/cli/">Kiro</a> magic to have it converted into Python running with FastMCP. I've ensured that the feature parity is the same, and also that there are no non-optimal tasks being performed by the Python version.</p>
+<br>
+<p>Although, I <i>must</i> give FastMCP a lot of credit for making the exercise of building MCP servers so simple and straightforward. The Rust MCP server building experience leaves a lot to be desired. Oh, and FastMCP has this <b>utterly glorious</b> splash screen 😍</p>
+<br>
+<br>
+<p>Okay, let's get building.</p>
+<br>
+<h2>Getting started with a Rust MCP server</h2>
+<br>
+<p>Today I will show you how to build a simple MCP server that will read and write to a CRUD JSON API (that I have running locally). While this is a rather simple example, it should cover most of the things you need to be able to build a MCP Server that uses <code>stdio</code> as its transport layer.</p>
+<br>
+<br>
+<p>&gt;<b>Please note:</b></p>
+<p>&gt;</p>
+<p>&gt;You will need to have <a href="https://github.com/darko-mesaros/ajde">this</a> CRUD API up and running locally. There is a quick start guide there that will get you through setting it up (you just need Rust, Docker, and just). Make sure to have this server running somewhere in the background on your local (or remote, do what you want) machine.</p>
+<br>
+<p>Let's set up a project - <b>crud_mcp</b>:</p>
+<br>
+<pre>
+cargo new crud_mcp
+</pre>
+<br>
+<p>To install the required crates, make sure your <code>Cargo.toml</code> has the following dependencies:</p>
+<pre>
+anyhow = "1.0.100"
+reqwest = "0.12.25"
+rmcp = { version = "0.11.0", features = ["reqwest", "transport-io", "uuid"] }
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.145"
+tokio = { version = "1.48.0", features = ["full"] }
+tracing = "0.1.43"
+tracing-subscriber = { version = "0.3.22", features = ["env-filter"] }
+</pre>
+<br>
+<p>Okay, let's add some scaffolding to our <code>main.rs</code> file. This will just set up some tracing for better debugging.</p>
+<br>
+<pre>
+use anyhow::Result;
+use tracing_subscriber::EnvFilter;
+
+#[tokio::main]
+async fn main() -&gt; Result&lt;()&gt; {
+    // Initialize the tracing subscriber with stdout logging
+    tracing_subscriber::fmt()
+        .with_env_filter(
+            EnvFilter::from_default_env()
+                .add_directive(tracing::Level::DEBUG.into())
+        )
+        .with_writer(std::io::stderr)
+        .with_ansi(false)
+        .init();
+
+    // Show a message that the MCP server has been started
+    tracing::info!("Starting CRUD MCP Server"); 
+
+    Ok(())
+}
+</pre>
+<br>
+<p>This does not really bring us any closer to building the MCP server, but it's a good first step. Now, let's configure the MCP server components in a separate file <code>todos.rs</code>.</p>
+<br>
+<h2>The MCP Server gives</h2>
+<br>
+<p>According to the <a href="https://modelcontextprotocol.io/specification/2025-11-25">MCP Specification</a> the server offers the following features to the clients:</p>
+<ul>
+<li><b>Tools:</b> Functions that your LLM can execute (ie something that invokes an API)</li>
+<li><b>Resources:</b> Additional data and context (ie some stored docs)</li>
+<li><b>Prompts:</b> Well ... Prompts. Stored prompts that the user can invoke.</li>
+</ul>
+<br>
+<p>In this example, we will only implement the <b>Tools</b>, but to be honest that's what most of the other MCPs offer as well. So let's implement the needed scaffolding for our MCP server to exist and start offering tools.</p>
+<br>
+<p>In the <code>todos.rs</code> file add the following:</p>
+<br>
+<pre>
+use rmcp::{handler::server::tool::{ToolRouter}, model::{CallToolResult, Content, Implementation, InitializeResult, ProtocolVersion, ServerCapabilities, ServerInfo}, tool, tool_handler, tool_router, ServerHandler};
+use rmcp::ErrorData as McpError;
+
+// Struct for our Tools and Tool Router
+#[derive(Clone)]
+pub struct TodoMcpServer {
+    tool_router: ToolRouter&lt;Self&gt; // This is a required field 
+}
+
+// Here be tools
+#[tool_router] // Macro that generates the tool router (there can be more than one router)
+impl TodoMcpServer {
+    pub fn new() -&gt; Self {
+        Self { 
+            tool_router: Self::tool_router()
+        }
+    }
+
+    // Tools ???
+}
+
+#[tool_handler] // Macro that will generate a tool handler
+impl ServerHandler for TodoMcpServer {
+    fn get_info(&amp;self) -&gt; rmcp::model::ServerInfo { // Present the information back to the client
+        ServerInfo {
+            protocol_version: ProtocolVersion::V_2025_06_18, // Defining the protocol version
+            capabilities: ServerCapabilities::builder()
+                .enable_tools() // Only enable tools, but we can also .enable_prompts() and .enable_resources()
+                .build(), 
+            server_info: Implementation::from_build_env(), // Info on the MCP gathered from the build_env
+            instructions: Some( // Instructions sent back to the MCP client - your prompt magic goes here.
+        "I manage a list of TODOs. That are stored behind an API server.
+
+        The available actions are:
+        ".to_string()),
+        }
+    }
+    async fn initialize( // Finally initialize the server
+            &amp;self,
+            _request: rmcp::model::InitializeRequestParam,
+            _context: rmcp::service::RequestContext&lt;rmcp::RoleServer&gt;,
+        ) -&gt; Result&lt;InitializeResult, McpError&gt; {
+            Ok(self.get_info())
+    }
+}
+</pre>
+<br>
+<p>I made sure to leave a bunch of comments in the code, but it should make a lot of sense. We are doing the following:</p>
+<ul>
+<li>Setting up a Struct for the <code>TodoMcpServer</code></li>
+<li>Implementing a <code>new()</code> function for that Struct</li>
+<li>Implementing <code>ServerHandler</code> with <code>get_info()</code> and <code>initialize()</code> for the <code>TodoMcpServer</code> struct</li>
+</ul>
+<br>
+<p>You may notice, there are <b>no tools</b> yet! That is fine, let's make sure this all works before adding any other complexities, such as tools.</p>
+<br>
+<p>Before we move forward, let's make some changes to the <code>main.rs</code>. At the top of your <code>main.rs</code> make sure to add a <code>mod todos;</code> and a few more lines:</p>
+<br>
+<pre>
+mod todos;
+
+use anyhow::Result;
+use rmcp::{ServiceExt, transport::stdio};
+use tracing_subscriber::EnvFilter;
+
+// Importing the MCP Server
+use crate::todos::TodoMcpServer;
+
+#[tokio::main]
+async fn main() -&gt; Result&lt;()&gt; {
+    // Initialize the tracing subscriber with stdout logging
+    tracing_subscriber::fmt()
+        .with_env_filter(
+            EnvFilter::from_default_env()
+                .add_directive(tracing::Level::DEBUG.into())
+        )
+        .with_writer(std::io::stderr)
+        .with_ansi(false)
+        .init();
+
+    // Show a message that the MCP server has been started
+    tracing::info!("Starting CRUD MCP Server"); 
+
+    // Create an instance of our MCP Server and start serving on STDIO
+    let service = TodoMcpServer::new().serve(stdio()).await.inspect_err(|e| {
+        tracing::error!("serving error: {:?}", e);
+    })?;
+
+    // Run the service
+    service.waiting().await?;
+    Ok(())
+}
+</pre>
+<br>
+<p>If you save now, and run <code>cargo build</code> you <b>should</b> have successfully compiled your first MCP server. Huzzah! 👏</p>
+<br>
+<p>To fully test it just run will <code>just mcp-test</code></p>
+<br>
+<hr>
+<br>
+<h3>Sidestep: <code>justfile</code></h3>
+<br>
+<p>Hopefully you've <a href="https://github.com/casey/just">installed</a> <code>just</code> during the set up of the CRUD API. But if you haven't yet. Now is the perfect time as any. <b>Just</b> is a simple command runner, like the <a href="https://builder.aws.com/content/2gWap2Oti02cq9bAnDZnaDSrxdx/making-makefiles-for-fun-and-profit">good ol'</a> <code>make</code> just made for the modern world.</p>
+<br>
+<p>In this tutorial I have the following <code>justfile</code>:</p>
+<pre>
+USER_ID := "550e8400-e29b-41d4-a716-446655440001"
+release:
+  cargo build --release
+
+# Test with MCP inspector
+mcp-test: release
+  npx @modelcontextprotocol/inspector -e USER_ID={{ USER_ID }} ./target/release/crud_mcp
+</pre>
+<br>
+<p>While the use of <code>just</code> is not mandatory for this tutorial, I find it way convenient to run complex commands with just ... <code>just</code>.</p>
+<br>
+<p>Back to it.</p>
+<br>
+<hr>
+<br>
+<p>Whoa, what is that - a browser? 🫢 Yes, we are using the <a href="https://modelcontextprotocol.io/docs/tools/inspector">MCP Inspector</a> tool to help us determine if our MCP server is actually doing what an MCP server should be doing.</p>
+<br>
+<br>
+<p>If everything worked correctly, hitting the big <b>Connect</b> button should you being connected to the MCP server. And then if you click on the <b>List Tools</b> button in the Tools box, you should get - absolutely nothing. But that is good. Feel free to poke around the inspector. Try to find where are the instructions we sent over to the MCP Client. </p>
+<br>
+<br>
+<br>
+<h2>MCPs first tool</h2>
+<br>
+<p>Okay, finally let's add some tools. For the first tool we will just issue a command to our API to get all the TODOs. </p>
+<blockquote><b>Please note</b> </blockquote>
+<p>&gt;</p>
+<p>&gt;This API does not implement any sort of user authentication, while we are passing a <code>user-id</code> there is nothing actually handling it in the back</p>
+<br>
+<p>To add the tools we will need to add some functionality to <code>todos.rs</code>. Namely we will be creating <code>Todo</code> and <code>Todos</code> structs, that will give us the ability to call the API and retrieve all the todos. We will be using the <a href="https://docs.rs/reqwest/latest/reqwest/">reqwest</a> crate to make the API calls and <code>serde</code> to deserialize the response back into the object. I wont go too deep into this, as this is not the purpose of this tutorial. But rest assured, that this is just pure Rust, and has no MCP specific flavor to it.</p>
+<br>
+<p>Here is just this bit in the <code>todos.rs</code>:</p>
+<pre>
+use std::sync::Arc;
+
+// [... rest of the code ...]
+
+// Here be Todos
+#[derive(Debug, Clone,Deserialize, Serialize)]
+pub struct Todos {
+    todos: Arc&lt;Vec&lt;Todo&gt;&gt;,
+}
+
+// Individual todo
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct Todo {
+    id: String,
+    user_id: String,
+    date: String,
+    title: String,
+    body: String,
+    complete: bool,
+    printed: bool,
+    archived: bool
+}
+
+// Impl block for our Todos. These are not Tools (yet)
+impl Todos {
+    // Get all TODOs from the API using reqwest
+    async fn get_todos() -&gt; Result&lt;Self, anyhow::Error&gt; {
+        // Maybe dont hardcode URLs into your code?
+        // A simple `curl` call to our API that deserializes the data into a Vector of Todo
+        let response: Vec&lt;Todo&gt; = reqwest::get("http://localhost:3000/todos")
+            .await?
+            .json()
+            .await?;
+        
+        Ok(Self {todos: Arc::new(response)}) // Return all todos as an Arc
+    }
+}
+
+// [... rest of the code ...]
+</pre>
+<br>
+<p>The next bit, is us actually implementing this as a tool. Let's add a new tool to our <code>TodoMcpServer</code> tool router:</p>
+<br>
+<pre>
+// [... rest of the code ...]
+#[tool_router] // Macro that generates the tool router
+impl TodoMcpServer {
+    pub fn new() -&gt; Self {
+        Self { 
+            tool_router: Self::tool_router()
+        }
+    }
+
+    // Tools
+    /// Get all TODO entries from via the get_todos() method
+    // This description is being passed onto the MCP client. The name of the tool (by default) is
+    // the function name.
+    #[tool(description = "Get all available TODOs in JSON format")]
+    async fn get_all_todos() -&gt; Result&lt;CallToolResult, McpError&gt; {
+        // Call the get_todos() method to get all the todos as a Todos struct
+        let todos = Todos::get_todos()
+            .await
+            .map_err(|e| McpError::internal_error(
+                format!("Error getting TODOs: {}",e), None))?;
+
+        // Convert it to json Content
+        let content = Content::json(todos)
+            .map_err(|e| McpError::internal_error(
+                format!("Error converting TODOs into JSON values: {}", e), None))?;
+
+        Ok(CallToolResult::success(
+            vec![content]
+        ))
+    }
+}
+// [... rest of the code ...]
+</pre>
+<br>
+<p>Looking at our new <code>get_all_todos()</code> function, let's discuss the MCP portions of this. <b>First off</b> the return of the function is a <code>CallToolResult</code> which is a specific <a href="https://docs.rs/rmcp/0.11.0/rmcp/model/struct.CallToolResult.html">struct</a> that contains the content returned by the tools execution. <b>Next up</b>, we are running the <code>get_todos()</code> function we created before and converting the received Vector of Todos into <code>json</code>. We are also checking if any of those calls result in an <code>Err</code> if so, we return a <code>McpError::internal_error</code> back to the MCP client to let them know something went wrong. </p>
+<br>
+<p><b>Lastly</b> we are returning the given <code>content</code> all wrapped up in a <code>Ok()</code> and a <code>CallToolResult::success</code>. Oh, and we are also returning a vector of contents (as per the requirements).</p>
+<br>
+<blockquote><b>Note</b>:</blockquote>
+<p>&gt;</p>
+<blockquote>I fully understand that I am at first deserializing data from JSON then immediately serializing it back into JSON. This is just meant to illustrate how you would work with structs. Ultimately I would just make the <code>reqwest</code> here and return the JSON, OR better yet format the results back to the MCP client and only include the data it needs (not the entire JSON)</blockquote>
+<br>
+<p>Lastly in the <code>get_info()</code> function make sure your instructions are updated:</p>
+<br>
+<pre>
+// [... rest of the code ...]
+    fn get_info(&amp;self) -&gt; rmcp::model::ServerInfo {
+        ServerInfo {
+            protocol_version: ProtocolVersion::V_2025_06_18,
+            capabilities: ServerCapabilities::builder()
+                .enable_tools() // Only enable tools
+                .build(),
+            server_info: Implementation::from_build_env(),
+            instructions: Some(
+        "I manage a list of TODOs. That are stored behind an API server.
+
+        The available actions are:
+        - get_all_todos: Get a list of all the todos.
+        ".to_string()),
+        }
+    }
+// [... rest of the code ...]
+</pre>
+<br>
+<p>Let's try this again. Save your files and run <code>just mcp-test</code>. Back on the MCP Inspector, connect to the MCP and <b>List Tools</b>. Whoa, there is the <code>get_all_todos</code> tool! 🥳 Click on it and run the tool (did you remember to run the API in the background?). Huzzah!!! Success! 🚀</p>
+<br>
+<br>
+<p>In the last part of this tutorial I will teach you how to pass parameters to tools calls. And we will wrap it up there!</p>
+<br>
+<h2>Passing parameters to tools</h2>
+<br>
+<p>So far we have asked the MCP to just run a tool, no information given to the tool, nothing. Let's implement a tool that will create a new TODO item in your API, by passing it the needed information as a parameter. There is not much to it, except creating a special struct that will contain our parameters.</p>
+<br>
+<h3>The Rust parts</h3>
+<br>
+<p>Let me first implement the basic Rust functionality that will create the TODO in our API. For this we need one helper Struct and one function implemented in Todo that will make the request to the API. </p>
+<br>
+<pre>
+// [... rest of the code ...]
+
+// Helper Struct that we pass on to the CRUD API to create a new TODO
+#[derive(Debug, Serialize, Deserialize, Clone)]
+struct NewTodo {
+    user_id: String,
+    title: String,
+    body: String
+}
+// [... rest of the code ...]
+
+impl Todos {
+    // [... rest of the code ...]
+
+    /// Creates a new TODO from a tool call
+    async fn create_todo(todo: NewTodo) -&gt; Result&lt;Todo, anyhow::Error&gt; {
+        // Again, maybe don't hardcode this
+        let response: Todo = reqwest::Client::new()
+            .post("http://localhost:3000/todos")
+            .json(&amp;todo) // Sending a serialized NewTodo
+            .send()
+            .await? // Send the request and wait
+            .json() // Deserialize the JSON back
+            .await?; // Wait for it to happen
+        
+        // Return the newly created TODO entry as Todo
+        Ok(response)
+    }
+}
+// [... rest of the code ...]
+</pre>
+<br>
+<p>Does that make sense? It should, as it is very similar to the previous ones, except we have a helper struct where we new todo information that we will later serialize into JSON and send over to the API. Sweet! 🔥</p>
+<br>
+<h3>Setting up the Parameters struct</h3>
+<br>
+<p>Now to add the MCP elements to it, we need <i>another</i> Struct, in this case a Parameter struct that will contain the needed parameters and their descriptions that will be passed on in a tool call. This is so we make it obvious to the MCP Client/LLM what needs to go into this tool call. </p>
+<br>
+<pre>
+// [... rest of the code ...]
+
+// This is a Parameter struct for creating a new TODO. This tells the LLM what it needs to pass
+#[derive(Debug, Deserialize, schemars::JsonSchema)]
+#[schemars(description = "Input for creating a new TODO entry")]
+pub struct NewTodoParameters {
+    #[schemars(description = "Title of the TODO item")]
+    title: String,
+    #[schemars(description = "Body of the TODO item")]
+    body: String
+}
+
+</pre>
+<br>
+<p>Okay, this looks a little bit more daunting, but rest assure it is not. First off the <code>NewTodoParameters</code> struct: This is like any ol' struct but with some additional decoration. Namely the <code>schemars</code> fields. These fields add to the <i>JSON Schema document</i> the descriptions of those fields. </p>
+<br>
+<blockquote>We are using the <a href="https://crates.io/crates/schemars">schemars</a> crate to generate JSON Schema documents</blockquote>
+<br>
+<p>The JSON Schema Document would look something like this:</p>
+<pre>
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "NewTodoParameters",
+  "description": "Input for creating a new TODO entry",
+  "type": "object",
+  "properties": {
+    "body": {
+      "description": "Body of the TODO item",
+      "type": "string"
+    },
+    "title": {
+      "description": "Title of the TODO item",
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "body"
+  ]
+}
+</pre>
+<br>
+<h3>The tool that takes parameters</h3>
+<br>
+<p>Okay, onto the tool implementation. Like before, it is very similar to other tools, except it has some additional plumbing around accepting parameters. Oh, and <i>one</i> more thing I want to mention: Structured outputs to the MCP Client.</p>
+<br>
+<p>First look at this code:</p>
+<br>
+<pre>
+
+// [... rest of the code ...]
+
+#[tool_router] // Macro that generates the tool router
+impl TodoMcpServer {
+
+    // [... rest of the code ...]
+
+    /// Creates a new TODO by getting the NewTodoParameters from the client
+    #[tool(description = "Create a new TODO entry by passing on the title and body of the TODO item.")]
+    async fn create_new_todo(
+        // [ 1 ]
+        Parameters(NewTodoParameters { // Extracting the value from Parameters&lt;NewTodoParameters&gt;
+        title,
+        body,
+    }): Parameters&lt;NewTodoParameters&gt;,
+    ) -&gt; Result&lt;CallToolResult, McpError&gt; {
+
+        // Get the user_id from the environment variable
+        // [ 2 ]
+        let user_id = std::env::var("USER_ID")
+            .map_err(|_| McpError::internal_error(
+                "USER_ID environment variable MUST be set".to_string(), None))?;
+        
+        // Create a NewTodo from the parameters supplied by the MCP client
+        let new_todo_request = NewTodo {
+            user_id,
+            title,
+            body
+        };
+        // [ 3 ]
+        let new_todo = Todos::create_todo(new_todo_request) // Invoke the create_todo 
+            .await
+            .map_err(|e| McpError::internal_error(          // Let the MCP client know if we fail
+                    format!("Error creating new TODO entry: {}", e), None))?;
+
+        // Return a structure message back instead of pure JSON
+        // [ 4 ]
+        let return_message = format!(
+            "A new TODO entry has been created, here are its details:
+            - id: {}
+            - date: {}
+            - title: {}
+            - body: {}
+            Use the ID of the TODO for any todo specific instructions.
+            ", new_todo.id, new_todo.date, new_todo.title, new_todo.body
+        );
+
+        // Return CallToolResult as `text`
+        Ok(CallToolResult::success(
+            vec![Content::text(return_message)]
+        ))
+    }
+}
+// [... rest of the code ...]
+</pre>
+<br>
+<p>Seen it? Good! Let's start with <code>[1]</code>: The function definition here takes the <code>NewTodoParameters</code> struct as a parameter but it also extracts the values into a <code>title</code> and <code>todo</code>. This is called <b>destructuring</b> and it is pure idiomatic Rust. This makes those values immediately available to the rest of the function.</p>
+<br>
+<hr>
+<br>
+<p>#### Sidestep: Another way of extracting values</p>
+<br>
+<p>The <a href="https://docs.rs/rmcp/0.11.0/rmcp/handler/server/wrapper/struct.Parameters.html">documentation</a> on <code>Parameters</code> shows that you just wrap the struct in a <code>Parameters&lt;T&gt;</code>, that works as well, but you just then have to handle extracting the values later on with a syntax I don't really like:</p>
+<br>
+<pre>
+#[tool(description = "Create a new TODO entry by passing on the title and body of the TODO item.")]
+async fn create_new_todo(params: Parameters&lt;NewTodoParameters&gt;)
+    -&gt; Result&lt;CallToolResult, McpError&gt; {
+    let user_id = "foo";
+
+    // Extract the values from params:
+    let title = params.0.title;
+    let body = params.0.body;
+    // Create a NewTodo from the parameters supplied by the MCP client
+    let new_todo_request = NewTodo {
+        user_id,
+        title,
+        body,
+    };
+</pre>
+<br>
+<p>I do prefer to Destructure the wrapper type in this case. </p>
+<br>
+<hr>
+<br>
+<p>Now, onto <code>[2]</code>, here we are simply extracting the <code>USER_ID</code> environment variable and erroring out if it is not set. (Remember, this MCP server example uses a fixed <code>USER_ID</code> for all it's requests, ultimately this would be a value extracted from a JWT token or something). Moving on to <code>[3]</code> here we invoke the <code>create_todo()</code> function with the <code>NewTodo</code> struct, this is where the call to the API happens. And lastly, <code>[4]</code> we format the return message.</p>
+<br>
+<p>You maybe asking yourself: <i>"But, Darko, why are we not just returning the response from the API back?"</i>. Well, this is where smart the MCP server construction happens, namely context management. Ask yourself the question: "Does the MCP client really need the entire JSON response?". In this case, no. It just needs the some of the details from the newly created TODO and it should be good on its way to work with it. When you are building your MCP server you want to make sure not to hammer the context window with unnecessary data. It's super easy to just throw whatever response you have back into it, but you want to preserve that context for what's important. </p>
+<br>
+<p>And that's it! We just return our <code>response_message</code> as <code>Content::text()</code> and the MCP client has it all done.</p>
+<br>
+<p>Before you close your <code>todos.rs</code>, I'd suggest updating your <code>instructions</code> and adding a point <code>- create_new_todo: Create a new todo entry</code>. Just so the MCP client know what we have! Always keep your instructions crisp! ✨</p>
+<br>
+<br>
+<h3>Make me a new TODO</h3>
+<br>
+<p>Okay, let's try it out. Make sure your <code>ajde</code> TODO API is running in the back, and let's test our MCP:</p>
+<pre>
+just mcp-test
+</pre>
+<br>
+<p>Now, on the MCP Inspector select the <code>create_new_todo</code> tool and give it a title and a body. Hit <code>Run Tool</code>:</p>
+<br>
+<br>
+<p>Hooray! 🚀 You did it! Now, let's just wrap this up by testing it in an actual coding assistant.</p>
+<br>
+<h2>Kiro, meet my MCP</h2>
+<br>
+<p>To test this out, I will be using <a href="https://kiro.dev/cli/">Kiro CLI</a>. When running Kiro CLI I edit my agent with the <code>/agent edit -n bloggy</code> command, and add the following to the <code>mcpServers</code> portion of the configuration:</p>
+<pre>
+"mcp_crud": {
+  "command": "/home/darko/tmp/crud_mcp/target/release/crud_mcp",
+  "env": {
+    "USER_ID": "550e8400-e29b-41d4-a716-446655440001"
+  },
+  "disabled": false,
+  "autoApprove": [],
+  "disabledTools": []
+}
+</pre>
+<br>
+<p>Please <b>NOTE</b>: The command is the path to the compiled binary on your local machine. So this will be different that what I have here, and the <code>USER_ID</code> is just the same one I have in the <code>justfile</code>.</p>
+<br>
+<p>This <code>json</code> will work for most other coding assistants, so if you are not using Kiro, just add it to whatever other tool you are using! 😍</p>
+<br>
+<br>
+<br>
+<p>Look at that! 👏 </p>
+<br>
+<h2>Now what?</h2>
+<br>
+<p>That's it folks! Your first MCP Server written in Rust! 🦀 As you can see it does take a little bit more plumbing than something built with FastMCP, but at the end of it you get something that is really quite robust.</p>
+<br>
+<p>An excellent comment came up on <a href="https://www.linkedin.com/feed/update/urn:li:activity:7404318059676819458?commentUrn=urn%3Ali%3Acomment%3A%28activity%3A7404318059676819458%2C7404515048112627712%29&amp;dashCommentUrn=urn%3Ali%3Afsd_comment%3A%287404515048112627712%2Curn%3Ali%3Aactivity%3A7404318059676819458%29">LinkedIn</a> by Svetozar: <i>"Do we need to optimize for this? Your LLM calls are dominating your execution time anyway."</i> And that is an absolutely fair take. Faster MCP servers do not really add to the fact that LLM calls are just so slow. But, when it comes to the ergonomics of writing Rust, and especially if you go into making some more complex / intensive tool calls, I do see Rust as being the right choice here. But what do I know, I am just drinking the Rust cool aid! 😅</p>
+<br>
+<p>I do see a future where the entire MCP server plumbing is done with a more approachable framework like FastMCP, but the actual tools are built in Rust! So keep an eye out for that! 👏</p>
+<br>
+<p>If you want to see the entire code/project - check out my <a href="https://github.com/darko-mesaros/example-rust-mcp-server">Github repo</a>.</p>
+<br>
+<p>Until next time friends! Don't forget to tip your compiler! 🦀</p>
+
+<hr>
+<font size="-1">rup12.net &mdash; Darko Mesaros</font>
+</td></tr>
+</table>
+
+</font>
+</body>
+</html>
