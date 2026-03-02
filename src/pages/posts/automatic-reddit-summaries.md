@@ -42,13 +42,13 @@ The integration with Telegram. Yes, the bot running on my server is accessible t
 ### Here's how it works:
 
 Every day at **8AM PST**, a *cronjob* triggers my application with the `cron` parameter (ie. `reddit-digest cron`). This kicks off a **one-shot process** that spawns 3 different agents: 
-- Simple Reddit summarizer
-- Content Analyzer
-- Briefing Writer
+- **Summary bot** — cheap, fast triage using Haiku: fetches hot threads and returns the top 5 worth analyzing
+- **Analytics bot** — deep per-thread analysis using Opus: reads comments on bug/question threads before forming its analysis
+- **Writer bot** — aggregates all analyses and writes the formatted briefing to Obsidian using Sonnet
 
 They are different agents because I had to deal with token rate limits, and I was just optimizing the token usage by using a smaller model for stuff like summaries. Once this process has done all it's research it writes this *briefing* to my Obsidian note (a new note for each day), and that briefing is automatically sent to me as Telegram message.
 
-But, besides this, I also have a **running service** (`reddit-digest bot`) that has a single agent spawned that I can interact with via Telegram. This agent has access to the Obsidian tool, and is using the Sonnet 4.6 model for cheaper and faster inference.
+But, besides this, I also have a **running service** (`reddit-digest bot`) that has a single agent spawned that I can interact with via Telegram. This is the **chat bot** — it has access to the Obsidian MCP and is focused on reading and discussing the daily briefings already saved in my vault. It uses Sonnet 4.6 for cheaper and faster inference.
 
 ## Agents
 
@@ -110,9 +110,9 @@ Okay, how about them **agents**?
 
 Here is the Haiku powered summarizer:
 ```rust
-async fn build_haiku(reddit: &McpService) -> Result<rig::agent::Agent<anthropic::completion::CompletionModel>> {
+async fn build_summary_bot(reddit: &McpService) -> Result<rig::agent::Agent<anthropic::completion::CompletionModel>> {
     let tools = reddit.list_tools(Default::default()).await?.tools;
-    log::info!("Haiku tools: {} reddit", tools.len());
+    log::info!("Summary bot tools: {} reddit", tools.len());
     Ok(anthropic::Client::from_env()
         .agent("claude-haiku-4-5")
         .max_tokens(4096)
@@ -124,6 +124,7 @@ async fn build_haiku(reddit: &McpService) -> Result<rig::agent::Agent<anthropic:
              ---THREAD---\n\
              Title: <title>\n\
              URL: <url>\n\
+             Post ID: <the ID portion of the URL, e.g. 1rgyew3>\n\
              Score: <score> | Comments: <count>\n\
              Summary: <2-3 sentences describing the discussion, issue, or question>\n\
              Type: <one of: bug | question | feature-request | discussion | positive>\n\
@@ -140,17 +141,17 @@ Let's digest (pun intented) this function. To spawn this agent, we are passing i
 Okay now what? Well, I run the **summary agent**:
 
 ```rust
-// Stage 1: Haiku fetches and summarizes all threads
-log::info!("Stage 1: Haiku fetching threads...");
-let haiku = build_haiku(&reddit).await?;
+// Stage 1: Summary bot fetches and triages threads
+log::info!("Stage 1: Summary bot fetching threads...");
+let haiku = build_summary_bot(&reddit).await?;
 let raw_summaries = haiku
     .prompt("Fetch hot threads from r/kiroide and return the thread blocks.")
     .max_turns(10)
     .await?;
 log::info!("Stage 1 complete. Got summaries:\n{raw_summaries}");
 
-// Stage 2: Per-thread Opus research calls
-log::info!("Stage 2: Per-thread Opus research...");
+// Stage 2: Per-thread analytics bot (fetches comments for bug/question threads)
+log::info!("Stage 2: Per-thread analytics...");
 let threads: Vec<&str> = raw_summaries
     .split("---THREAD---")
     .filter(|s| s.contains("Title:"))
@@ -171,10 +172,10 @@ for (i, thread) in threads.iter().enumerate() {
     if i > 0 {
         tokio::time::sleep(std::time::Duration::from_secs(5)).await;
     }
-    let researcher = build_opus_researcher(&fetch).await?;
+    let researcher = build_analytics_bot(&reddit, &fetch).await?;
     let analysis = researcher
         .prompt(&format!("Research this Reddit thread:\n\n---THREAD---\n{thread}\n---END---"))
-        .max_turns(3)
+        .max_turns(5)
         .await?;
     analyses.push(analysis);
 }
@@ -182,25 +183,31 @@ for (i, thread) in threads.iter().enumerate() {
 
 Then we store the analysis inside of the new analyses Vector! Oh, and a little **NOTE** here: I am using `sleep` here as this has helped me not get throttled by my LLM provider. Without this, depending on the size of the load, I may hit the 30K Tokens/Minute limits I have over at Anthropic.
 
-Oh, the *AGENT*, right. This one is as simple as it gets:
+Oh, the *AGENT*, right. The analytics bot has access to both the Reddit and fetch MCP servers — it uses Reddit to fetch comments on bug/question threads before forming its analysis:
 ```rust
-async fn build_opus_researcher(fetch: &McpService) -> Result<rig::agent::Agent<anthropic::completion::CompletionModel>> {
-    let tools = fetch.list_tools(Default::default()).await?.tools;
-    log::info!("Opus researcher tools: {} fetch", tools.len());
+async fn build_analytics_bot(reddit: &McpService, fetch: &McpService) -> Result<rig::agent::Agent<anthropic::completion::CompletionModel>> {
+    let tools = reddit.list_tools(Default::default()).await?.tools;
+    let fetch_tools = fetch.list_tools(Default::default()).await?.tools;
+    log::info!("Analytics bot tools: {} reddit + {} fetch", tools.len(), fetch_tools.len());
     Ok(anthropic::Client::from_env()
         .agent("claude-opus-4-6")
         .preamble(
-            "You are a DevRel researcher for Kiro IDE. You receive a single Reddit thread summary \
-             and must analyze it. You can fetch URLs to get more context if needed.\n\n\
-             Return a concise analysis block for this thread only. Include:\n\
+            "You are a DevRel analyst for Kiro IDE. You receive a single Reddit thread summary \
+             and must produce a deep analysis.\n\n\
+             For bug and question threads: always call fetch_reddit_post_content (using the Post ID) \
+             to read the actual discussion before forming your analysis. \
+             For positive/discussion threads: use your judgment.\n\n\
+             Return a concise analysis block. Include:\n\
              - Thread title and URL\n\
              - Category (Needs Action / Sentiment / Opportunity)\n\
              - What Darko should do\n\
-             - Suggested action or research(if applicable)\n\
-             Keep it tight — 5-8 lines max per thread."
+             - Key comments: quote or paraphrase 2-3 most insightful/representative comments\n\
+             - Suggested answer or talking points (if applicable)\n\
+             Keep it tight — 10-15 lines max per thread."
         )
-        .rmcp_tools(tools, fetch.peer().to_owned())
+        .rmcp_tools(tools, reddit.peer().to_owned())
+        .rmcp_tools(fetch_tools, fetch.peer().to_owned())
         .build())
 }
 ```
-Very similar to the summarizer one, just this one has a different prompt and has access to the `fetch` MCP Server and all its tools.
+Very similar to the summarizer, but this one has access to both the `reddit` and `fetch` MCP servers. The key difference: for bug and question threads it will call `fetch_reddit_post_content` to read the actual comments before forming its analysis — so the briefing reflects what people are actually saying, not just the thread title.
