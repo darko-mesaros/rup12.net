@@ -22,11 +22,15 @@ const jsonLd = {
 <Base head={{ title: frontmatter.title, description: frontmatter.description, image: imageUrl, canonical: canonicalUrl, type: "article" }}>
   <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   <script define:vars={{ slug: canonicalUrl.split('/').filter(Boolean).pop() }}>
-    fetch('/api/track', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ slug }),
-    });
+    const key = `viewed:${slug}`;
+    if (!sessionStorage.getItem(key)) {
+      sessionStorage.setItem(key, '1');
+      fetch('/api/track', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ slug }),
+      });
+    }
   </script>
 	<div class="mx-auto w-full max-w-screen-lg">
 		<PostHeader
