@@ -1,8 +1,8 @@
 ---
 layout: ../../layouts/post.astro
-title: "Can my SPARC server host a website?"
+title: "I'm Hosting a Website on a SPARC Server in My Garage (OpenBSD + Cloudflare Tunnels)"
 author: "Darko"
-description: "Can I host a website on a 25 year old server running a CPU architecture almost no one supports?"
+description: "I'm running a live website on a 25-year-old Sun Netra X1 SPARC server from my garage. OpenBSD 7.8, httpd, pf firewall, Cloudflare tunnels for safe exposure — no port forwarding needed. Yes, it actually works."
 excerpt: "Okay, so how do we get this thing to the internet? Port Forwarding? Dynamic DNS? IPv6? Not a chance! I'm not exposing an IP address of a server in my garage to the internet. 👀 There must be a way to, proxy this! I was thinking of some sort of reverse proxy in the cloud, setting up a server to do something. But..."
 tags: ['sun', 'sparc', 'homelab', 'retro', 'openbsd', 'cloudflare', 'httpd', 'proxmox', 'lxc' ]
 image:
