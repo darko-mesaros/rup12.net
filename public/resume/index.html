@@ -9,321 +9,29 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,600;0,700;1,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg: #1a1b26;
-      --bg-surface: #1f2133;
-      --bg-raised: #262840;
-      --text: #c0caf5;
-      --text-dim: #7982a9;
-      --text-bright: #e0e6ff;
-      --accent: #7aa2f7;
-      --accent-dim: #3d59a1;
-      --green: #9ece6a;
-      --orange: #e0af68;
-      --red: #f7768e;
-      --border: #2e3150;
-      --prompt: #9ece6a;
-    }
-
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    html {
-      font-size: 15px;
-      scroll-behavior: smooth;
-    }
-
-    body {
-      font-family: 'IBM Plex Sans', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.65;
-      min-height: 100vh;
-    }
-
-    /* Scanline overlay for subtle retro effect */
-    body::after {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background: repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 2px,
-        rgba(0,0,0,0.03) 2px,
-        rgba(0,0,0,0.03) 4px
-      );
-      pointer-events: none;
-      z-index: 999;
-    }
-
-    .container {
-      max-width: 52rem;
-      margin: 0 auto;
-      padding: 2rem 1.5rem 4rem;
-    }
-
-    /* ---- NAV BAR ---- */
-    .topbar {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.8rem;
-      padding: 0.75rem 1.5rem;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      color: var(--text-dim);
-    }
-    .topbar a {
-      color: var(--accent);
-      text-decoration: none;
-    }
-    .topbar a:hover { text-decoration: underline; }
-    .topbar .prompt { color: var(--prompt); }
-    .topbar .path { color: var(--orange); }
-
-    .topbar-links {
-      display: flex;
-      gap: 1.5rem;
-    }
-
-    /* ---- HEADER ---- */
-    .header {
-      padding: 3rem 0 1.5rem;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 2rem;
-    }
-    .header h1 {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 2.2rem;
-      font-weight: 700;
-      color: var(--text-bright);
-      letter-spacing: -0.02em;
-      margin-bottom: 0.25rem;
-    }
-    .header .subtitle {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.95rem;
-      color: var(--accent);
-      margin-bottom: 1rem;
-    }
-    .contact-line {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.75rem;
-      color: var(--text-dim);
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.35rem;
-    }
-    .contact-line a {
-      color: var(--accent);
-      text-decoration: none;
-    }
-    .contact-line a:hover {
-      text-decoration: underline;
-    }
-    .contact-line .sep {
-      color: var(--accent-dim);
-    }
-
-    /* ---- SECTIONS ---- */
-    .section {
-      margin-bottom: 2rem;
-    }
-    .section-title {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.8rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: var(--green);
-      margin-bottom: 1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-    .section-title::before {
-      content: '##';
-      color: var(--text-dim);
-    }
-    .section-title::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--border);
-    }
-
-    /* ---- SUMMARY ---- */
-    .summary {
-      color: var(--text);
-      font-size: 0.95rem;
-      line-height: 1.7;
-    }
-
-    /* ---- SKILLS ---- */
-    .skill-row {
-      margin-bottom: 0.5rem;
-      font-size: 0.9rem;
-    }
-    .skill-label {
-      font-family: 'JetBrains Mono', monospace;
-      font-weight: 600;
-      color: var(--orange);
-      font-size: 0.8rem;
-    }
-
-    /* ---- EXPERIENCE ---- */
-    .job {
-      margin-bottom: 1.75rem;
-      position: relative;
-    }
-    .job-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      flex-wrap: wrap;
-      gap: 0.25rem;
-      margin-bottom: 0.15rem;
-    }
-    .job-title {
-      font-weight: 600;
-      font-size: 1rem;
-      color: var(--text-bright);
-    }
-    .job-dates {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.75rem;
-      color: var(--text-dim);
-    }
-    .job-company {
-      font-size: 0.85rem;
-      color: var(--accent);
-      font-style: italic;
-      margin-bottom: 0.5rem;
-    }
-
-    .bullets {
-      list-style: none;
-      padding: 0;
-    }
-    .bullets li {
-      position: relative;
-      padding-left: 1.25rem;
-      margin-bottom: 0.4rem;
-      font-size: 0.9rem;
-      color: var(--text);
-    }
-    .bullets li::before {
-      content: '›';
-      position: absolute;
-      left: 0;
-      color: var(--accent);
-      font-family: 'JetBrains Mono', monospace;
-      font-weight: 700;
-    }
-    .bullets li strong {
-      color: var(--text-bright);
-      font-weight: 600;
-    }
-
-    /* ---- CONTENT & IMPACT ---- */
-    .impact-item {
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-left: 3px solid var(--accent);
-      border-radius: 4px;
-      padding: 0.75rem 1rem;
-      margin-bottom: 0.6rem;
-      font-size: 0.9rem;
-    }
-    .impact-item strong {
-      color: var(--text-bright);
-    }
-
-    /* ---- CERTIFICATIONS ---- */
-    .certs {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-    }
-    .cert-tag {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.7rem;
-      padding: 0.3rem 0.6rem;
-      background: var(--bg-raised);
-      border: 1px solid var(--border);
-      border-radius: 3px;
-      color: var(--text-dim);
-    }
-
-    /* ---- EDUCATION ---- */
-    .education-main {
-      font-weight: 600;
-      color: var(--text-bright);
-    }
-    .education-detail {
-      font-size: 0.85rem;
-      color: var(--text-dim);
-    }
-    .education-note {
-      font-size: 0.8rem;
-      font-style: italic;
-      color: var(--text-dim);
-      margin-top: 0.35rem;
-    }
-
-    /* ---- FOOTER ---- */
-    .footer {
-      margin-top: 3rem;
-      padding-top: 1rem;
-      border-top: 1px solid var(--border);
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.7rem;
-      color: var(--text-dim);
-      text-align: center;
-    }
-    .footer a { color: var(--accent); text-decoration: none; }
-
-    /* ---- PRINT ---- */
-    @media print {
-      body { background: #fff; color: #1a1a1a; }
-      body::after { display: none; }
-      .topbar { display: none; }
-      .container { max-width: 100%; padding: 0; }
-      .header h1 { color: #1a1a1a; }
-      .header .subtitle { color: #2b5797; }
-      .section-title { color: #2b5797; }
-      .section-title::before { color: #999; }
-      .job-title { color: #1a1a1a; }
-      .job-company { color: #2b5797; }
-      .bullets li { color: #1a1a1a; }
-      .bullets li::before { color: #2b5797; }
-      .impact-item { background: #f5f5f5; border-color: #ddd; border-left-color: #2b5797; }
-      .cert-tag { background: #f0f0f0; border-color: #ddd; color: #555; }
-      .contact-line, .contact-line a { color: #555; }
-      .skill-label { color: #2b5797; }
-      .footer { display: none; }
-      a { color: #2b5797; }
-    }
-
-    /* ---- RESPONSIVE ---- */
-    @media (max-width: 640px) {
-      html { font-size: 14px; }
-      .header h1 { font-size: 1.7rem; }
-      .job-header { flex-direction: column; }
-      .topbar { flex-direction: column; gap: 0.5rem; }
-    }
-  </style>
+  <link rel="stylesheet" href="https://unpkg.com/nes.css@2.3.0/css/nes.min.css">
+  <link id="theme-css" rel="stylesheet" href="theme-default.css">
+  <script>
+    // Apply saved theme before paint to avoid flash
+    const t = localStorage.getItem('resume-theme') || 'default';
+    document.getElementById('theme-css').href = 'theme-' + t + '.css';
+  </script>
 </head>
 <body>
 
 <div class="topbar">
   <div>
-    <span class="prompt">~darko@localhost</span>:<span class="path">~/resume</span>$ cat <span style="color:var(--text)">resume.html</span>
+    <span class="prompt">~darko@localhost</span>:<span class="path">~/resume</span>$ cat <span>resume.html</span>
   </div>
   <div class="topbar-links">
     <a href="https://rup12.net">BLOG</a>
     <a href="https://rup12.net/about">ABOUT</a>
+    <div class="theme-switcher">
+      <button class="theme-btn" onclick="setTheme('default')">DEFAULT</button>
+      <button class="theme-btn" onclick="setTheme('nes')">NES</button>
+      <button class="theme-btn" onclick="setTheme('ie5')">IE5</button>
+      <button class="theme-btn" onclick="setTheme('teletext')">TELETEXT</button>
+    </div>
   </div>
 </div>
 
@@ -333,12 +41,13 @@
   <div class="header">
     <h1>Darko Mesaroš</h1>
     <div class="subtitle">Developer Relations &amp; Cloud Infrastructure</div>
+    <marquee class="marquee-welcome">~~~welcome to my resume~~~</marquee>
     <div class="contact-line">
       <span>Seattle, WA</span>
       <span class="sep">|</span>
       <a href="mailto:d@rko.rs">d@rko.rs</a>
       <span class="sep">|</span>
-      <a href="https://linkedin.com/in/darkomesaros">linkedin</a>
+      <a href="https://www.linkedin.com/in/darko-mesaros/">linkedin</a>
       <span class="sep">|</span>
       <a href="https://rup12.net">rup12.net</a>
       <span class="sep">|</span>
@@ -357,22 +66,18 @@
   <!-- SKILLS -->
   <div class="section">
     <div class="section-title">Technical Skills</div>
-
     <div class="skill-row">
       <span class="skill-label">Infrastructure:</span>
       Cloud architecture, Kubernetes, containers, VMs, serverless, infrastructure at scale, infrastructure as code (CDK, CloudFormation), configuration management (Chef, Puppet, OpsWorks), automated provisioning, networking, storage optimization, CI/CD, Linux (Arch btw), DevOps
     </div>
-
     <div class="skill-row">
       <span class="skill-label">Languages &amp; Tools:</span>
       Python, Rust, TypeScript, Bash; AWS (certified Professional-level), generative AI platforms (Amazon Bedrock), distributed systems
     </div>
-
     <div class="skill-row">
       <span class="skill-label">Developer Relations:</span>
       Program development, community building, technical content strategy, live coding, public speaking, developer experience design, cross-functional leadership, speaker training &amp; enablement
     </div>
-
     <div class="skill-row">
       <span class="skill-label">Languages:</span>
       English (Native), Serbian (Native), Hungarian (Elementary), Czech &amp; Slovak (Limited Working)
@@ -455,25 +160,20 @@
   <!-- CONTENT & COMMUNITY IMPACT -->
   <div class="section">
     <div class="section-title">Content &amp; Community Impact</div>
-
     <div class="impact-item">
       <strong>100+ speaking engagements</strong> at AWS re:Invent, AWS Summits, DevOps Days, AI Engineers Summit, and developer meetups worldwide. Twice hosted the global AWS re:Invent conference (80K+ viewers). Featured guest on Screaming in the Cloud, AWS Developers Podcast, and other tech podcasts.
     </div>
-
     <div class="impact-item">
       <strong>200+ technical content pieces</strong>: tutorials, live coding streams, video guides, documentation, blog posts, and podcasts. Stack Overflow blog author. Content has reached millions across 6 years; 25K+ social media following across platforms.
     </div>
-
     <div class="impact-item">
-      <strong>Viral technical content:</strong> "Running a webserver on a SPARC server" (featured on Adafruit, Hacker News front page, Lobsters), a personal site (<a href="https://sparc.rup12.net" style="color:var(--accent)">sparc.rup12.net</a>) now literally hosted on a 25-year-old SPARC server; "Deploying Kubernetes with a TRS-80 Model 100" (Tom's Hardware); "Restoring a Sun Workstation" (30K+ reads, HN front page).
+      <strong>Viral technical content:</strong> "Running a webserver on a SPARC server" (featured on Adafruit, Hacker News front page, Lobsters), a personal site (<a href="https://sparc.rup12.net">sparc.rup12.net</a>) now literally hosted on a 25-year-old SPARC server; "Deploying Kubernetes with a TRS-80 Model 100" (Tom's Hardware); "Restoring a Sun Workstation" (30K+ reads, HN front page).
     </div>
-
     <div class="impact-item">
       <strong>Creative technical storytelling:</strong> Deploying AWS infrastructure from a Commodore 64, open source demos via Minecraft presentations, thermal printer MCP servers, and teletypes running serverless applications, consistently finding novel angles that cut through conference and content fatigue.
     </div>
-
     <div class="impact-item">
-      <strong>Learning in public:</strong> Documented Rust journey from zero to production applications via live streams and blog posts, building tools like <a href="https://github.com/darko-mesaros/bedrust" style="color:var(--accent)">bedrust</a> (CLI coding assistant, 68 GitHub stars) and <a href="https://github.com/darko-mesaros/shuk" style="color:var(--accent)">shuk</a> (S3 file sharing). 146 public GitHub repos.
+      <strong>Learning in public:</strong> Documented Rust journey from zero to production applications via live streams and blog posts, building tools like <a href="https://github.com/darko-mesaros/bedrust">bedrust</a> (CLI coding assistant, 68 GitHub stars) and <a href="https://github.com/darko-mesaros/shuk">shuk</a> (S3 file sharing). 146 public GitHub repos.
     </div>
   </div>
 
@@ -504,6 +204,21 @@
   </div>
 
 </div>
+
+<script>
+  function setTheme(name) {
+    localStorage.setItem('resume-theme', name);
+    document.getElementById('theme-css').href = 'theme-' + name + '.css';
+    document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+  }
+
+  // Mark active button on load
+  const current = localStorage.getItem('resume-theme') || 'default';
+  document.querySelectorAll('.theme-btn').forEach(b => {
+    if (b.textContent.trim().toLowerCase() === current) b.classList.add('active');
+  });
+</script>
 
 </body>
 </html>
