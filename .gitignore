@@ -3,6 +3,7 @@ dist/
 .astro/
 .vscode/
 .vercel/
+.wrangler/
 
 # dependencies
 node_modules/

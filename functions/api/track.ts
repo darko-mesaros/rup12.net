@@ -1,3 +1,5 @@
+/// <reference types="@cloudflare/workers-types" />
+
 const BOT_PATTERNS = /bot|crawler|spider|crawling|headless|curl|wget|python|go-http/i;
 
 interface Env {
@@ -12,10 +14,10 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     return new Response(null, { status: 204 });
   }
 
-  const { slug } = await request.json<{ slug: string }>();
-  if (!slug) return new Response(null, { status: 400 });
+  const body = await request.json() as { slug?: string };
+  if (!body.slug) return new Response(null, { status: 400 });
 
-  const key = `views:${slug}`;
+  const key = `views:${body.slug}`;
   const current = parseInt((await env.PAGE_VIEWS.get(key)) ?? "0");
   await env.PAGE_VIEWS.put(key, String(current + 1));
 
