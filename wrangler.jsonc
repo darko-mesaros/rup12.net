@@ -4,6 +4,22 @@
   // Update to today's date
   "compatibility_date": "2025-04-06",
   "assets": {
-    "directory": "./dist"
+    "directory": "./dist",
+    "not_found_handling": "single-page-application"
+  },
+  "redirects": {
+    "rules": [
+      { "from": "/posts/write-your-mcps-in-rust", "to": "/posts/write-your-mcps-in-rust/", "status": 301 },
+      { "from": "/posts/running-obsidian-headless", "to": "/posts/running-obsidian-headless/", "status": 301 },
+      { "from": "/posts/learning-rust-custom-errors", "to": "/posts/learning-rust-custom-errors/", "status": 301 },
+      { "from": "/posts/q-developer-cli-173-update", "to": "/posts/q-developer-cli-173-update/", "status": 301 },
+      { "from": "/posts/adventures-with-sun-ultra-1-workstation", "to": "/posts/adventures-with-sun-ultra-1-workstation/", "status": 301 },
+      { "from": "/posts/download-and-deserialize-10000-files-in-10-seconds", "to": "/posts/download-and-deserialize-10000-files-in-10-seconds/", "status": 301 },
+      { "from": "/posts/awesome-neovim-plugins-vimplug", "to": "/posts/awesome-neovim-plugins-vimplug/", "status": 301 },
+      { "from": "/posts/can-my-sparc-server-host-my-website", "to": "/posts/can-my-sparc-server-host-my-website/", "status": 301 },
+      { "from": "/posts/learning-rust-configuring-the-aws-sdk", "to": "/posts/learning-rust-configuring-the-aws-sdk/", "status": 301 },
+      { "from": "/posts/awesome-vim-plugins-quickscope", "to": "/posts/awesome-vim-plugins-quickscope/", "status": 301 },
+      { "from": "/posts/vim-spellchecker", "to": "/posts/vim-spellchecker/", "status": 301 }
+    ]
   }
 }

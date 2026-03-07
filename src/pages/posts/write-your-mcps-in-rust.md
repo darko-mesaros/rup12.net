@@ -1,8 +1,8 @@
 ---
 layout: ../../layouts/post.astro
-title: "Write your MCP servers in Rust"
+title: "Building MCP Servers in Rust with rmcp — A Complete Guide"
 author: "Darko"
-description: "There is more people writing MCP Servers than using MCP Servers. I think 🤔 So let's learn how to write one in Rust."
+description: "A complete guide to building Model Context Protocol (MCP) servers in Rust using the rmcp crate. Covers server setup, tool definitions, and connecting to MCP clients like Claude and Kiro."
 excerpt: "However, I think we can make this better. We can have it be fast, compiled, safe and written in Rust 🦀 (I am fully aware that this just adds to the *'Just rewrite it in Rust'* meme)."
 tags: [rust, mcp, anyhow, llms, kiro]
 image:

@@ -45,6 +45,7 @@ export default defineConfig({
 
     integrations: [react(), sitemap()],
     output: 'static',
+    trailingSlash: 'always',
 
     //adapter: cloudflare(),
     vite: {
