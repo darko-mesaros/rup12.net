@@ -1,15 +1,26 @@
 ---
-import { AppConfig } from '@/utils/AppConfig';
 import Base from '@/layouts/Base.astro';
 import PostHeader from '@/components/PostHeader.astro';
 import PostContent from '@/components/PostContent.astro';
 
-const { description } = AppConfig;
-
 const { frontmatter } = Astro.props;
+const canonicalUrl = `https://rup12.net/posts/${Astro.url.pathname.split('/').filter(Boolean).pop()}`;
+const imageUrl = `https://rup12.net/${frontmatter.image.src}`;
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": frontmatter.title,
+  "description": frontmatter.description,
+  "author": { "@type": "Person", "name": frontmatter.author ?? "Darko" },
+  "datePublished": frontmatter.pubDate,
+  "image": imageUrl,
+  "url": canonicalUrl,
+};
 ---
 
-<Base head={{ title: frontmatter.title, description, image: `https://rup12.net/${frontmatter.image.src}` }}>
+<Base head={{ title: frontmatter.title, description: frontmatter.description, image: imageUrl, canonical: canonicalUrl, type: "article" }}>
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 	<div class="mx-auto w-full max-w-screen-lg">
 		<PostHeader
 			title={frontmatter.title}

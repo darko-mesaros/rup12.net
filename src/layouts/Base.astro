@@ -10,12 +10,16 @@ export interface Props {
 		title: string;
     description: string;
     image?: string;
+    canonical?: string;
+    type?: string;
 	};
 }
 
 const {
-head: { title, description, image }
+head: { title, description, image, canonical, type }
 } = Astro.props as Props;
+
+const canonicalUrl = canonical ?? `https://rup12.net${Astro.url.pathname}`;
 ---
 
 <html lang="en">
@@ -25,12 +29,17 @@ head: { title, description, image }
 		<title>{title}</title>
 		<meta name="description" content={description} />
     <meta name="author" content={AppConfig.author} />
+    <link rel="canonical" href={canonicalUrl} />
     <!-- Open Graph meta tags for social -->
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:type" content="article" />
+    <meta property="og:type" content={type ?? "website"} />
+    <meta property="og:url" content={canonicalUrl} />
     {image && <meta property="og:image" content={image} />}
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    {image && <meta name="twitter:image" content={image} />}
     <!-- Google tag (gtag.js) -->
     <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-1Y3LKYL9FC"></script>
     <script is:inline>
