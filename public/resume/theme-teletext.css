@@ -121,6 +121,7 @@ body {
 .footer a { color: #00ffff; text-decoration: none; }
 
 .teletext-page { color: #ffff00; font-weight: bold; }
+.marquee-welcome { display: none; }
 
 .theme-switcher { display: flex; gap: 6px; align-items: center; }
 .theme-btn {
