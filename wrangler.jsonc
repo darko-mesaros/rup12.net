@@ -2,11 +2,14 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "rup12",
   // Update to today's date
-  "compatibility_date": "2025-04-06",
+  "compatibility_date": "2026-03-07",
   "assets": {
     "directory": "./dist",
     "not_found_handling": "single-page-application"
   },
+  "kv_namespaces": [
+    { "binding": "PAGE_VIEWS", "id": "b7addfb3289e44cc83674da2cec5774e" }
+  ],
   "redirects": {
     "rules": [
       { "from": "/posts/write-your-mcps-in-rust", "to": "/posts/write-your-mcps-in-rust/", "status": 301 },
