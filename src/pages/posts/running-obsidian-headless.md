@@ -26,7 +26,7 @@ But there was a catch. I wanted to run this in my home lab, on a virtual machine
 
 Hmm, so step **number 2** is the problem. I cannot open Obsidian as I have no GUI running on this headless server. I can certainly install it but once I try to start it: 
 
-![](/post-content/running-obsidian-on-a-headless-server/no-x.png)
+<img src="/post-content/running-obsidian-on-a-headless-server/no-x.png" width="1893" height="577" alt="Missing X11 error" />
 
 I am missing that GUI/x11 here. But I really don't want x11 running on this server. So how can I start Obsidian to do my login bit?
 
@@ -52,7 +52,7 @@ Restart the SSH server, and run the following:
 ssh -X user@server obsidian
 ```
 **Boom** 💥 - Look at that!
-![](/post-content/running-obsidian-on-a-headless-server/x11-forward.png)
+<img src="/post-content/running-obsidian-on-a-headless-server/x11-forward.png" width="1930" height="1507" alt="Obsidian running via X11 forwarding" />
 
 Okay, now log in, set your vault. And you are good to go. Oh and if you are a paid customer, and have the [catalyst licence](https://help.obsidian.md/catalyst) you should also enable the [Command Line version](https://help.obsidian.md/cli) of Obsidian. Just in case.
 
@@ -132,7 +132,7 @@ Okay, let's verify the service with:
 systemctl --user status obsidian.service
 ```
 
-![](/post-content/running-obsidian-on-a-headless-server/service-ok.png)
+<img src="/post-content/running-obsidian-on-a-headless-server/service-ok.png" width="1487" height="492" alt="Obsidian systemd service running" />
 
 And just like that, we have Obsidian running as a service on a remote headless server. You may choose to run this in your Home Lab, or on an [AWS EC2](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts.html) instance, maybe some [VPS Hosting](https://docs.digitalocean.com/products/droplets/how-to/create/). Or whatever you decide to choose!
 
@@ -142,7 +142,7 @@ Let me bring it back to the first paragraph. Why this? Why would you do this at 
 
 An agent, powered by an LLM, is running daily on my headless server. Using the [Reddit MCP](https://github.com/adhikasp/mcp-reddit) it fetches information from some subreddit and summarizes it for me. But for it to be practical, it also uses the [Obsidian MCP](https://github.com/bitbonsai/mcp-obsidian) to store that summary in a daily note.
 
-![](/post-content/running-obsidian-on-a-headless-server/summary.png)
+<img src="/post-content/running-obsidian-on-a-headless-server/summary.png" width="1137" height="625" alt="Agent summary in Obsidian note" />
 
 I am looking forward for the wonderful folks over at Obsidian to make a full version of the obsidian CLI that does not require any GUI. Please Obsidian, make my post irrelevant! 🙏
 
