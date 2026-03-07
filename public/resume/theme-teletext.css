@@ -28,7 +28,7 @@ body {
   align-items: center;
   font-size: 16px;
 }
-.topbar::before { content: 'P100 '; color: #ffff00; }
+.topbar::before { content: ''; }
 .topbar a { color: #00ffff; text-decoration: none; }
 .topbar a:hover { color: #ffff00; }
 .topbar .prompt { color: #00ff00; }
@@ -120,7 +120,7 @@ body {
 .footer::before { content: '888 '; color: #ffff00; }
 .footer a { color: #00ffff; text-decoration: none; }
 
-.marquee-welcome { display: none; }
+.teletext-page { color: #ffff00; font-weight: bold; }
 
 .theme-switcher { display: flex; gap: 6px; align-items: center; }
 .theme-btn {

@@ -21,7 +21,7 @@
 
 <div class="topbar">
   <div>
-    <span class="prompt">~darko@localhost</span>:<span class="path">~/resume</span>$ cat <span>resume.html</span>
+    <span class="teletext-page" style="display:none">P<span id="teletext-num">100</span> </span><span class="prompt">~darko@localhost</span>:<span class="path">~/resume</span>$ cat <span>resume.html</span>
   </div>
   <div class="topbar-links">
     <a href="https://rup12.net">BLOG</a>
@@ -211,6 +211,26 @@
     document.getElementById('theme-css').href = 'theme-' + name + '.css';
     document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
     event.target.classList.add('active');
+    applyTeletextUI(name);
+  }
+
+  function applyTeletextUI(name) {
+    const pageEl = document.querySelector('.teletext-page');
+    pageEl.style.display = name === 'teletext' ? 'inline' : 'none';
+    if (name === 'teletext') cyclePage();
+  }
+
+  function cyclePage() {
+    const numEl = document.getElementById('teletext-num');
+    let cycles = 0;
+    const max = 20 + Math.floor(Math.random() * 20);
+    const interval = setInterval(() => {
+      numEl.textContent = Math.floor(100 + Math.random() * 800);
+      if (++cycles >= max) {
+        clearInterval(interval);
+        numEl.textContent = '100';
+      }
+    }, 80);
   }
 
   // Mark active button on load
@@ -218,6 +238,7 @@
   document.querySelectorAll('.theme-btn').forEach(b => {
     if (b.textContent.trim().toLowerCase() === current) b.classList.add('active');
   });
+  applyTeletextUI(current);
 </script>
 
 </body>
