@@ -55,7 +55,8 @@ export default {
 
       const html = `<!DOCTYPE html>
 <html>
-<head><title>rup12.net — views</title>
+<head><title>rup12.net | very basic dashboard</title>
+<link rel="icon" type="image/png" href="/dashboard_favicon.png" />
 <style>body{font-family:monospace;max-width:600px;margin:2rem auto}table{width:100%;border-collapse:collapse}td{padding:.4rem .8rem;border-bottom:1px solid #eee}td:last-child{text-align:right;font-weight:bold}</style>
 </head>
 <body>
