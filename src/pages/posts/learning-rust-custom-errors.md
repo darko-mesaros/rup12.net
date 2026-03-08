@@ -9,7 +9,7 @@ image:
   src: /post-content/learning-rust-custom-errors/header.jpg
   alt:
 pubDate: 2025-11-16
-isPinned: true
+isPinned: false
 ---
 > **TL;DR:** [GITHUB REPO](https://github.com/darko-mesaros/webone). Tired of writing the same verbose error handling boilerplate in your Axum handlers? Me too! 🙄 By creating a custom `AppError` newtype that wraps `anyhow::Error` and implements `IntoResponse` + `From<E>`, you can ditch all those ugly match statements and embrace the beautiful `?` operator. Your handler functions go from messy error-matching shenanigans to clean, readable code that automatically converts any error into proper HTTP responses. It's like magic, but with more crabs! 🦀 
 

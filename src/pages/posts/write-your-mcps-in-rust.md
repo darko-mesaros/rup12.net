@@ -9,7 +9,7 @@ image:
   src: /post-content/write-your-mcps-in-rust/header.png
   alt:
 pubDate: 2025-12-11
-isPinned: true
+isPinned: false
 ---
 
 > TL;DR: [CODE](https://github.com/darko-mesaros/example-rust-mcp-server). You can build really robust MCP servers in Rust using the `rmcp` crate. Things you need to know is: tool_router, tool_handler, and  tool parameters! 

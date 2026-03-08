@@ -5,7 +5,7 @@ description: "It is the year 2021 and I've decided to by a Sun Microsystems Work
 author: "Darko"
 excerpt: "Guess what - I got myself a Sun Microsystems workstation. A Sun Ultra 1 Creator workstation from 1995. This was (is) a thing of beauty"
 it's specs:
-isPinned: true
+isPinned: false
 tags: ["retro computing", "sun", "sparc", "cde", "restoration", "13w3", "workstation", "adventures"]
 image:
   src:

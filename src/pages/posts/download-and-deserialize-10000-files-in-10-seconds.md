@@ -9,7 +9,7 @@ image:
   src: /post-content/learning-rust-semaphores/header.webp
   alt:
 pubDate: 2025-11-26
-isPinned: true
+isPinned: false
 ---
 
 > **TL;DR**: [CODE](https://gist.github.com/darko-mesaros/dea185369131e060e01456d03bd08357); I built a Rust app that downloads and processes 10,000 CSV files from S3 in ~10 seconds using async concurrency with semaphores ... all running on a single thread. 

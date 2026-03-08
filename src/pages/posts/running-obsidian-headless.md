@@ -9,7 +9,7 @@ image:
   src: /post-content/running-obsidian-on-a-headless-server/headless-obsidian.png
   alt:
 pubDate: 2026-02-19
-isPinned: true
+isPinned: false
 ---
 
 ## Running Obsidian without x11

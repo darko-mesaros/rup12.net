@@ -9,7 +9,7 @@ image:
   src:
   alt:
 pubDate: 2021-07-29
-isPinned: true
+isPinned: false
 ---
 
 *What you are about to read is a personal opinion. I've never written anything

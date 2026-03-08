@@ -9,7 +9,7 @@ image:
   src: /post-content/q-developer-173/header.jpg
   alt:
 pubDate: 2025-04-10
-isPinned: true
+isPinned: false
 ---
 
 > **TL;DR** [Amazon Q Developer CLI](https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/command-line.html?trk=dad343da-c131-4cd9-a323-ecf121d818d4&sc_channel=el) 1.7.3 introduces five key improvements: just type `q` to launch; granular tool permission controls with `/tools trust/untrust` commands; VIM integration via `/editor` command for complex prompts; multi-line editing with Ctrl+J; and enhanced context management through the `/context` command. 
