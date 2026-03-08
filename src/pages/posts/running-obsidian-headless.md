@@ -2,17 +2,73 @@
 layout: ../../layouts/post.astro
 title: "Running Obsidian on a headless server"
 author: "Darko"
-description: "How to run Obsidian on a headless Linux server using X11 forwarding and Xvfb for agent automation and note syncing"
-excerpt: "But there was a catch. I wanted to run this in my home lab, on a virtual machine I have for just these kinds of utilities. So what's the catch? Well, to run Obsidian and have it start syncing there are a few steps..."
-tags: ['obsidian', 'opensource', 'linux', 'ssh', 'x11', 'notes', 'productivity' ]
+description: "How to run Obsidian on a headless Linux server using the official obsidian-headless CLI and systemd for continuous vault syncing"
+excerpt: "The Obsidian team released an official headless client — here's how to set it up with systemd for continuous vault syncing on a remote server."
+tags: ['obsidian', 'opensource', 'linux', 'ssh', 'x11', 'notes', 'productivity', 'headless', 'sync', 'systemd', 'obsidian-headless']
 image:
-  src: /post-content/running-obsidian-on-a-headless-server/headless-obsidian.png
-  alt:
+  src: /post-content/running-obsidian-on-a-headless-server/headless-obsidian_v2.png
+  alt: Obsidian headless architecture with obsidian-cli
 pubDate: 2026-02-19
-isPinned: false
+isPinned: true
 ---
 
+
+## UPDATE March 2026:
+
+Since writing this post, the wonderful people over at Obsidian have released a fully fledged *headless client* 🥳 So in the spirit of this, you can fully disregard the rest of the post, and just follow [their instructions](https://help.obsidian.md/sync/headless). However, let me tell you how I set this up myself, if you wish to remain here. 
+
+First off, ensure you have both `node` and `npm` installed. As this is a requirement to installing the package. Then, let's go ahead and install the package:
+
+```bash
+sudo npm install -g obsidian-headless
+```
+Just a note, I am running this on Arch Linux, and I need to use sudo in order to be able to install it globally.
+First thing you need to do is login:
+```bash
+ob login
+```
+Enter your username and password (And MFA if setup) and you should be good to go. Now to configure the location of the vault:
+```bash
+mkdir ~/vaults #or wherever
+# Show your remote vaults, this will get you a VAULT_NAME
+ob sync-list-remote
+# IMPORTANT, move into the directoru where you want to store it
+cd ~/vaults
+ob sync-setup --vault "VAULT_NAME"
+```
+
+Now to run a one time sync, just run `ob sync`. Boom that's it! 👏 Well sort of. You would need to do this all the time. Their docs do suggest running `ob sync --continuous` as that will watch for changes. But the problem is, if you are running this on a remote system (like me) it will be shut down once I exit the sessions.
+
+So... Let's set up a systemd service! Create a file at this location: `~/.config/systemd/user/obsidian-sync.service` with the following content:
+```ini
+[Unit]
+Description=Obsidian Headless Sync
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/ob sync --continuous
+WorkingDirectory=%h/vaults
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
+```
+
+Then just enable and start the service:
+```bash
+systemctl --user enable --now obsidian-sync
+```
+
+To check the status, you can also run:
+```bash
+systemctl --user status obsidian-sync
+```
+
+That's it! *WAY* simpler than emulating x11 and using ssh x11 forwarding. Thank you Obsidian team! I will leave the rest of the blog post in tact, for legacy reasons. But **you do not need to follow anything below this line from now on** huzzah! 👏
+
 ## Running Obsidian without x11
+
+![](/post-content/running-obsidian-on-a-headless-server/headless-obsidian.png)
 
 These days we are all (trying to use) using Agents! **Right?**  From helping you with your day-to-day coding, to managing social media research, to even helping you plan out your days. Some of us use coding assistants, some of us web interfaces, but there is a number of us that want to build *bespoke agents* that run on our own little pieces of the internet. Well, I wanted to build one that would do some daily research on certain subreddits and write down its findings inside of my [Obsidian](https://obsidian.md/) notes. What could go wrong!
 
@@ -56,7 +112,7 @@ ssh -X user@server obsidian
 
 Okay, now log in, set your vault. And you are good to go. Oh and if you are a paid customer, and have the [catalyst licence](https://help.obsidian.md/catalyst) you should also enable the [Command Line version](https://help.obsidian.md/cli) of Obsidian. Just in case.
 
-We are almost, good to go. Except, one more problem. I don't want Obsidian just running like this, via SSH and X11 forwarding. I want it running truly headless, meaning I just run `obisidian` at startup and let it be. Well for that, let's talk about *faking* X11.
+We are almost, good to go. Except, one more problem. I don't want Obsidian just running like this, via SSH and X11 forwarding. I want it running truly headless, meaning I just run `obsidian` at startup and let it be. Well for that, let's talk about *faking* X11.
 
 ## Virtual x11
 
