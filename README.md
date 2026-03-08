@@ -37,12 +37,12 @@ This is a **Cloudflare Worker**, not Cloudflare Pages. That distinction matters:
 
 ## Features
 
-- **Retro modes**: every post has an 80s (plain `.txt`) and 90s (raw `.html`) version, generated via [`goback`](https://github.com/darko-mesaros/goback) and served from `public/80s/` and `public/90s/`
+- **Retro modes**: every post has an 80s (plain `.txt`) and 90s (raw `.html`) version, generated via [`goback`](https://github.com/darko-mesaros/tools) and served from `public/80s/` and `public/90s/`
 - **Reading time**: calculated at build time via a remark plugin
 - **RSS feed**: at `/rss.xml`
 - **Sitemap**: auto-generated
 - **SEO/AEO**: canonical URLs, JSON-LD `BlogPosting` schema, Open Graph tags, Twitter card tags
-- **llms.txt**: structured content index for LLM/AI crawlers, generated via [`elelem`](https://github.com/darko-mesaros/elelem)
+- **llms.txt**: structured content index for LLM/AI crawlers, generated via [`elelem`](https://github.com/darko-mesaros/tools)
 - **301 redirects**: handles legacy no-trailing-slash URLs for already-indexed posts
 - **Resume page**: at `/resume` with 4 switchable themes: default, IE5, NES, Teletext
 
