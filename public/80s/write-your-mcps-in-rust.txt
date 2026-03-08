@@ -3,10 +3,10 @@ RUP12.NET
 ========================================
 [ home: index.txt | about: about.txt | posts: posts.txt ]
 ----------------------------------------
-Write your MCP servers in Rust
+Building MCP Servers in Rust with rmcp  A Complete Guide
 ----------------------------------------
-Write your MCP servers in Rust
-2025-12-11 -- There is more people writing MCP Servers than using MCP Servers. I think  So let's learn how to write one in Rust.
+Building MCP Servers in Rust with rmcp  A Complete Guide
+2025-12-11 -- A complete guide to building Model Context Protocol (MCP) servers in Rust using the rmcp crate. Covers server setup, tool definitions, and connecting to MCP clients like Claude and Kiro.
 
   | TL;DR: CODE. You can build really robust MCP servers in Rust using the rmcp crate. Things you need to know is: tool_router, tool_handler, and  tool parameters! 
 

@@ -7,10 +7,11 @@ All Posts
 ----------------------------------------
 ALL POSTS
 ---------
+  * AWS SDK for Rust: Using S3-Compatible APIs with Other Clouds (2026-03-07) -> s3-api-compatibility-is-awesome.txt
   * Running Obsidian on a headless server (2026-02-19) -> running-obsidian-headless.txt
-  * Can my SPARC server host a website? (2026-02-09) -> can-my-sparc-server-host-my-website.txt
+  * I'm Hosting a Website on a SPARC Server in My Garage (OpenBSD + Cloudflare Tunnels) (2026-02-09) -> can-my-sparc-server-host-my-website.txt
   * Learning Rust: Getting started with the AWS SDK for Rust! (2025-12-22) -> learning-rust-configuring-the-aws-sdk.txt
-  * Write your MCP servers in Rust (2025-12-11) -> write-your-mcps-in-rust.txt
+  * Building MCP Servers in Rust with rmcp  A Complete Guide (2025-12-11) -> write-your-mcps-in-rust.txt
   * Learning Rust: Download and deserialize 10 000 files in 9.833 seconds (2025-11-26) -> download-and-deserialize-10000-files-in-10-seconds.txt
   * Learning Rust: Custom Error types that actually work! (2025-11-16) -> learning-rust-custom-errors.txt
   * Amazon Q Developer CLI 1.7.3 - Now with VIM!  (2025-04-10) -> q-developer-cli-173-update.txt

@@ -6,7 +6,7 @@ RUP12.NET
 For the love of PROD: Test your code! (Part 1)
 ----------------------------------------
 For the love of PROD: Test your code! (Part 1)
-2021-06-28 -- 
+2021-06-28 -- Why testing your code before it hits production matters more than ever. A practical guide to automated testing, CI/CD pipelines, and building confidence in your deployments using AWS tools.
 
 In the old days, software release cycles were slower then they are today. When
 you would release [Super Mario

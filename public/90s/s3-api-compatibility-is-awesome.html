@@ -1,0 +1,156 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>AWS SDK for Rust: Using S3-Compatible APIs with Other Clouds</title>
+</head>
+<body bgcolor="#ffffff" text="#000000" link="#0000ff" vlink="#800080">
+<font face="Arial,Helvetica">
+
+<table width="600" border="0" cellpadding="4">
+<tr><td>
+<h1><font color="#cc6600">rup12.net</font></h1>
+<font size="-1">[ <a href="index.html">home</a> | <a href="about.html">about</a> | <a href="posts.html">posts</a> ]</font>
+<hr>
+<h2>AWS SDK for Rust: Using S3-Compatible APIs with Other Clouds</h2>
+<font size="-1"><i>2026-03-07 &mdash; Learn how to configure AWS SDK for Rust to work with S3-compatible APIs from Cloudflare R2, Backblaze B2, Nebius, and more. Complete guide with code examples.</i></font>
+<hr>
+<p>A while back, I've built a small command line utility that uploads files to <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/Welcome.html">Amazon S3</a> and makes them shareable. I named it <a href="https://github.com/darko-mesaros/shuk">shuk</a>, and it's just fantastic! I use it on a regular basis to share files with people.</p>
+<br>
+<blockquote><b>TL;DR:</b> Many clouds support the S3 API. The AWS SDK for Rust works with them too, but you better use <code>.profile_name()</code> for a full profile load instead of manually cherry-picking credentials and region.</blockquote>
+<br>
+<p>It's a rather simple Rust 🦀 application using the <a href="https://crates.io/crates/aws-sdk-s3">AWS S3 SDK</a>. Nothing truly special about it. However, I made some minor changes that allow it to be used with other clouds. Yes, <i>other clouds also support the S3 API</i> 🤯</p>
+<br>
+<h2>Wait what? Other clouds?</h2>
+<br>
+<p>Yes, this has been common for quite a while. So you have cloud providers out there that, to various extents, support the S3 API. Here are some of them:</p>
+<ul>
+<li><a href="https://www.backblaze.com/docs/cloud-storage-s3-compatible-api">Backblaze B2</a></li>
+<li><a href="https://developers.cloudflare.com/r2/api/s3/api/">Cloudflare R2</a></li>
+<li><a href="https://techdocs.akamai.com/cloud-computing/docs/object-storage">Akamai Object Storage</a></li>
+<li><a href="https://www.digitalocean.com/products/spaces">Digital Ocean Spaces</a></li>
+<li>and <a href="https://docs.nebius.com/object-storage">Nebius Object storage</a></li>
+</ul>
+<br>
+<p>What does this mean? Well, it's as simple as using the <a href="https://aws.amazon.com/cli/">AWS CLI</a> to interact with object storage on these other clouds. Meaning I can easily run something like this:</p>
+<pre>
+aws s3 cp s3://darko-files --profile nebius
+</pre>
+<p>And upload files using the <i>AWS CLI</i> to the Nebius cloud platform. Amazing. </p>
+<br>
+<br>
+<h2>Not just the CLI</h2>
+<br>
+<p>The AWS CLI is just a very good AWS SDK wrapper, so this means that anything else that uses the AWS SDK. Like, I don't know... a <a href="https://github.com/darko-mesaros/shuk">certain Rust based command line utility that uploads files to S3 buckets</a>. That also works. As long as you are able to pass on a few things. Here is what you need to use with <i>Nebius</i>:</p>
+<ul>
+<li>AWS_ACCESS_KEY_ID</li>
+<li>AWS_SECRET_ACCESS_KEY</li>
+<li>REGION</li>
+<li>ENDPOINT_URL</li>
+</ul>
+<br>
+<p>So in essence with the CLI locally, I configured it like so:</p>
+<pre>
+aws configure --profile nebius set aws_access_key_id &lt;key_id&gt;
+aws configure --profile nebius set aws_secret_access_key &lt;secret_key&gt;
+aws configure --profile nebius set region us-central1
+aws configure --profile nebius set endpoint_url https://storage.us-central1.nebius.cloud
+</pre>
+<p>Yes, I get it, this is just the AWS CLI configuration. However the AWS SDK takes this configuration and applies it to any SDK calls it makes. If you configured it correctly. </p>
+<br>
+<p>Let's go back to my little <code>shuk</code> uploaded application. The application, as is, could take the parameter of <code>profile</code>. This means, it should work with different clouds, out of the box. Right? Not so fast, I never really counted on making this work for other clouds. So when I ran it with the <code>nebius</code> profile I got something like this:</p>
+<br>
+<pre>
+2026-03-07 22:14:23 [WARN] There was a SDK when checking for file "shared/kiro-student-workshop.pdf" in bucket "darko-shuk"
+Error: Could not determine if a the file exists - S3 SDK error: DispatchFailure(DispatchFailure { source: ConnectorError { kind: Io, source: hyper_util::client::legacy::Error(Connect, ConnectError("dns error", Custom { kind: Uncategorized, error: "failed to lookup address information: Name or service not known" })), connection: Unknown } })
+========================================
+🚀 | Uploading file: kiro-student-workshop.pdf, to S3 Bucket: darko-shuk | 🚀
+========================================
+Error uploading file: dispatch failure
+</pre>
+<br>
+<p>This was trying to resolve a bucket called <code>darko-shuk.&lt;region&gt;.amazonaws.com</code>. And <b>NOT</b> the bucket in Nebius. This is because it was not actually taking the <code>ENDPOINT_URL</code>. Let's learn some AWS Rust SDK.</p>
+<br>
+<h2>Configuring the Rust SDK</h2>
+<br>
+<p>A while back, I <a href="https://rup12.net/posts/learning-rust-configuring-the-aws-sdk/">wrote about</a> how you can configure the AWS Rust SDK, including setting up credentials, regions, and endpoint URLs. And all I said there was correct, however I wrote <code>shuk</code> before I was any good at writing decent Rust for AWS. Let's see what I did wrong.</p>
+<br>
+<pre>
+// BAD way to configuring the SDK
+pub async fn configure_aws(
+    fallback_region: String,
+    profile_name: Option&lt;&amp;String&gt;,
+) -&gt; aws_config::SdkConfig {
+    let profile = profile_name.map(|s| s.as_str()).unwrap_or("default");
+    let region_provider = RegionProviderChain::first_try(
+        ProfileFileRegionProvider::builder()
+            .profile_name(profile)
+            .build(),
+    )
+    .or_else(aws_config::environment::EnvironmentVariableRegionProvider::new())
+    .or_else(aws_config::imds::region::ImdsRegionProvider::builder().build())
+    .or_else(Region::new(fallback_region));
+
+    let credentials_provider = CredentialsProviderChain::first_try(
+        "Environment",
+        EnvironmentVariableCredentialsProvider::new(),
+    )
+    .or_else(
+        "Profile",
+        ProfileFileCredentialsProvider::builder()
+            .profile_name(profile)
+            .build(),
+    )
+    .or_else("IMDS", ImdsCredentialsProvider::builder().build());
+
+    aws_config::defaults(BehaviorVersion::latest())
+        .credentials_provider(credentials_provider)
+        .region(region_provider)
+        .load()
+        .await
+}
+</pre>
+<br>
+<p>This is a function that would configure the SDK, rather it would return a <code>SdkConfig</code> object. The problem is, I basically cherry-picked <i>specific</i> things out of the AWS profile: <b>Credentials</b>, and <b>Region</b>. But ignored everything else. This is why it was failing, it was just calling the standard AWS SDK Endpoint URL. And for Nebius, that's not gonna work. </p>
+<br>
+<p>So how did I fix it. Well, basically I handed the entire profile name to the SDK loader by passing <code>.profile_name()</code> and let it do a <i>full profile load</i>. Oh and this made the function way shorter:</p>
+<br>
+<pre>
+// CORRECT way to configuring the SDK
+pub async fn configure_aws(
+    fallback_region: String,
+    profile_name: Option&lt;&amp;String&gt;,
+) -&gt; aws_config::SdkConfig {
+    let mut loader = aws_config::defaults(BehaviorVersion::latest());
+
+    if let Some(profile) = profile_name.map(|s| s.as_str()) { 
+        // THIS, this fixed it
+        loader = loader.profile_name(profile);
+    } else {
+        let region_provider = RegionProviderChain::first_try(
+            aws_config::environment::EnvironmentVariableRegionProvider::new(),
+        )
+        .or_else(aws_config::imds::region::ImdsRegionProvider::builder().build())
+        .or_else(Region::new(fallback_region));
+        loader = loader.region(region_provider);
+    }
+
+    loader.load().await
+}
+</pre>
+<br>
+<h2>Caveats</h2>
+<br>
+<p>Please do note, not all features are supported. And I do suggest you check out the documentation of a given cloud to see what features can work. I am safe to say that the <a href="https://docs.nebius.com/object-storage">Nebius Object Storage</a> supports, both uploads <i>and</i> presigning 🥳</p>
+<br>
+<p>If you wanna check out <code>shuk</code>, it's available on <a href="https://github.com/darko-mesaros/shuk">Github</a>, or even on <a href="https://crates.io/crates/shuk">crates</a>.</p>
+<br>
+<p>See you in the next one ✌</p>
+
+<hr>
+<font size="-1">rup12.net &mdash; Darko Mesaros</font>
+</td></tr>
+</table>
+
+</font>
+</body>
+</html>

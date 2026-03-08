@@ -28,6 +28,7 @@
 <br>
 <p>Hmm, so step <b>number 2</b> is the problem. I cannot open Obsidian as I have no GUI running on this headless server. I can certainly install it but once I try to start it: </p>
 <br>
+<p>&lt;img src="/post-content/running-obsidian-on-a-headless-server/no-x.png" width="1893" height="577" alt="Missing X11 error" /&gt;</p>
 <br>
 <p>I am missing that GUI/x11 here. But I really don't want x11 running on this server. So how can I start Obsidian to do my login bit?</p>
 <br>
@@ -53,6 +54,7 @@
 ssh -X user@server obsidian
 </pre>
 <p><b>Boom</b> 💥 - Look at that!</p>
+<p>&lt;img src="/post-content/running-obsidian-on-a-headless-server/x11-forward.png" width="1930" height="1507" alt="Obsidian running via X11 forwarding" /&gt;</p>
 <br>
 <p>Okay, now log in, set your vault. And you are good to go. Oh and if you are a paid customer, and have the <a href="https://help.obsidian.md/catalyst">catalyst licence</a> you should also enable the <a href="https://help.obsidian.md/cli">Command Line version</a> of Obsidian. Just in case.</p>
 <br>
@@ -132,6 +134,7 @@ sudo loginctl enable-linger $USER
 systemctl --user status obsidian.service
 </pre>
 <br>
+<p>&lt;img src="/post-content/running-obsidian-on-a-headless-server/service-ok.png" width="1487" height="492" alt="Obsidian systemd service running" /&gt;</p>
 <br>
 <p>And just like that, we have Obsidian running as a service on a remote headless server. You may choose to run this in your Home Lab, or on an <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts.html">AWS EC2</a> instance, maybe some <a href="https://docs.digitalocean.com/products/droplets/how-to/create/">VPS Hosting</a>. Or whatever you decide to choose!</p>
 <br>
@@ -141,6 +144,7 @@ systemctl --user status obsidian.service
 <br>
 <p>An agent, powered by an LLM, is running daily on my headless server. Using the <a href="https://github.com/adhikasp/mcp-reddit">Reddit MCP</a> it fetches information from some subreddit and summarizes it for me. But for it to be practical, it also uses the <a href="https://github.com/bitbonsai/mcp-obsidian">Obsidian MCP</a> to store that summary in a daily note.</p>
 <br>
+<p>&lt;img src="/post-content/running-obsidian-on-a-headless-server/summary.png" width="1137" height="625" alt="Agent summary in Obsidian note" /&gt;</p>
 <br>
 <p>I am looking forward for the wonderful folks over at Obsidian to make a full version of the obsidian CLI that does not require any GUI. Please Obsidian, make my post irrelevant! 🙏</p>
 <br>
