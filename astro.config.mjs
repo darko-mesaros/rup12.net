@@ -1,6 +1,7 @@
 import { defineConfig } from 'astro/config';
 import { remarkReadingTime } from './src/utils/readingTime';
 import rehypePrettyCode from 'rehype-pretty-code';
+import rehypeImgSize from 'rehype-img-size';
 import vercelStatic from '@astrojs/vercel';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@astrojs/react';
@@ -39,7 +40,7 @@ export default defineConfig({
     markdown: {
         syntaxHighlight: false,
         // Disable syntax built-in syntax hightlighting from astro
-        rehypePlugins: [[rehypePrettyCode, options]],
+        rehypePlugins: [[rehypePrettyCode, options], [rehypeImgSize, { dir: "public" }]],
         remarkPlugins: [remarkReadingTime]
     },
 
