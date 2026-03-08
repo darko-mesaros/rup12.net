@@ -3,22 +3,7 @@ new-post name:
     #!/usr/bin/env sh
     FILE="src/pages/posts/{{name}}.md"
     DATE=$(date +%Y-%m-%d)
-    cat > "$FILE" << EOF
----
-layout: ../../layouts/post.astro
-title: ""
-author: "Darko"
-description: ""
-excerpt: ""
-tags: []
-image:
-  src:
-  alt:
-pubDate: $DATE
-isPinned: false
----
-
-EOF
+    printf -- '---\nlayout: ../../layouts/post.astro\ntitle: ""\nauthor: "Darko"\ndescription: ""\nexcerpt: ""\ntags: []\nimage:\n  src:\n  alt:\npubDate: %s\nisPinned: false\n---\n\n' "$DATE" > "$FILE"
     echo "Created $FILE"
 
 # Generate llms.txt and place it in public/
