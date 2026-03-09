@@ -1,7 +1,7 @@
 ---
 layout: ../../layouts/post.astro
 title: "ARCHIVE - My Work From Home Setup"
-author: "Darko"
+author: "Darko Mesaros"
 description: "Here is how I get all this streaming, recording, and screaming at the camera done"
 tags: [hardware, streaming, video, home office, canon, elgato]
 excerpt: "Here’s a quick one for you: Terminals are wonderful, the best tool for many different kinds of work. But, let’s be honest - it mostly looks very dull and boring. All those black and grays (or black and green if you are the adventurous type)."

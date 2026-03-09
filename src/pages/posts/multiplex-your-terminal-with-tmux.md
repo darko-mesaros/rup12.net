@@ -2,7 +2,7 @@
 layout: ../../layouts/post.astro
 title: "Multiplex Your Terminal With tmux"
 description: "Are you tired of your work being lost due to a broken SSH connection? Do you wish you can look at your code and run commands at the same time? Do you just want to look cool? Let's talk about TMUX - the Terminal Multiplexer."
-author: "Darko"
+author: "Darko Mesaros"
 excerpt: "Here’s a quick one for you: Terminals are wonderful, the best tool for many different kinds of work. But, let’s be honest - it mostly looks very dull and boring. All those black and grays (or black and green if you are the adventurous type)."
 tags: [linux, tmux, cli, tools, productivity]
 image:

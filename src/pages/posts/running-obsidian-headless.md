@@ -1,7 +1,7 @@
 ---
 layout: ../../layouts/post.astro
 title: "Running Obsidian on a headless server"
-author: "Darko"
+author: "Darko Mesaros"
 description: "How to run Obsidian on a headless Linux server using the official obsidian-headless CLI and systemd for continuous vault syncing"
 excerpt: "The Obsidian team released an official headless client — here's how to set it up with systemd for continuous vault syncing on a remote server."
 tags: ['obsidian', 'opensource', 'linux', 'ssh', 'x11', 'notes', 'productivity', 'headless', 'sync', 'systemd', 'obsidian-headless']

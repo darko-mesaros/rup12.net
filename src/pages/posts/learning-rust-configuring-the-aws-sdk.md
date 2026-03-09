@@ -1,7 +1,7 @@
 ---
 layout: ../../layouts/post.astro
 title: "Learning Rust: Getting started with the AWS SDK for Rust!"
-author: "Darko"
+author: "Darko Mesaros"
 description: "Complete guide to configuring AWS SDK for Rust: credentials, regions, and localstack integration with practical examples."
 excerpt: "In this post let's explore how you can properly configure the AWS Rust SDK and how you can use that SDK with tools such as LocalStack"
 tags: [rust, aws, sdk, aws-config, localstack, development]

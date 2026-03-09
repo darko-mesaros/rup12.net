@@ -3,7 +3,7 @@ layout: ../../layouts/post.astro
 title: "For the love of PROD: Test your code! (Part 1)"
 description: "Why testing your code before it hits production matters more than ever. A practical guide to automated testing, CI/CD pipelines, and building confidence in your deployments using AWS tools."
 excerpt: "Here’s a quick one for you: Terminals are wonderful, the best tool for many different kinds of work. But, let’s be honest - it mostly looks very dull and boring. All those black and grays (or black and green if you are the adventurous type)."
-author: "Darko"
+author: "Darko Mesaros"
 tags: ["aws", "code", "testing", "devops", "cloud", "codecommit", "github", "editors"]
 image:
   src: /post-content/test-code-p1/header.png

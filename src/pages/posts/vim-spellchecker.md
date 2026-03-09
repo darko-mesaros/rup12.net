@@ -2,7 +2,7 @@
 layout: ../../layouts/post.astro
 title: "Check your spelling in vim"
 description: "Did you know that vim has a built-in spell checker?"
-author: "Darko"
+author: "Darko Mesaros"
 excerpt: "Here’s a quick one for you: Terminals are wonderful, the best tool for many different kinds of work. But, let’s be honest - it mostly looks very dull and boring. All those black and grays (or black and green if you are the adventurous type)."
 tags: [vim, writing, linux, tools]
 image:

@@ -2,7 +2,7 @@
 layout: ../../layouts/post.astro
 title: "Do awesome things with Infrastructure as Code (PART 1)"
 description: "Clicking is no fun if you have to do it over and over again. Let's avoid clicking and start using code to define, describe and create our infrastructure. Let's start talking about doing awesome things with Infrastructure as Code"
-author: "Darko"
+author: "Darko Mesaros"
 excerpt: "Here’s a quick one for you: Terminals are wonderful, the best tool for many different kinds of work. But, let’s be honest - it mostly looks very dull and boring. All those black and grays (or black and green if you are the adventurous type)."
 tags: [aws, terraform, cdk, iac, cloud, devops, multi-part]
 image:

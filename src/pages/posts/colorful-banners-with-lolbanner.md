@@ -3,7 +3,7 @@ layout: ../../layouts/post.astro
 title: "Add some color to your terminal with lolbanner"
 description: "You did not know you want this in your life until you see it! Colorful banners for your terminal"
 pubDate: 2021-03-09
-author: "Darko"
+author: "Darko Mesaros"
 excerpt: "Here’s a quick one for you: Terminals are wonderful, the best tool for many different kinds of work. But, let’s be honest - it mostly looks very dull and boring. All those black and grays (or black and green if you are the adventurous type)."
 isPinned: false
 tags: ["vim", "linux", "tools"]

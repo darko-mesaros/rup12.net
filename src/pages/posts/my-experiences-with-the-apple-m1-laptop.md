@@ -3,7 +3,7 @@ layout: ../../layouts/post.astro
 title: "My experience with the Apple M1 Macbook Air"
 description: "After a long time I bought myself a new laptop. I've decided to bite the bullet and grab the newly fangled Apple Silicon (M1) Macbook. Here I get to tell you my experience with it."
 excerpt: "Late in the year 2020 (yes *that* year), Apple did something interesting. It has released it's first computer NOT running an x86 CPU, since 2006 when they stopped using their PowerPC architecture."
-author: "Darko"
+author: "Darko Mesaros"
 tags: [hardware, apple, laptops, m1, arm]
 image:
   src: /post-content/m1-mac/m1-header.png

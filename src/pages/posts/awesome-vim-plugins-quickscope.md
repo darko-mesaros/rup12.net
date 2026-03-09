@@ -2,7 +2,7 @@
 layout: ../../layouts/post.astro
 title: "Awesome vim plugins: quick-scope"
 description: "Vim is all about speed and efficiency! Movement in a text file is the thing that can slow you down. Let's have a look at a plugin that solves the horizontal movement bit. Quick-Scope"
-author: "Darko"
+author: "Darko Mesaros"
 excerpt: "Vim is all about speed, efficiency and the pure joy of editing text files. While I can talk about macros (and I will) all day long, let's chat about going fast. Moving through the file is something you need to do often! Move up, down, left and right - and well, in vim that is pretty fast. But what about if you can do it even faster?"
 tags: [vim, plugins, tools]
 image:

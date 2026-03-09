@@ -2,7 +2,7 @@
 layout: ../../layouts/post.astro
 title: "Installing Windows 2000 on real hardware in 2021"
 description: "Getting Windows 2000 to run on actual hardware! How hard can it be?"
-author: "Darko"
+author: "Darko Mesaros"
 excerpt: "Here’s a quick one for you: Terminals are wonderful, the best tool for many different kinds of work. But, let’s be honest - it mostly looks very dull and boring. All those black and grays (or black and green if you are the adventurous type)."
 tags: [hardware, windows, retro, windows 2000, weekend projects]
 image:

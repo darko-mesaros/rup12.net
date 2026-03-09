@@ -1,7 +1,7 @@
 ---
 layout: ../../layouts/post.astro
 title: "Amazon Q Developer CLI 1.7.3 - Now with VIM! 😍"
-author: "Darko"
+author: "Darko Mesaros"
 description: "Amazon Q Developer CLI1.7.3 introduces five key improvements: just type `q` to launch; granular tool permission controls with `/tools trust/untrust` commands; VIM integration via `/editor` command for complex prompts; multi-line editing with Ctrl+J; and enhanced context management through the `/context` command."
 excerpt: "A quick update on some neat new features coming out of Amazon Q Developer CLI"
 tags: [tools, aws, q, genai, development]

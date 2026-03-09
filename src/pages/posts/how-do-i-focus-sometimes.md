@@ -1,7 +1,7 @@
 ---
 layout: ../../layouts/post.astro
 title: "How do I focus (sometimes)?"
-author: "Darko"
+author: "Darko Mesaros"
 description: "Wow, look at this, my first personal opinion post on something. Hey if you are struggling with focusing on your work sometimes, don'f feel bad! We all do! Here I go through a few differetn ways I keep focus on the imporant things to me, even though I am surrounded by screens, chats, and YouTube."
 excerpt: "Ah attention. The thing that we lack at important meetings. The thing that we need in School and in the Military. I am no expert, but I can certainly claim that I can only have a limited amount of attention at any given moment."
 tags: [lifehack, personal, work, life, balance, some tech]

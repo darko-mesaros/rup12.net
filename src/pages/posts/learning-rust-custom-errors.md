@@ -1,7 +1,7 @@
 ---
 layout: ../../layouts/post.astro
 title: "Learning Rust: Custom Error types that actually work!"
-author: "Darko"
+author: "Darko Mesaros"
 description: "Tired of writing the same verbose error handling boilerplate in your Axum handlers? Me too! 🙄 By creating a custom `AppError` newtype that wraps `anyhow::Error` and implements `IntoResponse` + `From<E>`, you can ditch all those ugly match statements and embrace the beautiful `?` operator."
 excerpt: "We are taking advantage of a *very* powerful crate here, [anyhow](https://crates.io/crates/anyhow). Which allows us to work with errors in Rust way more efficiently. In our case we are using it's popularity and other crates ability to convert into this Error type."
 tags: [rust, axum, anyhow, errors, types, newtype, development]

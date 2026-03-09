@@ -2,7 +2,7 @@
 layout: ../../layouts/post.astro
 title: "Awesome vim plugins: vim-plug"
 description: "Do you find managing vim plugins frustrating? Do you think there needs to be a better way for that? Well then, let's talk about vim-plug. The plugin manager that plugs in plugins!"
-author: "Darko"
+author: "Darko Mesaros"
 excerpt: "Let's start with the most important plugin of them all. The plugin to plugin in all the plugins (yes I know). A plugin that enables you to easily get and manage other plugins you see out there. The plugin that makes plugin management, easier. Let's talk about **vim-plug**!"
 tags: [vim, plugins, tools]
 image:

@@ -2,7 +2,7 @@
 layout: ../../layouts/post.astro
 title: "Getting and restoring a Sun Ultra 1 Workstation"
 description: "It is the year 2021 and I've decided to by a Sun Microsystems Workstation from 1995. Can I get it working? What are its flaws? And just how awesome it is?"
-author: "Darko"
+author: "Darko Mesaros"
 excerpt: "Guess what - I got myself a Sun Microsystems workstation. A Sun Ultra 1 Creator workstation from 1995. This was (is) a thing of beauty"
 it's specs:
 isPinned: false

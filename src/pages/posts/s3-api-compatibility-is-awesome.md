@@ -1,7 +1,7 @@
 ---
 layout: ../../layouts/post.astro
 title: "AWS SDK for Rust: Using S3-Compatible APIs with Other Clouds"
-author: "Darko"
+author: "Darko Mesaros"
 description: "Learn how to configure AWS SDK for Rust to work with S3-compatible APIs from Cloudflare R2, Backblaze B2, Nebius, and more. Complete guide with code examples."
 excerpt: "The AWS S3 API is supported by many cloud providers. Here's how to configure the AWS SDK for Rust to work with any of them, and why my naive approach was broken."
 tags: [rust, aws, s3, cloudflare, nebius, sdk]

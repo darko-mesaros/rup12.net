@@ -1,7 +1,7 @@
 ---
 layout: ../../layouts/post.astro
 title: "Learning Rust: Download and deserialize 10 000 files in 9.833 seconds"
-author: "Darko"
+author: "Darko Mesaros"
 description: "Learn with me how to process CSV files from S3 in seconds using Rust's async concurrency, semaphores, and fearless parallelism patterns."
 excerpt: "Think of it like a parking garage with a limited amount of parking slots, and new cars can only come in once the slots free up. Well, with semaphores you define how many slots you have, and how to give out parking permits."
 tags: [rust, tokio, s3, async, semaphore, development, aws]
