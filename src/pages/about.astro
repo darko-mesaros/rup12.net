@@ -10,6 +10,18 @@ const description = 'About Darko Mesaroš, Developer Advocate, vintage computer 
 ---
 
 <Base head={{ title, description }}>
+<script type="application/ld+json" set:html={JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Darko Mesaros",
+  "url": "https://rup12.net",
+  "jobTitle": "Principal Developer Advocate",
+  "worksFor": { "@type": "Organization", "name": "Amazon Web Services" },
+  "sameAs": [
+    "https://github.com/darko-mesaros",
+    "https://www.linkedin.com/in/darko-mesaros/"
+  ]
+})} />
   <Section>
     <br />
     <p class="pb-2 pt-6 text-4xl font-bold">$(whoami)</p>
