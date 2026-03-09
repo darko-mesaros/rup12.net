@@ -139,4 +139,6 @@ Please do note, not all features are supported. And I do suggest you check out t
 
 If you wanna check out `shuk`, it's available on [Github](https://github.com/darko-mesaros/shuk), or even on [crates](https://crates.io/crates/shuk).
 
+If you want to see the AWS SDK for Rust pushed to its limits — downloading 10,000 files concurrently — check out [Download and deserialize 10,000 files in 9 seconds](/posts/download-and-deserialize-10000-files-in-10-seconds/).
+
 See you in the next one ✌

@@ -623,3 +623,5 @@ I do see a future where the entire MCP server plumbing is done with a more appro
 If you want to see the entire code/project - check out my [Github repo](https://github.com/darko-mesaros/example-rust-mcp-server).
 
 Until next time friends! Don't forget to tip your compiler! 🦀
+
+If you want to level up your Rust error handling beyond what we did here, check out [Custom Error types that actually work!](/posts/learning-rust-custom-errors/).

@@ -259,5 +259,7 @@ here:
 
 Definitely more to come, so stay tuned and sign up on the [rss](https://rup12.net/posts/index.xml).
 
+If you want to see where this SPARC obsession led, I eventually got a Sun Netra X1 server and [hosted a live website on it from my garage](/posts/can-my-sparc-server-host-my-website/).
+
 ![internet](/post-content/sun-sparc/internet.jpg "The goal is, one day, fire up
 this puppy and go to theoldnet.com")

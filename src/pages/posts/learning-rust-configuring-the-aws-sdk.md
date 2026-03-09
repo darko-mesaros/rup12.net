@@ -257,6 +257,6 @@ Look at that sweet sweet local bucket! 😍
 
 ## Whats next?
 
-Well, first off you can check out the [full code listing](https://gist.github.com/darko-mesaros/9d27070d46ab784904bdef1e2259357a). Second, you may notice a lot of `.unwrap()` methods being invoked here. Now, this is all great for development, but be careful with those when going into production. Stay tuned, for an upcoming blog post on that topic.
+Well, first off you can check out the [full code listing](https://gist.github.com/darko-mesaros/9d27070d46ab784904bdef1e2259357a). Second, you may notice a lot of `.unwrap()` methods being invoked here. Now, this is all great for development, but be careful with those when going into production. I wrote a follow-up post on exactly that — check out [Custom Error types that actually work!](/posts/learning-rust-custom-errors/) to see how to handle this properly with a custom `AppError` newtype.
 
 Keep learning Rust, it does pay off in the end! 🦀 💘

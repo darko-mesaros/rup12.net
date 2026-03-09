@@ -408,3 +408,5 @@ to the full `.tmux.conf` used in this blog post.
   with tmux.
 
 ---
+
+If you want to spice up your terminal further, [lolbanner](/posts/colorful-banners-with-lolbanner/) is a fun one for adding colorful banners to your sessions.

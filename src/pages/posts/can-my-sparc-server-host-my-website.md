@@ -27,6 +27,8 @@ Here's a crazy idea, can I expose and host a website on a 2001 [Sun MicroSystems
 
 Not so long ago, I ordered from eBay a [Sun Fire V100](https://dogemicrosystems.ca/wiki/Sun_Fire_V100) server. But somehow, the seller made a mistake, and sent me a Netra X1. Now, these systems are quite similar, and to be honest I did not mind. (the seller did give me a discount on the next system I buy ️♥️). The Netra X1 is a more commodity grade server, this means it completely headless (no video output), and uses standard SD-RAM (ECC) and runs a pair of IDE Hard Disks. At the center of this server is a 500 Mhz UltraSparcIIe CPU and a whopping 1GB of said SD-RAM. This was a *lot* of RAM back then, but I guess it makes sense for its server-esque purpose.
 
+This isn't my first Sun hardware rodeo. I previously restored a [Sun Ultra 1 Creator workstation from 1995](/posts/adventures-with-sun-ultra-1-workstation/) if you want to see where this obsession started.
+
 ![](/post-content/can-my-sparc-server-host-my-website/cpu.jpeg)
 
 Oh, and I did some HDD archeology, it seems this is a decommissioned server from Ford (the car company). I am not sure what it used to do, but the disks were obviously not wiped. Rest assured, the data is gone and both drives were formatted by me.

@@ -119,3 +119,5 @@ And you are done!
 Now you can (like me) go ahead and keep on using vim for more than just writing
 code. You can write proper emails, documents, and even blog posts. All that
 while being sure that your spelling remains good.
+
+If you're building out your vim setup, check out [vim-plug](/posts/awesome-neovim-plugins-vimplug/) for plugin management and [quick-scope](/posts/awesome-vim-plugins-quickscope/) for faster navigation.

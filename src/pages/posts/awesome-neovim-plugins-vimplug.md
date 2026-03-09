@@ -144,7 +144,7 @@ That's it - the first of many plugins for vim that you should use. Make sure
 to have vim-plug as a mainstay of your vim configuration, as it makes plugin
 management so much easier.
 
-Stay tuned for more Awesome Plugin posts!
+Stay tuned for more Awesome Plugin posts! Next up: [quick-scope](/posts/awesome-vim-plugins-quickscope/) for lightning fast horizontal navigation, and [vim's built-in spell checker](/posts/vim-spellchecker/) if you write prose in vim.
 
 Do check out my neovim configuration files
 [here](https://github.com/darko-mesaros/nvim).

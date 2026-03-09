@@ -315,3 +315,5 @@ you may believe.")
 
 I hope you have enjoyed this little read and walk down with me, on setting up
 Windows 2000, 21 years too late.
+
+If retro hardware is your thing, I also picked up a [Sun Ultra 1 workstation from 1995](/posts/adventures-with-sun-ultra-1-workstation/) for a very different kind of weekend project.

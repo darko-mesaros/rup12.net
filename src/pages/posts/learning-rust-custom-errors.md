@@ -199,3 +199,5 @@ Whoa, that is way tighter than before. Yes, we are using the `?` [operator](http
 This means we no longer have to deal with error handling within the function itself, and we are just returning the same error type back. Since it is the same error type, both function handler and axum are happy with receiving it! 🥳 Huzzah!
 
 If you want to see the full codebase in action, you can check out my GitHub repo [here](https://github.com/darko-mesaros/webone). And please ignore the mess, this is just a learning repo! 🙏
+
+If you're just getting started with the AWS SDK for Rust, check out [Getting started with the AWS SDK for Rust](/posts/learning-rust-configuring-the-aws-sdk/). And if you want to see these error patterns in action at scale, have a look at [Download and deserialize 10,000 files in 9 seconds](/posts/download-and-deserialize-10000-files-in-10-seconds/).

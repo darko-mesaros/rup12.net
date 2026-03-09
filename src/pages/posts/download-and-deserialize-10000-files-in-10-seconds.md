@@ -312,3 +312,5 @@ I am quite impressed with how much of a beating Amazon S3 can take, but I do nee
 ![failure](/post-content/learning-rust-semaphores/io_error.png)
 
 Thank you so much for sticking around this much. See you in the next one ✌
+
+Want to use this same SDK setup with S3-compatible APIs from other clouds? Check out [Using S3-Compatible APIs with Other Clouds](/posts/s3-api-compatibility-is-awesome/).

@@ -90,3 +90,5 @@ jumping to the 'to' word, in 3 key presses")
 Vim enables us to be very fast. Moving around the file, making changes, doing
 stuff for us. Quick-scope is an awesome little plugin that helps us with
 horizontal navigation by highlighting characters we can jump on to.
+
+If you haven't set up a plugin manager yet, start with [vim-plug](/posts/awesome-neovim-plugins-vimplug/) before installing this.
