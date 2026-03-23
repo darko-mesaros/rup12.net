@@ -4,6 +4,7 @@ import { AppConfig } from '@/utils/AppConfig';
 import Base from '@/layouts/Base.astro';
 import Social from '@/components/Social.astro';
 import Section from '@/components/Section.astro';
+import { aboutIntro, aboutProjects } from '@/data/about';
 
 const { title } = AppConfig;
 const description = 'About Darko Mesaroš, Developer Advocate, vintage computer collector, and Rust evangelist based in Seattle. Builder of things, breaker of old hardware.';
@@ -28,18 +29,9 @@ const description = 'About Darko Mesaroš, Developer Advocate, vintage computer 
     <div class="text-sm">
       <img src="/images/darko_green_screen.jpg"></img>
     <br />
-      <p class="py-2">
-      You may be wondering “Who is this person that is blabbing on this website, and why should I care?”. Well, my name is <span class="font-black text-black-900">Darko Mesaroš</span>, or <span class="font-black text-black-900">Darko Meszaros</span>, or even <span class="font-black text-black-900">Дарко Месарош</span>. Depends who you ask and in what piece od document you look at.
-      </p>
-      <p class="py-2">
-      I am a computer person who writes <span class="font-black text-blue-600">Rust</span> 🦀, breaks things on <span class="font-black text-orange-600">AWS</span>, and collects computers older than most of my audience. By title I'm a <span class="font-black text-orange-600">Principal Developer Advocate</span>, by practice I'm live-coding on Twitch or convincing a 1974 minicomputer to do something useful. I build CLI tools nobody asked for but everyone ends up using, blog about Rust and cloud development right here, and firmly believe the terminal is the best UI ever made. I'm happiest when a demo works on the first try, which almost never happens.
-      </p>
-      <p class="py-2">
-      I also care deeply about <span class="font-black text-blue-600">developer productivity and coding assistants</span>. I spend an unreasonable amount of time teaching AI agents to be better coding companions, building MCP servers, and automating everything that stands still long enough. If there's a way to make developers faster and happier, I'm probably already tinkering with it.
-      </p>
-      <p class="py-2">
-      Oh, and I collect <span class="font-black text-blue-600">old computers</span>. Like, a lot of them. From Commodore 64s to a 1974 Data General minicomputer that used to belong to NOAA. I like making them do things they were never meant to do - like deploying AWS infrastructure through a teletype. Ask me about an old computer you loved, and I likely have it at home!
-      </p>
+      {aboutIntro.map((paragraph) => (
+        <p class="py-2">{paragraph}</p>
+      ))}
     </div>
     <p class="pb-2 pt-6 text-xl font-bold">Stuff I'm throwing code at 💾</p>
     <div class="text-sm">
@@ -47,14 +39,9 @@ const description = 'About Darko Mesaroš, Developer Advocate, vintage computer 
       When I'm not advocating, I'm throwing code at things. Here are some tools I've been tinkering with:
       </p>
       <ul class="list-disc list-inside space-y-1 py-2">
-        <li><a class="font-bold underline" href="https://github.com/darko-mesaros/bedrust">bedrust</a>: CLI tool for interacting with Amazon Bedrock models</li>
-        <li><a class="font-bold underline" href="https://github.com/darko-mesaros/shuk">shuk</a>: share files from S3 via presigned URLs</li>
-        <li><a class="font-bold underline" href="https://github.com/darko-mesaros/krtk.rs">krtk</a>: serverless URL shortener built with Rust Lambda + CDK</li>
-        <li><a class="font-bold underline" href="https://github.com/darko-mesaros/pristup">pristup</a>: generates temporary AWS Console sign-in URLs</li>
-        <li><a class="font-bold underline" href="https://github.com/darko-mesaros/tweetpad">tweetpad</a>: pads videos to Twitter/X aspect ratios using ffmpeg</li>
-        <li><a class="font-bold underline" href="https://github.com/darko-mesaros/statusbar_tools">statusbar_tools</a>: Rust tools for window manager status bars</li>
-        <li><a class="font-bold underline" href="https://github.com/darko-mesaros/grimoire-mcp">grimoire-mcp</a>: MCP server for managing dev patterns as markdown files</li>
-        <li><a class="font-bold underline" href="https://github.com/darko-mesaros/tools">tools</a>: misc utilities for blog and content workflows</li>
+        {aboutProjects.map((project) => (
+          <li><a class="font-bold underline" href={project.href}>{project.name}</a>: {project.description}</li>
+        ))}
       </ul>
       <p class="py-2">Most of it is Rust. Obviously. 🦀</p>
       <hr>
