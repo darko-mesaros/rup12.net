@@ -16,7 +16,7 @@ isPinned: false
 
 ---
 
-*Before I start a **disclaimer**: I work as a Developer Advocate at AWS, and I get to interact with the wonderful folks who build and run the ElastiCache Services. Just though you should know that going in ❤️ On to the show ...*
+*Before I start a **disclaimer**: I work as a Developer Advocate at AWS, and I get to interact with the wonderful folks who build and run the ElastiCache Services. Just thought you should know that going in ❤️ On to the show ...*
 
 ---
 
