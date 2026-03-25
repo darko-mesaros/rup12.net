@@ -20,7 +20,20 @@ isPinned: false
 
 ---
 
-I recently made a [video on database caching strategies](https://youtube.com/TODO) where I explored caching patterns, Rust code, and how to set this up on AWS with [Valkey](https://aws.amazon.com/blogs/database/get-started-with-amazon-elasticache-for-valkey/). This post is a companion to that video. The code, the key patterns, and the gotchas, all in one place you can reference later.
+I recently made a [video on database caching strategies](https://www.youtube.com/watch?v=epsjBkgZSSM) where I explored caching patterns, Rust code, and how to set this up on AWS with [Valkey](https://aws.amazon.com/blogs/database/get-started-with-amazon-elasticache-for-valkey/). This post is a companion to that video. The code, the key patterns, and the gotchas, all in one place you can reference later.
+
+<div class="flex justify-center">
+<iframe
+  width="560"
+  height="315"
+  src="https://www.youtube.com/embed/epsjBkgZSSM"
+  title="YouTube video player"
+  frameborder="0"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+  allowfullscreen>
+</iframe>
+</div>
+
 
 ## Why Caching?
 
@@ -120,7 +133,7 @@ async fn update_user(
 
 So... When do you use this over the other one? Well, it's simple, when you have read-heavy workloads where data freshness is **critical** (user profiles, inventory, pricing). Simple as that. **However**, when you have write-heavy workloads. Doubling every write (DB + cache) adds up fast. Also, infrequently-read data ends up in the cache for no reason, making your cache bigger and more expensive. You may wanna skip this one.
 
-## So, whats the downside?
+## So, what's the downside?
 
 This can't be just all great, right? It cant be that simple. 🤔 You're right, there are a few gotchas when it comes to caching, that may trip you up initially. They are not something that is unsolveable, but it is something to keep in mind as you are building stuff out.
 
@@ -187,6 +200,7 @@ let _: () = cache.set_ex(id, json, ttl).await?;
 Here's a pro tip: you don't have to go over the network for every cache lookup. For long-running applications (not looking at you Lambda 👀), you can keep a small in-process cache using `moka` (or an equivalent library) in front of your cache:
 
 ```rust
+// Note: Simplified for example
 async fn get_user(id: &str, l1: &Cache<String, User>) -> Result<User> {
     // L1: check in-process moka cache first (nanoseconds)
     if let Some(user) = l1.get(id).await {
@@ -222,7 +236,7 @@ On AWS, you run Valkey through **Amazon ElastiCache**. The two options:
 
 One thing to remember: ElastiCache is a **VPC-based service**. Your application needs to be in the same VPC. If you're using Lambda, that means VPC-attached Lambda functions, which can add some cold start latency. What this also means is that you cannot really *easily* access the cluster from outside of AWS. In the video I actually ran my code on an EC2 instance. (But this can be made work with some VPN shenanigans).
 
-Setting it up is surprisingly dead simple: Point your `redis-rs` connection to the ElastiCache endpoint, and *poof*, You're done. Check out the setup part in the [video](https://youtube.com/TODO).
+Setting it up is surprisingly dead simple: Point your `redis-rs` connection to the ElastiCache endpoint, and *poof*, You're done. Check out the setup part in the [video](https://www.youtube.com/watch?v=epsjBkgZSSM).
 
 ## Wrapping Up
 
