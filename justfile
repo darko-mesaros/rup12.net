@@ -14,3 +14,7 @@ llms:
 retro:
     goback . --style 90s
     goback . --style 80s
+
+# Export resume to PDF using headless Chromium via Puppeteer
+resume-pdf output="public/resume/resume.pdf":
+    node scripts/resume-to-pdf.mjs {{output}}
