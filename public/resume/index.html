@@ -1,245 +1,353 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<!-- Hello fellow source code snooper. Yes, I know this page looks vastly different than the rest of my website. It has completely baked in CSS and looks. Because it's supposed to stand out from the rest of the website. Maybe even have odd looks here and there. -->
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Resume | Darko Mesaroš</title>
-  <meta name="description" content="Resume of Darko Mesaroš | Developer Relations & Cloud Infrastructure">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,600;0,700;1,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://unpkg.com/nes.css@2.3.0/css/nes.min.css">
-  <link id="theme-css" rel="stylesheet" href="theme-default.css">
-  <script>
-    // Apply saved theme before paint to avoid flash
-    const t = localStorage.getItem('resume-theme') || 'default';
-    document.getElementById('theme-css').href = 'theme-' + t + '.css';
-  </script>
-</head>
-<body>
+	<!-- Hello fellow source code snooper. Yes, I know this page looks vastly different than the rest of my website. It has completely baked in CSS and looks. Because it's supposed to stand out from the rest of the website. Maybe even have odd looks here and there. -->
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Resume | Darko Mesaroš</title>
+		<meta
+			name="description"
+			content="Resume of Darko Mesaroš | Developer Relations & Cloud Infrastructure"
+		/>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,600;0,700;1,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+			rel="stylesheet"
+		/>
+		<link rel="stylesheet" href="https://unpkg.com/nes.css@2.3.0/css/nes.min.css" />
+		<link id="theme-css" rel="stylesheet" href="theme-default.css" />
+		<script>
+			// Apply saved theme before paint to avoid flash
+			const t = localStorage.getItem('resume-theme') || 'default';
+			document.getElementById('theme-css').href = 'theme-' + t + '.css';
+		</script>
+	</head>
+	<body>
+		<div class="topbar">
+			<div>
+				<span class="teletext-page" style="display: none">P<span id="teletext-num">100</span> </span
+				><span class="prompt">~darko@localhost</span>:<span class="path">~/resume</span>$ cat
+				<span>resume.html</span>
+			</div>
+			<div class="topbar-links">
+				<a href="https://rup12.net">BLOG</a>
+				<a href="https://rup12.net/about">ABOUT</a>
+				<a class="theme-btn pdf-btn" href="resume.pdf" download="darko-mesaros-resume.pdf">PDF</a>
+				<div class="theme-switcher">
+					<button class="theme-btn" onclick="setTheme('default')">DEFAULT</button>
+					<button class="theme-btn" onclick="setTheme('nes')">NES</button>
+					<button class="theme-btn" onclick="setTheme('ie5')">IE5</button>
+					<button class="theme-btn" onclick="setTheme('teletext')">TELETEXT</button>
+				</div>
+			</div>
+		</div>
 
-<div class="topbar">
-  <div>
-    <span class="teletext-page" style="display:none">P<span id="teletext-num">100</span> </span><span class="prompt">~darko@localhost</span>:<span class="path">~/resume</span>$ cat <span>resume.html</span>
-  </div>
-  <div class="topbar-links">
-    <a href="https://rup12.net">BLOG</a>
-    <a href="https://rup12.net/about">ABOUT</a>
-    <div class="theme-switcher">
-      <button class="theme-btn" onclick="setTheme('default')">DEFAULT</button>
-      <button class="theme-btn" onclick="setTheme('nes')">NES</button>
-      <button class="theme-btn" onclick="setTheme('ie5')">IE5</button>
-      <button class="theme-btn" onclick="setTheme('teletext')">TELETEXT</button>
-    </div>
-  </div>
-</div>
+		<div class="container">
+			<!-- HEADER -->
+			<div class="header">
+				<h1>Darko Mesaroš</h1>
+				<div class="subtitle">Developer Relations &amp; Cloud Infrastructure</div>
+				<marquee class="marquee-welcome">~~~welcome to my resume~~~</marquee>
+				<div class="contact-line">
+					<span>Seattle, WA</span>
+					<span class="sep">|</span>
+					<a href="mailto:d@rko.rs">d@rko.rs</a>
+					<span class="sep">|</span>
+					<a href="https://www.linkedin.com/in/darko-mesaros/">linkedin</a>
+					<span class="sep">|</span>
+					<a href="https://rup12.net">rup12.net</a>
+					<span class="sep">|</span>
+					<a href="https://github.com/darko-mesaros">github</a>
+				</div>
+			</div>
 
-<div class="container">
+			<!-- SUMMARY -->
+			<div class="section">
+				<div class="section-title">Summary</div>
+				<p class="summary">
+					Principal Developer Advocate with 10 years at AWS and 20 years in the technology industry.
+					Deep hands-on expertise in cloud infrastructure, containerization, Kubernetes,
+					configuration management, serverless, and AI/ML platforms. Built developer relations
+					programs from scratch across the US and EMEA, created 200+ pieces of technical content
+					reaching millions of developers, and spoken at 100+ conferences. Proven ability to
+					translate complex infrastructure into content developers trust and adopt. Known for
+					creative, high-signal technical storytelling. From live-coding Rust applications to
+					deploying Kubernetes from a 1986 portable computer. Passionate about helping developers
+					succeed on AI-native cloud platforms.
+				</p>
+			</div>
 
-  <!-- HEADER -->
-  <div class="header">
-    <h1>Darko Mesaroš</h1>
-    <div class="subtitle">Developer Relations &amp; Cloud Infrastructure</div>
-    <marquee class="marquee-welcome">~~~welcome to my resume~~~</marquee>
-    <div class="contact-line">
-      <span>Seattle, WA</span>
-      <span class="sep">|</span>
-      <a href="mailto:d@rko.rs">d@rko.rs</a>
-      <span class="sep">|</span>
-      <a href="https://www.linkedin.com/in/darko-mesaros/">linkedin</a>
-      <span class="sep">|</span>
-      <a href="https://rup12.net">rup12.net</a>
-      <span class="sep">|</span>
-      <a href="https://github.com/darko-mesaros">github</a>
-    </div>
-  </div>
+			<!-- SKILLS -->
+			<div class="section">
+				<div class="section-title">Technical Skills</div>
+				<div class="skill-row">
+					<span class="skill-label">Infrastructure:</span>
+					Cloud architecture, Kubernetes, containers, VMs, serverless, infrastructure at scale,
+					infrastructure as code (CDK, CloudFormation), configuration management (Chef, Puppet,
+					OpsWorks), automated provisioning, networking, storage optimization, CI/CD, Linux (Arch
+					btw), DevOps
+				</div>
+				<div class="skill-row">
+					<span class="skill-label">Languages &amp; Tools:</span>
+					Python, Rust, TypeScript, Bash; AWS (certified Professional-level), generative AI
+					platforms (Amazon Bedrock), distributed systems
+				</div>
+				<div class="skill-row">
+					<span class="skill-label">Developer Relations:</span>
+					Program development, community building, technical content strategy, live coding, public
+					speaking, developer experience design, cross-functional leadership, speaker training &amp;
+					enablement
+				</div>
+				<div class="skill-row">
+					<span class="skill-label">Languages:</span>
+					English (Native), Serbian (Native), Hungarian (Elementary), Czech &amp; Slovak (Limited
+					Working)
+				</div>
+			</div>
 
-  <!-- SUMMARY -->
-  <div class="section">
-    <div class="section-title">Summary</div>
-    <p class="summary">
-      Principal Developer Advocate with 10 years at AWS and 20 years in the technology industry. Deep hands-on expertise in cloud infrastructure, containerization, Kubernetes, configuration management, serverless, and AI/ML platforms. Built developer relations programs from scratch across the US and EMEA, created 200+ pieces of technical content reaching millions of developers, and spoken at 100+ conferences. Proven ability to translate complex infrastructure into content developers trust and adopt. Known for creative, high-signal technical storytelling. From live-coding Rust applications to deploying Kubernetes from a 1986 portable computer. Passionate about helping developers succeed on AI-native cloud platforms.
-    </p>
-  </div>
+			<!-- EXPERIENCE -->
+			<div class="section">
+				<div class="section-title">Experience</div>
 
-  <!-- SKILLS -->
-  <div class="section">
-    <div class="section-title">Technical Skills</div>
-    <div class="skill-row">
-      <span class="skill-label">Infrastructure:</span>
-      Cloud architecture, Kubernetes, containers, VMs, serverless, infrastructure at scale, infrastructure as code (CDK, CloudFormation), configuration management (Chef, Puppet, OpsWorks), automated provisioning, networking, storage optimization, CI/CD, Linux (Arch btw), DevOps
-    </div>
-    <div class="skill-row">
-      <span class="skill-label">Languages &amp; Tools:</span>
-      Python, Rust, TypeScript, Bash; AWS (certified Professional-level), generative AI platforms (Amazon Bedrock), distributed systems
-    </div>
-    <div class="skill-row">
-      <span class="skill-label">Developer Relations:</span>
-      Program development, community building, technical content strategy, live coding, public speaking, developer experience design, cross-functional leadership, speaker training &amp; enablement
-    </div>
-    <div class="skill-row">
-      <span class="skill-label">Languages:</span>
-      English (Native), Serbian (Native), Hungarian (Elementary), Czech &amp; Slovak (Limited Working)
-    </div>
-  </div>
+				<div class="job">
+					<div class="job-header">
+						<span class="job-title">Principal Developer Advocate</span>
+						<span class="job-dates">Oct 2023 -> Present</span>
+					</div>
+					<div class="job-company">Amazon Web Services (AWS) · Seattle, WA</div>
+					<ul class="bullets">
+						<li>
+							Core member of developer relations for generative AI infrastructure (Amazon Bedrock),
+							serverless, and cloud-native development. Owning end-to-end tutorials, sample
+							applications, documentation, and video content for both regional and global programs
+						</li>
+						<li>
+							Deliver keynotes and technical deep-dives at AWS re:Invent (80K+ attendees), AWS
+							Summits, and external conferences including DevOps Days and AI Engineers Summit
+						</li>
+						<li>
+							Drive cross-functional programs with product, engineering, and marketing to improve
+							developer experience; serve as voice of the developer translating community feedback
+							into product improvements
+						</li>
+						<li>
+							Build and maintain personal open source projects in <strong>Rust</strong> as
+							learning-in-public content: serverless link shortener, CLI coding assistant
+							(pre-cursor to modern AI CLI tools), S3-based file sharing utility, and more. Each
+							doubling as technical blog posts, live stream material, and conference demos
+						</li>
+						<li>
+							Mentor developer advocates across the organization on content strategy, technical
+							depth, and community engagement
+						</li>
+						<li>
+							Partner with engineering teams to shape developer-facing APIs and documentation;
+							advocate for developer needs internally translating community signals into product
+							decisions
+						</li>
+					</ul>
+				</div>
 
-  <!-- EXPERIENCE -->
-  <div class="section">
-    <div class="section-title">Experience</div>
+				<div class="job">
+					<div class="job-header">
+						<span class="job-title">Senior Developer Advocate</span>
+						<span class="job-dates">Dec 2019 -> Oct 2023</span>
+					</div>
+					<div class="job-company">
+						Amazon Web Services (AWS) · Seattle, WA &amp; Berlin, Germany
+					</div>
+					<ul class="bullets">
+						<li>
+							Built developer community programs from the ground up across US and EMEA, producing
+							150+ pieces of technical content reaching global AI/ML and cloud developer audiences
+						</li>
+						<li>
+							Created and hosted <strong>"Build On Live"</strong>: AWS's flagship Twitch live
+							streaming program (twitch.tv/aws) featuring quarterly day-long technical events and
+							weekly episodes on cloud, open source, and AI/ML topics
+						</li>
+						<li>
+							Established internal live video content creator program: trained and enabled creators
+							who delivered <strong>1,500+ livestream episodes</strong> reaching
+							<strong>1.3M+ developers</strong> in 2.5 years
+						</li>
+						<li>
+							One of only 3 people company-wide certified to "train the trainers" of AWS's most
+							senior speakers (C-level and below), leading to
+							<strong>~40% improvement in CSATs</strong> across 24 global AWS Summits
+						</li>
+						<li>
+							Trained <strong>130 expert speaker trainers</strong> and enabled
+							<strong>50+ technical peers</strong> in creating high-quality video and written
+							content through "Content Camps" - intensive 2-day workshops on technical content
+							delivery
+						</li>
+						<li>
+							Spoke at 50+ conferences; developed repeatable talk frameworks adopted across the
+							team; engaged developers across Discord, GitHub, Stack Overflow, and technical forums
+						</li>
+					</ul>
+				</div>
 
-    <div class="job">
-      <div class="job-header">
-        <span class="job-title">Principal Developer Advocate</span>
-        <span class="job-dates">Oct 2023 -> Present</span>
-      </div>
-      <div class="job-company">Amazon Web Services (AWS) · Seattle, WA</div>
-      <ul class="bullets">
-        <li>Core member of developer relations for generative AI infrastructure (Amazon Bedrock), serverless, and cloud-native development. Owning end-to-end tutorials, sample applications, documentation, and video content for both regional and global programs</li>
-        <li>Deliver keynotes and technical deep-dives at AWS re:Invent (80K+ attendees), AWS Summits, and external conferences including DevOps Days and AI Engineers Summit</li>
-        <li>Drive cross-functional programs with product, engineering, and marketing to improve developer experience; serve as voice of the developer translating community feedback into product improvements</li>
-        <li>Build and maintain personal open source projects in <strong>Rust</strong> as learning-in-public content: serverless link shortener, CLI coding assistant (pre-cursor to modern AI CLI tools), S3-based file sharing utility, and more. Each doubling as technical blog posts, live stream material, and conference demos</li>
-        <li>Mentor developer advocates across the organization on content strategy, technical depth, and community engagement</li>
-        <li>Partner with engineering teams to shape developer-facing APIs and documentation; advocate for developer needs internally translating community signals into product decisions</li>
-      </ul>
-    </div>
+				<div class="job">
+					<div class="job-header">
+						<span class="job-title">Solutions Architect → Specialist Solutions Architect</span>
+						<span class="job-dates">Feb 2018 -> Dec 2019</span>
+					</div>
+					<div class="job-company">Amazon Web Services (AWS) · Berlin, Germany</div>
+					<ul class="bullets">
+						<li>
+							Designed cloud architectures for enterprise customers across industries; served as
+							subject matter expert for AWS Marketplace and Management Tools
+						</li>
+						<li>
+							Provided deep technical architecture guidance, developed reference architectures, and
+							delivered technical workshops on AWS services
+						</li>
+					</ul>
+				</div>
 
-    <div class="job">
-      <div class="job-header">
-        <span class="job-title">Senior Developer Advocate</span>
-        <span class="job-dates">Dec 2019 -> Oct 2023</span>
-      </div>
-      <div class="job-company">Amazon Web Services (AWS) · Seattle, WA &amp; Berlin, Germany</div>
-      <ul class="bullets">
-        <li>Built developer community programs from the ground up across US and EMEA, producing 150+ pieces of technical content reaching global AI/ML and cloud developer audiences</li>
-        <li>Created and hosted <strong>"Build On Live"</strong>: AWS's flagship Twitch live streaming program (twitch.tv/aws) featuring quarterly day-long technical events and weekly episodes on cloud, open source, and AI/ML topics</li>
-        <li>Established internal live video content creator program: trained and enabled creators who delivered <strong>1,500+ livestream episodes</strong> reaching <strong>1.3M+ developers</strong> in 2.5 years</li>
-        <li>One of only 3 people company-wide certified to "train the trainers" of AWS's most senior speakers (C-level and below), leading to <strong>~40% improvement in CSATs</strong> across 24 global AWS Summits</li>
-        <li>Trained <strong>130 expert speaker trainers</strong> and enabled <strong>50+ technical peers</strong> in creating high-quality video and written content through "Content Camps" - intensive 2-day workshops on technical content delivery</li>
-        <li>Spoke at 50+ conferences; developed repeatable talk frameworks adopted across the team; engaged developers across Discord, GitHub, Stack Overflow, and technical forums</li>
-      </ul>
-    </div>
+				<div class="job">
+					<div class="job-header">
+						<span class="job-title">Cloud Support Engineer II</span>
+						<span class="job-dates">Feb 2016 -> Feb 2018</span>
+					</div>
+					<div class="job-company">Amazon Web Services (AWS) · Dublin, Ireland</div>
+					<ul class="bullets">
+						<li>
+							Premium technical support for deployment, provisioning, and DevOps services; SME for
+							infrastructure-as-code (CloudFormation), configuration management (OpsWorks, Chef,
+							Puppet), and automated deployment (CodeDeploy)
+						</li>
+						<li>
+							Troubleshot complex infrastructure issues across the full AWS stack; created internal
+							documentation and knowledge base articles
+						</li>
+					</ul>
+				</div>
 
-    <div class="job">
-      <div class="job-header">
-        <span class="job-title">Solutions Architect → Specialist Solutions Architect</span>
-        <span class="job-dates">Feb 2018 -> Dec 2019</span>
-      </div>
-      <div class="job-company">Amazon Web Services (AWS) · Berlin, Germany</div>
-      <ul class="bullets">
-        <li>Designed cloud architectures for enterprise customers across industries; served as subject matter expert for AWS Marketplace and Management Tools</li>
-        <li>Provided deep technical architecture guidance, developed reference architectures, and delivered technical workshops on AWS services</li>
-      </ul>
-    </div>
+				<div class="job">
+					<div class="job-header">
+						<span class="job-title">System Administration &amp; Infrastructure</span>
+						<span class="job-dates">2010 -> 2016</span>
+					</div>
+					<div class="job-company">Tipico Ltd. (Malta) → AT&amp;T → Mercator-S (Serbia)</div>
+					<ul class="bullets">
+						<li>
+							Progressive sysadmin roles managing Linux/Windows infrastructure, VMware
+							virtualization, multi-site DR, and server provisioning at scale (1,500+ users)
+						</li>
+						<li>
+							Automated operations with PowerShell, Bash, and Python; developed tooling for server
+							deployment and management across hosting environments
+						</li>
+					</ul>
+				</div>
+			</div>
 
-    <div class="job">
-      <div class="job-header">
-        <span class="job-title">Cloud Support Engineer II</span>
-        <span class="job-dates">Feb 2016 -> Feb 2018</span>
-      </div>
-      <div class="job-company">Amazon Web Services (AWS) · Dublin, Ireland</div>
-      <ul class="bullets">
-        <li>Premium technical support for deployment, provisioning, and DevOps services; SME for infrastructure-as-code (CloudFormation), configuration management (OpsWorks, Chef, Puppet), and automated deployment (CodeDeploy)</li>
-        <li>Troubleshot complex infrastructure issues across the full AWS stack; created internal documentation and knowledge base articles</li>
-      </ul>
-    </div>
+			<!-- CONTENT & COMMUNITY IMPACT -->
+			<div class="section">
+				<div class="section-title">Content &amp; Community Impact</div>
+				<div class="impact-item">
+					<strong>100+ speaking engagements</strong> at AWS re:Invent, AWS Summits, DevOps Days, AI
+					Engineers Summit, and developer meetups worldwide. Twice hosted the global AWS re:Invent
+					conference (80K+ viewers). Featured guest on Screaming in the Cloud, AWS Developers
+					Podcast, and other tech podcasts.
+				</div>
+				<div class="impact-item">
+					<strong>200+ technical content pieces</strong>: tutorials, live coding streams, video
+					guides, documentation, blog posts, and podcasts. Stack Overflow blog author. Content has
+					reached millions across 6 years; 25K+ social media following across platforms.
+				</div>
+				<div class="impact-item">
+					<strong>Viral technical content:</strong> "Running a webserver on a SPARC server"
+					(featured on Adafruit, Hacker News front page, Lobsters), a personal site (<a
+						href="https://sparc.rup12.net"
+						>sparc.rup12.net</a
+					>) now literally hosted on a 25-year-old SPARC server; "Deploying Kubernetes with a TRS-80
+					Model 100" (Tom's Hardware); "Restoring a Sun Workstation" (30K+ reads, HN front page).
+				</div>
+				<div class="impact-item">
+					<strong>Creative technical storytelling:</strong> Deploying AWS infrastructure from a
+					Commodore 64, open source demos via Minecraft presentations, thermal printer MCP servers,
+					and teletypes running serverless applications, consistently finding novel angles that cut
+					through conference and content fatigue.
+				</div>
+				<div class="impact-item">
+					<strong>Learning in public:</strong> Documented Rust journey from zero to production
+					applications via live streams and blog posts, building tools like
+					<a href="https://github.com/darko-mesaros/bedrust">bedrust</a> (CLI coding assistant, 68
+					GitHub stars) and <a href="https://github.com/darko-mesaros/shuk">shuk</a> (S3 file
+					sharing). 146 public GitHub repos.
+				</div>
+			</div>
 
-    <div class="job">
-      <div class="job-header">
-        <span class="job-title">System Administration &amp; Infrastructure</span>
-        <span class="job-dates">2010 -> 2016</span>
-      </div>
-      <div class="job-company">Tipico Ltd. (Malta) → AT&amp;T → Mercator-S (Serbia)</div>
-      <ul class="bullets">
-        <li>Progressive sysadmin roles managing Linux/Windows infrastructure, VMware virtualization, multi-site DR, and server provisioning at scale (1,500+ users)</li>
-        <li>Automated operations with PowerShell, Bash, and Python; developed tooling for server deployment and management across hosting environments</li>
-      </ul>
-    </div>
-  </div>
+			<!-- CERTIFICATIONS -->
+			<div class="section">
+				<div class="section-title">Certifications</div>
+				<div class="certs">
+					<span class="cert-tag">AWS SA - Professional</span>
+					<span class="cert-tag">AWS Developer - Professional</span>
+					<span class="cert-tag">AWS Gen AI - Associate</span>
+					<span class="cert-tag">AWS SA - Associate</span>
+					<span class="cert-tag">AWS Cloud Practitioner</span>
+					<span class="cert-tag">Microsoft MCSA</span>
+					<span class="cert-tag">MCTS: AD &amp; Server 2008</span>
+				</div>
+			</div>
 
-  <!-- CONTENT & COMMUNITY IMPACT -->
-  <div class="section">
-    <div class="section-title">Content &amp; Community Impact</div>
-    <div class="impact-item">
-      <strong>100+ speaking engagements</strong> at AWS re:Invent, AWS Summits, DevOps Days, AI Engineers Summit, and developer meetups worldwide. Twice hosted the global AWS re:Invent conference (80K+ viewers). Featured guest on Screaming in the Cloud, AWS Developers Podcast, and other tech podcasts.
-    </div>
-    <div class="impact-item">
-      <strong>200+ technical content pieces</strong>: tutorials, live coding streams, video guides, documentation, blog posts, and podcasts. Stack Overflow blog author. Content has reached millions across 6 years; 25K+ social media following across platforms.
-    </div>
-    <div class="impact-item">
-      <strong>Viral technical content:</strong> "Running a webserver on a SPARC server" (featured on Adafruit, Hacker News front page, Lobsters), a personal site (<a href="https://sparc.rup12.net">sparc.rup12.net</a>) now literally hosted on a 25-year-old SPARC server; "Deploying Kubernetes with a TRS-80 Model 100" (Tom's Hardware); "Restoring a Sun Workstation" (30K+ reads, HN front page).
-    </div>
-    <div class="impact-item">
-      <strong>Creative technical storytelling:</strong> Deploying AWS infrastructure from a Commodore 64, open source demos via Minecraft presentations, thermal printer MCP servers, and teletypes running serverless applications, consistently finding novel angles that cut through conference and content fatigue.
-    </div>
-    <div class="impact-item">
-      <strong>Learning in public:</strong> Documented Rust journey from zero to production applications via live streams and blog posts, building tools like <a href="https://github.com/darko-mesaros/bedrust">bedrust</a> (CLI coding assistant, 68 GitHub stars) and <a href="https://github.com/darko-mesaros/shuk">shuk</a> (S3 file sharing). 146 public GitHub repos.
-    </div>
-  </div>
+			<!-- EDUCATION -->
+			<div class="section">
+				<div class="section-title">Education</div>
+				<div class="education-main">Srednja Tehnicka Skola</div>
+				<div class="education-detail">Electro-technician of Computers · 2003 -> 2007</div>
+				<div class="education-note">
+					Supplemented by 20 years of continuous self-education, 7 professional certifications, and
+					3 promotions across a decade at AWS.
+				</div>
+			</div>
 
-  <!-- CERTIFICATIONS -->
-  <div class="section">
-    <div class="section-title">Certifications</div>
-    <div class="certs">
-      <span class="cert-tag">AWS SA - Professional</span>
-      <span class="cert-tag">AWS Developer - Professional</span>
-      <span class="cert-tag">AWS Gen AI - Associate</span>
-      <span class="cert-tag">AWS SA - Associate</span>
-      <span class="cert-tag">AWS Cloud Practitioner</span>
-      <span class="cert-tag">Microsoft MCSA</span>
-      <span class="cert-tag">MCTS: AD &amp; Server 2008</span>
-    </div>
-  </div>
+			<div class="footer">
+				<a href="https://rup12.net">rup12.net</a> · © 2026 Darko Mesaroš · Made with ♥️ and way too
+				many old computers
+			</div>
+		</div>
 
-  <!-- EDUCATION -->
-  <div class="section">
-    <div class="section-title">Education</div>
-    <div class="education-main">Srednja Tehnicka Skola</div>
-    <div class="education-detail">Electro-technician of Computers · 2003 -> 2007</div>
-    <div class="education-note">Supplemented by 20 years of continuous self-education, 7 professional certifications, and 3 promotions across a decade at AWS.</div>
-  </div>
+		<script>
+			function setTheme(name) {
+				localStorage.setItem('resume-theme', name);
+				document.getElementById('theme-css').href = 'theme-' + name + '.css';
+				document.querySelectorAll('.theme-btn').forEach((b) => b.classList.remove('active'));
+				event.target.classList.add('active');
+				applyTeletextUI(name);
+			}
 
-  <div class="footer">
-    <a href="https://rup12.net">rup12.net</a> · © 2026 Darko Mesaroš · Made with ♥️ and way too many old computers
-  </div>
+			function applyTeletextUI(name) {
+				const pageEl = document.querySelector('.teletext-page');
+				pageEl.style.display = name === 'teletext' ? 'inline' : 'none';
+				if (name === 'teletext') cyclePage();
+			}
 
-</div>
+			function cyclePage() {
+				const numEl = document.getElementById('teletext-num');
+				let cycles = 0;
+				const max = 20 + Math.floor(Math.random() * 20);
+				const interval = setInterval(() => {
+					numEl.textContent = Math.floor(100 + Math.random() * 800);
+					if (++cycles >= max) {
+						clearInterval(interval);
+						numEl.textContent = '100';
+					}
+				}, 80);
+			}
 
-<script>
-  function setTheme(name) {
-    localStorage.setItem('resume-theme', name);
-    document.getElementById('theme-css').href = 'theme-' + name + '.css';
-    document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
-    event.target.classList.add('active');
-    applyTeletextUI(name);
-  }
-
-  function applyTeletextUI(name) {
-    const pageEl = document.querySelector('.teletext-page');
-    pageEl.style.display = name === 'teletext' ? 'inline' : 'none';
-    if (name === 'teletext') cyclePage();
-  }
-
-  function cyclePage() {
-    const numEl = document.getElementById('teletext-num');
-    let cycles = 0;
-    const max = 20 + Math.floor(Math.random() * 20);
-    const interval = setInterval(() => {
-      numEl.textContent = Math.floor(100 + Math.random() * 800);
-      if (++cycles >= max) {
-        clearInterval(interval);
-        numEl.textContent = '100';
-      }
-    }, 80);
-  }
-
-  // Mark active button on load
-  const current = localStorage.getItem('resume-theme') || 'default';
-  document.querySelectorAll('.theme-btn').forEach(b => {
-    if (b.textContent.trim().toLowerCase() === current) b.classList.add('active');
-  });
-  applyTeletextUI(current);
-</script>
-
-</body>
+			// Mark active button on load
+			const current = localStorage.getItem('resume-theme') || 'default';
+			document.querySelectorAll('.theme-btn').forEach((b) => {
+				if (b.textContent.trim().toLowerCase() === current) b.classList.add('active');
+			});
+			applyTeletextUI(current);
+		</script>
+	</body>
 </html>
