@@ -204,7 +204,7 @@ Or in the Web interface,the jobs console, like a pending job:
 
 ![](/post-content/video-transcription-prefect-nebius/jobs_console.png)
 
-> **NOTE**: If you have run this command, please make sure to cancel the job before moving away. While it does have a 1h timeout, it will still potentially cost you 1h worth of compute if you don't cancel it before then.
+> **NOTE**: If you have run this command, rest assured that the job and the resources will terminate at the completion of the job. In this case it will be instant due to the `nvidia-smi` command exiting. For safety it does have a 1h timeout.
 
 Now, me coming from the world of [AWS Lambda](https://docs.aws.amazon.com/lambda/), I half expected this to be up and running in less than a couple of milliseconds. Well, no! It will take a couple of minutes for the job to kick off. So while it is in the true sense serverless, it's *not* a Lambda Function!
 
