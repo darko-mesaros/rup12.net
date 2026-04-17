@@ -4,8 +4,8 @@ import PostHeader from '@/components/PostHeader.astro';
 import PostContent from '@/components/PostContent.astro';
 
 const { frontmatter } = Astro.props;
-const canonicalUrl = `https://rup12.net/posts/${Astro.url.pathname.split('/').filter(Boolean).pop()}`;
-const imageUrl = `https://rup12.net/${frontmatter.image.src}`;
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
+const imageUrl = new URL(frontmatter.image.src, Astro.site).toString();
 
 const jsonLd = {
   "@context": "https://schema.org",

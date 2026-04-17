@@ -1,4 +1,14 @@
 const BOT_PATTERNS = /bot|crawler|spider|crawling|headless|curl|wget|python|go-http/i;
+const VALID_SLUG = /^[a-z0-9-]+$/;
+
+function escapeHtml(value) {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
 
 function basicAuth(request, env) {
   const auth = request.headers.get("authorization") ?? "";
@@ -22,7 +32,9 @@ export default {
       }
 
       const body = await request.json();
-      if (!body.slug) return new Response(null, { status: 400 });
+      if (typeof body.slug !== "string" || !VALID_SLUG.test(body.slug)) {
+        return new Response(null, { status: 400 });
+      }
 
       const key = `views:${body.slug}`;
       const current = parseInt((await env.PAGE_VIEWS.get(key)) ?? "0");
@@ -44,7 +56,8 @@ export default {
         keys.keys.map(async ({ name }) => {
           const count = await env.PAGE_VIEWS.get(name);
           const slug = name.replace("views:", "");
-          return `<tr><td><a href="/posts/${slug}/">${slug}</a></td><td>${count}</td></tr>`;
+          const safeSlug = escapeHtml(slug);
+          return `<tr><td><a href="/posts/${safeSlug}/">${safeSlug}</a></td><td>${count}</td></tr>`;
         })
       );
       rows.sort((a, b) => {
