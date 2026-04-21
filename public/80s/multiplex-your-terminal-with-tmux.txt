@@ -401,5 +401,7 @@ to the full .tmux.conf used in this blog post.
 
 ----------------------------------------
 
+If you want to spice up your terminal further, lolbanner is a fun one for adding colorful banners to your sessions.
+
 ----------------------------------------
 rup12.net -- Darko Mesaros

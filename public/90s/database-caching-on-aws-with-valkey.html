@@ -1,0 +1,261 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>Database Caching on AWS with Valkey: A Developer's Guide</title>
+</head>
+<body bgcolor="#ffffff" text="#000000" link="#0000ff" vlink="#800080">
+<font face="Arial,Helvetica">
+
+<table width="600" border="0" cellpadding="4">
+<tr><td>
+<h1><font color="#cc6600">rup12.net</font></h1>
+<font size="-1">[ <a href="index.html">home</a> | <a href="about.html">about</a> | <a href="posts.html">posts</a> ]</font>
+<hr>
+<h2>Database Caching on AWS with Valkey: A Developer's Guide</h2>
+<font size="-1"><i>2026-03-18 &mdash; A companion guide to my YouTube video on database caching strategies. Covers cache-aside, write-through, cache invalidation, TTL jitter, and multi-tier caching with Rust code examples using Valkey on ElastiCache.</i></font>
+<hr>
+<blockquote><b>TL;DR</b>: <a href="https://github.com/darko-mesaros/caching_strategies_sample_code">CODE</a>. Cache-aside (lazy loading) is what you should start with, it covers 90% of use cases. Pair it with write-through for data freshness, add TTL jitter to prevent thundering herds, and consider in-process caching with <code>moka</code> for hot data. All of this runs beautifully on ElastiCache Serverless for Valkey.</blockquote>
+<br>
+<hr>
+<br>
+<p><i>Before I start a <b>disclaimer</b>: I work as a Developer Advocate at AWS, and I get to interact with the wonderful folks who build and run the ElastiCache Services. Just thought you should know that going in ❤️ On to the show ...</i></p>
+<br>
+<hr>
+<br>
+<p>I recently made a <a href="https://www.youtube.com/watch?v=epsjBkgZSSM">video on database caching strategies</a> where I explored caching patterns, Rust code, and how to set this up on AWS with <a href="https://aws.amazon.com/blogs/database/get-started-with-amazon-elasticache-for-valkey/">Valkey</a>. This post is a companion to that video. The code, the key patterns, and the gotchas, all in one place you can reference later.</p>
+<br>
+<p>&lt;div class="flex justify-center"&gt;</p>
+<p>&lt;iframe</p>
+<p>  width="560"</p>
+<p>  height="315"</p>
+<p>  src="https://www.youtube.com/embed/epsjBkgZSSM"</p>
+<p>  title="YouTube video player"</p>
+<p>  frameborder="0"</p>
+<p>  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"</p>
+<p>  allowfullscreen&gt;</p>
+<p>&lt;/iframe&gt;</p>
+<p>&lt;/div&gt;</p>
+<br>
+<br>
+<h2>Why Caching?</h2>
+<br>
+<p>Here's the thing, I initially thought caching was complex and unnecessary. My database was "fast enough." But going from ~100ms database reads to single-digit millisecond cache hits? That makes a real difference. And it's way simpler to set up than I expected.</p>
+<br>
+<p>The concept is straightforward: put a fast in-memory store (like Valkey) between your app and your database. Check the cache first, only hit the database if you have to.</p>
+<br>
+<h2>The Two Patterns You Actually Need</h2>
+<br>
+<p>There are five caching patterns out there, but honestly? Knowing <b>just two</b> of them is fine. Here's the full picture for reference:</p>
+<br>
+<p>| Pattern       | Write goes to         | Read goes to                  | Tradeoff                               |</p>
+<p>| ------------- | --------------------- | ----------------------------- | -------------------------------------- |</p>
+<p>| Cache-Aside   | DB only               | Cache, then DB on miss        | Simple, but cache can be stale         |</p>
+<p>| Write-Through | Cache + DB (sync)     | Cache first (always fresh)    | Write latency doubles                  |</p>
+<p>| Write-Behind  | Cache only (DB async) | Cache first                   | Fast writes, risk of data loss         |</p>
+<p>| Read-Through  | DB (via cache)        | Cache (cache fetches on miss) | Clean API, hard to implement in Valkey |</p>
+<p>| Write-Around  | DB only (skip cache)  | Cache, then DB on miss        | Good for rarely-read writes            |</p>
+<br>
+<p>Let's focus on the two that matter: Cache-Aside and Write-Through 🥳</p>
+<br>
+<h3>Cache-Aside (Lazy Loading)</h3>
+<br>
+<br>
+<p>This is the default. 90% of the time, this is what you want. The idea: your application is in charge of the cache. Nothing gets cached until it's actually asked for.</p>
+<br>
+<p>The flow:</p>
+<p>1. Request comes in - check the cache first</p>
+<p>2. <b>Cache hit</b> - return immediately, done</p>
+<p>3. <b>Cache miss</b> - fetch from DB, write it to cache with a TTL, return it</p>
+<br>
+<pre>
+async fn get_user(
+    id: &amp;str,
+    cache: &amp;mut redis::aio::MultiplexedConnection,
+    db: &amp;SqlitePool,
+) -&gt; Result&lt;User&gt; {
+    // 1. Check cache
+    let cached: Option&lt;String&gt; = cache.get(id).await?;
+    if let Some(json) = cached {
+        println!("[CACHE HIT]  id={id}");
+        return Ok(serde_json::from_str(&amp;json)?);
+    }
+
+    // 2. Cache miss: fetch from DB
+    println!("[CACHE MISS] id={id} - querying SQLite...");
+    let user = sqlx::query_as::&lt;_, User&gt;("SELECT id, name, email FROM users WHERE id = ?")
+        .bind(id)
+        .fetch_one(db)
+        .await
+        .with_context(|| format!("user {id} not found in DB"))?;
+
+    // 3. Populate cache with a 30-second TTL
+    let json = serde_json::to_string(&amp;user)?;
+    let _: () = cache.set_ex(id, json, 30u64).await?;
+
+    Ok(user)
+}
+</pre>
+<br>
+<p><b>Why it's great:</b> Only data that's actually requested gets cached (no wasted memory), and if the cache goes down, your app still works, it just falls back to the database. Resilient by design.</p>
+<br>
+<p>Now, there are a few things you need to watch out for when working with this approach:</p>
+<ul>
+<li><b>Cold starts</b> - fresh cache means everything is a miss until the working set warms up</li>
+<li><b>Thundering herd</b> - a popular key expires, many requests miss simultaneously and hammer the DB (more on this below)</li>
+<li><b>Stale data</b> - the cache isn't updated on writes, so you can serve slightly outdated data until the TTL expires</li>
+</ul>
+<br>
+<h3>Write-Through</h3>
+<br>
+<br>
+<p>Write-through is almost always used <i>alongside</i> cache-aside. The difference: it doesn't only cache data when it's read, it also updates the cache every time you write to the database. Stale data begone!</p>
+<br>
+<pre>
+async fn update_user(
+    user: &amp;User,
+    cache: &amp;mut redis::aio::MultiplexedConnection,
+    db: &amp;SqlitePool,
+) -&gt; Result&lt;()&gt; {
+    // 1. Write to DB first
+    sqlx::query("UPDATE users SET name = ?, email = ? WHERE id = ?")
+        .bind(&amp;user.name)
+        .bind(&amp;user.email)
+        .bind(&amp;user.id)
+        .execute(db)
+        .await?;
+
+    // 2. Write to cache: keep them in sync
+    let _: () = cache
+        .set_ex(&amp;user.id, serde_json::to_string(user)?, 300u64)
+        .await?;
+
+    Ok(())
+}
+</pre>
+<br>
+<p>So... When do you use this over the other one? Well, it's simple, when you have read-heavy workloads where data freshness is <b>critical</b> (user profiles, inventory, pricing). Simple as that. <b>However</b>, when you have write-heavy workloads. Doubling every write (DB + cache) adds up fast. Also, infrequently-read data ends up in the cache for no reason, making your cache bigger and more expensive. You may wanna skip this one.</p>
+<br>
+<h2>So, what's the downside?</h2>
+<br>
+<p>This can't be just all great, right? It cant be that simple. 🤔 You're right, there are a few gotchas when it comes to caching, that may trip you up initially. They are not something that is unsolveable, but it is something to keep in mind as you are building stuff out.</p>
+<br>
+<h3>Serialization Overhead</h3>
+<br>
+<p>First off, <b>Serialization</b>. Yes this really depends on the language and framework you are using, but this can be an issue. For example, in Rust, <code>redis-rs</code> gives you back raw <code>String</code> types. You must serialize/deserialize structs yourself with <code>serde</code> in order for this to work. Now, for small objects this is nothing, but with larger payloads, keep this overhead in mind.</p>
+<br>
+<h3>TTL: The Goldilocks Problem</h3>
+<br>
+<p>TTL: Time To Live. This is what tells the cache how long the objects there should live. This <i>CAN</i> be quite a challenge to solve. Too short and you get constant cache misses. Too long and you serve stale data. There's no universal answer here, you need to understand your data's update patterns and set TTLs accordingly. The good thing is, you can change this relatively easily.</p>
+<br>
+<h3>Cache Invalidation</h3>
+<br>
+<p>Phil Karlton famously said: <i>"There are only two hard things in computer science: cache invalidation and naming things."</i></p>
+<br>
+<p>Instead of updating the cache on every write (write-through), you can just <i>delete</i> the cache entry. The next read will miss and fetch fresh data from the DB:</p>
+<br>
+<pre>
+async fn update_user(
+    user: &amp;User,
+    cache: &amp;mut redis::aio::MultiplexedConnection,
+    db: &amp;SqlitePool,
+) -&gt; Result&lt;()&gt; {
+    // 1. DB write - source of truth updated first
+    sqlx::query("UPDATE users SET name = ?, email = ? WHERE id = ?")
+        .bind(&amp;user.name)
+        .bind(&amp;user.email)
+        .bind(&amp;user.id)
+        .execute(db)
+        .await?;
+
+    // 2. Invalidate cache - don't update it, just remove it
+    let _: () = cache.del(&amp;user.id).await?;
+
+    Ok(())
+}
+</pre>
+<br>
+<p>This is a nice middle ground: simpler than write-through, and your cache-aside pattern handles re-populating the data on the next read. 🔥</p>
+<br>
+<h3>Thundering Herd (and TTL Jitter)</h3>
+<br>
+<p>The first time I've heard the term "Thundering Herd" was from my friends over at <b>Puppet</b>. In their example it was when too many systems check into the Puppet configuration server at once, and cause the server a lot of pain. Well, similar things can happen with caching. If a bunch of cache entries share the same TTL (and are written at the same time), they all expire at the same time. Suddenly every request is a cache miss and your database gets hammered. The fix is dead simple: ✨Jitter✨. Yes, just add jitter to your TTLs:</p>
+<br>
+<pre>
+fn ttl_with_jitter(base_secs: u64, jitter_secs: u64) -&gt; u64 {
+    let nanos = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .expect("system clock before UNIX epoch")
+        .subsec_nanos() as u64;
+
+    base_secs + (nanos % jitter_secs)
+}
+
+// Instead of a flat 300s TTL, you get something between 300s and 360s
+let ttl = ttl_with_jitter(300, 60);
+let _: () = cache.set_ex(id, json, ttl).await?;
+</pre>
+<br>
+<h2>Multi-Tier Caching with Moka</h2>
+<br>
+<br>
+<p>Here's a pro tip: you don't have to go over the network for every cache lookup. For long-running applications (not looking at you Lambda 👀), you can keep a small in-process cache using <code>moka</code> (or an equivalent library) in front of your cache:</p>
+<br>
+<pre>
+// Note: Simplified for example
+async fn get_user(id: &amp;str, l1: &amp;Cache&lt;String, User&gt;) -&gt; Result&lt;User&gt; {
+    // L1: check in-process moka cache first (nanoseconds)
+    if let Some(user) = l1.get(id).await {
+        return Ok(user);
+    }
+
+    // L2: check Valkey (milliseconds)
+    if let Some(user) = fetch_from_valkey(id).await? {
+        l1.insert(id.to_string(), user.clone()).await;
+        return Ok(user);
+    }
+
+    // L3: DB, source of truth (slower)
+    let user = fetch_from_db(id).await?;
+    l1.insert(id.to_string(), user.clone()).await;
+
+    Ok(user)
+}
+</pre>
+<br>
+<p>L1 (<a href="https://crates.io/crates/moka">moka</a>) is nanosecond latency, straight from your process memory. L2 (Valkey) is milliseconds, shared across instances. L3, the DB is your source of truth. </p>
+<br>
+<p><b>Heads up:</b> local cache is <i>not</i> shared across instances. In horizontally-scaled deployments, you'll get brief inconsistencies between instances. And in Lambda, the container lifecycle makes this kind of unreliable. You have been warned.</p>
+<br>
+<h2>Valkey on AWS</h2>
+<br>
+<p>Alright, time to talk about Valkey! 🥳 <a href="https://valkey.io/">Valkey</a> is the open-source Redis fork under the Linux Foundation (started March 2024). AWS here is a top contributor. What is important for you to understand: it's a drop-in Redis replacement. Your <code>redis-rs</code> (or whatever other library) code works with it unchanged. Huzzah!</p>
+<br>
+<p>On AWS, you run Valkey through <b>Amazon ElastiCache</b>. The two options:</p>
+<br>
+<ul>
+<li><b>Serverless</b>: auto-scales, pay-per-use, ready in under a minute. Best for variable workloads and getting started fast. This is what I used in the video.</li>
+<li><b>Node-based</b>: you pick your instance types and cluster size. More control, better for predictable, high-throughput workloads.</li>
+</ul>
+<br>
+<p>One thing to remember: ElastiCache is a <b>VPC-based service</b>. Your application needs to be in the same VPC. If you're using Lambda, that means VPC-attached Lambda functions, which can add some cold start latency. What this also means is that you cannot really <i>easily</i> access the cluster from outside of AWS. In the video I actually ran my code on an EC2 instance. (But this can be made work with some VPN shenanigans).</p>
+<br>
+<p>Setting it up is surprisingly dead simple: Point your <code>redis-rs</code> connection to the ElastiCache endpoint, and <i>poof</i>, You're done. Check out the setup part in the <a href="https://www.youtube.com/watch?v=epsjBkgZSSM">video</a>.</p>
+<br>
+<h2>Wrapping Up</h2>
+<br>
+<p>Alright friends, my TTL is about to expire, so time to wrap it up. Yeah ... I know! 😅</p>
+<br>
+<p>Caching is one of those things that sounds intimidating until you actually do it. Start with cache-aside (it's literally a few lines added to your data fetching functions). Then layer on write-through or invalidation as needed. Add TTL jitter from day one (your future self will thank you later). And if you're lookin for a serverless Redis option, well on AWS, ElastiCache Serverless for Valkey makes the infrastructure part trivial. 👏</p>
+<br>
+<p>All the code from this post (and the video) is on GitHub: <a href="https://github.com/darko-mesaros/caching_strategies_sample_code">darko-mesaros/caching_strategies_sample_code</a></p>
+<br>
+<p>Happy caching! 🦀</p>
+
+<hr>
+<font size="-1">rup12.net &mdash; Darko Mesaros</font>
+</td></tr>
+</table>
+
+</font>
+</body>
+</html>

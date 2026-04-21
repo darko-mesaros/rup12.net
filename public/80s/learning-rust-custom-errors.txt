@@ -195,5 +195,7 @@ This means we no longer have to deal with error handling within the function its
 
 If you want to see the full codebase in action, you can check out my GitHub repo here. And please ignore the mess, this is just a learning repo! 
 
+If you're just getting started with the AWS SDK for Rust, check out Getting started with the AWS SDK for Rust. And if you want to see these error patterns in action at scale, have a look at Download and deserialize 10,000 files in 9 seconds.
+
 ----------------------------------------
 rup12.net -- Darko Mesaros

@@ -610,5 +610,7 @@ If you want to see the entire code/project - check out my Github repo.
 
 Until next time friends! Don't forget to tip your compiler! 
 
+If you want to level up your Rust error handling beyond what we did here, check out Custom Error types that actually work!.
+
 ----------------------------------------
 rup12.net -- Darko Mesaros

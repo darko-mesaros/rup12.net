@@ -253,7 +253,7 @@ Look at that sweet sweet local bucket!
 
 === Whats next? ===
 
-Well, first off you can check out the full code listing. Second, you may notice a lot of .unwrap() methods being invoked here. Now, this is all great for development, but be careful with those when going into production. Stay tuned, for an upcoming blog post on that topic.
+Well, first off you can check out the full code listing. Second, you may notice a lot of .unwrap() methods being invoked here. Now, this is all great for development, but be careful with those when going into production. I wrote a follow-up post on exactly that  check out Custom Error types that actually work! to see how to handle this properly with a custom AppError newtype.
 
 Keep learning Rust, it does pay off in the end!  
 

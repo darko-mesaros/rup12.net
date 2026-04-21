@@ -113,5 +113,7 @@ Now you can (like me) go ahead and keep on using vim for more than just writing
 code. You can write proper emails, documents, and even blog posts. All that
 while being sure that your spelling remains good.
 
+If you're building out your vim setup, check out vim-plug for plugin management and quick-scope for faster navigation.
+
 ----------------------------------------
 rup12.net -- Darko Mesaros

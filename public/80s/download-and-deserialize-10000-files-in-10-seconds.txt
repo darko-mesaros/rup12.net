@@ -304,5 +304,7 @@ I am quite impressed with how much of a beating Amazon S3 can take, but I do nee
 
 Thank you so much for sticking around this much. See you in the next one 
 
+Want to use this same SDK setup with S3-compatible APIs from other clouds? Check out Using S3-Compatible APIs with Other Clouds.
+
 ----------------------------------------
 rup12.net -- Darko Mesaros

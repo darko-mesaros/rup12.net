@@ -1,0 +1,241 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>Adding Nebius to My Rust Agent Without Writing a Custom Rig Provider</title>
+</head>
+<body bgcolor="#ffffff" text="#000000" link="#0000ff" vlink="#800080">
+<font face="Arial,Helvetica">
+
+<table width="600" border="0" cellpadding="4">
+<tr><td>
+<h1><font color="#cc6600">rup12.net</font></h1>
+<font size="-1">[ <a href="index.html">home</a> | <a href="about.html">about</a> | <a href="posts.html">posts</a> ]</font>
+<hr>
+<h2>Adding Nebius to My Rust Agent Without Writing a Custom Rig Provider</h2>
+<font size="-1"><i>2026-04-21 &mdash; Nebius Token Factory doesn't have a native Rig provider. Here's how I hacked it in anyway using their OpenAI-compatible API, and why I still want to write a proper PR.</i></font>
+<hr>
+<blockquote><b>TL;DR:</b> Nebius Token Factory speaks OpenAI's API protocol. So instead of building a custom Rig provider from scratch, I just pointed <code>openai::CompletionsClient</code> at their base URL. It took 10 lines of code and one infuriating trailing slash to get working. But I still want to write a proper Rig provider PR.</blockquote>
+<br>
+<p>Not so long ago, I've built a little agent (blog post pending) setup that parses the <i>r/kiroIDE</i> subreddit every morning and tells me the latest tea! It stores that data in my Obsidian vault as well as sends me a text message via Telegram. Amazing! When I built it initially I used the Anthropic API, so last night I've added support for more endpoints: <i>OpenAI</i>, <i>OpenRouter</i>, and you know what... Let's add <a href="https://tokenfactory.nebius.com/">Nebius' token factory</a>. How hard could that be? Nebius after all uses the OpenAI API framework for invoking LLMs!</p>
+<br>
+<br>
+<p>Oh and this agent is powered by the <a href="https://docs.rs/rig-core/latest/rig/index.html">rig</a> crate. A very neat and Rusty way to get your agents in line. I will get to how it all works in some future post.</p>
+<br>
+<h2>The "just change the URL" approach</h2>
+<br>
+<p>Here's the thing: Rig, the Rust framework I use for the LLM bits, has native providers for Anthropic, OpenAI, OpenRouter, Gemini, and like 15 others. Nebius isn't one of them 💔. But Nebius, as I mentioned, exposes an <b>OpenAI-compatible API</b>. Same endpoints, same request format, same response shape. Just one thing to change, the <code>base_url</code>.</p>
+<br>
+<p>So I was lazy and I didn't write a custom Rig provider. I just reused <code>openai::CompletionsClient</code> with a custom base URL:</p>
+<pre>
+// Set base url
+const NEBIUS_BASE_URL: &amp;str = "https://api.tokenfactory.us-central1.nebius.com/v1";
+// [...]
+
+fn build_nebius_client() -&gt; openai::CompletionsClient {
+    // Get stuff from env
+    let api_key = std::env::var("NEBIUS_API_KEY")
+        .expect("NEBIUS_API_KEY must be set");
+    
+    // Make that call
+    openai::CompletionsClient::builder()
+        .api_key(&amp;api_key)
+        .base_url(NEBIUS_BASE_URL)
+        .build()
+        .expect("Failed to build Nebius client")
+}
+</pre>
+<br>
+<p>That's it. The entire Nebius "provider" is 10 lines of code. No custom traits, no provider extensions, no boilerplate. You can leave now 👋</p>
+<br>
+<h2>Why this works (and why it's a hack)</h2>
+<br>
+<p>My agent uses an <code>enum</code> to wrap different provider types:</p>
+<br>
+<pre>
+enum Agent {
+    Anthropic(rig::agent::Agent&lt;anthropic::completion::CompletionModel&gt;),
+    Nebius(rig::agent::Agent&lt;openai::completion::CompletionModel&gt;), // Not really OpenAI
+    Openai(rig::agent::Agent&lt;openai::completion::CompletionModel&gt;),
+    Openrouter(rig::agent::Agent&lt;openrouter::completion::CompletionModel&gt;),
+}
+</pre>
+<br>
+<p>Notice something? <b>Nebius and OpenAI share the same <code>CompletionModel</code> type.</b> Because Nebius speaks the same API protocol, Rig can't tell the difference. It's just HTTP requests to a different hostname.</p>
+<br>
+<p>This is both beautiful and slightly wrong. Beautiful because it ✨ Just Works ✨. Wrong because... well, Nebius isn't OpenAI. They have their own model listing format, their own pricing, their own features like dedicated endpoints. Am I to just ignore all that? No! Ideally I would make a PR over to Rig to add support for Token Factory.</p>
+<br>
+<h2>The trailing slash that broke everything</h2>
+<br>
+<p>I deployed it, sent a test message to my Telegram bot, and got back:</p>
+<br>
+<pre>
+❌ Error: 404 Not Found
+</pre>
+<br>
+<p>Oh crap... Wait, what? The API key works. The base URL is correct. The model ID is valid. Why the 404 my sweet API? </p>
+<br>
+<p>I stared at the code for 10 minutes before I saw it:</p>
+<br>
+<pre>
+const NEBIUS_BASE_URL: &amp;str = "https://api.tokenfactory.us-central1.nebius.com/v1/";
+//                                                                               ^^^^ THIS SLASH
+</pre>
+<blockquote>Note: The first bit of code in this blog post is the working one, as you may note that one <i>does NOT</i> have a trailing slash.</blockquote>
+<br>
+<p>Rig's <code>post("/chat/completions")</code> appends to that base URL, producing <code>.../v1//chat/completions</code>. Double slash. Nebius says <i>"nah, sorry, don't know that endpoint."</i> Removed the trailing slash. Deployed again. Worked instantly.</p>
+<br>
+<h2>Model discovery</h2>
+<br>
+<p>Nebius hosts a bunch of models, and I wanted to use Kimi-K2.5 until I get <b>Kimi-K2.6</b>. Now, since I already have the <code>base_url</code>, maybe I can get models they have? Maybe even the exact model ID format. Is it <code>kimi-k2.5</code>? <code>moonshot/kimi-k2.5</code>? <code>moonshotai/Kimi-K2.5</code>?</p>
+<br>
+<p>Instead of guessing, let me just <code>curl</code> it:</p>
+<br>
+<pre>
+curl -s "https://api.tokenfactory.us-central1.nebius.com/v1/models" \
+  -H "Authorization: Bearer $NEBIUS_API_KEY" | jq
+</pre>
+<br>
+<p>This gets me a wonderful list (which is current as of 2026-04-21):</p>
+<br>
+<pre>
+{
+  "object": "list",
+  "data": [
+    {
+      "id": "deepseek-ai/DeepSeek-V3.2",
+      "created": 1776811207,
+      "object": "model",
+      "owned_by": "system"
+    },
+    {
+      "id": "nvidia/nemotron-3-super-120b-a12b",
+      "created": 1776811207,
+      "object": "model",
+      "owned_by": "system"
+    },
+    {
+      "id": "zai-org/GLM-5",
+      "created": 1776811204,
+      "object": "model",
+      "owned_by": "system"
+    },
+    {
+      "id": "Qwen/Qwen3.5-397B-A17B",
+      "created": 1776811207,
+      "object": "model",
+      "owned_by": "system"
+    },
+    {
+      "id": "moonshotai/Kimi-K2.5",
+      "created": 1776811205,
+      "object": "model",
+      "owned_by": "system"
+    },
+    {
+      "id": "MiniMaxAI/MiniMax-M2.5",
+      "created": 1776811203,
+      "object": "model",
+      "owned_by": "system"
+    },
+    {
+      "id": "deepseek-ai/DeepSeek-V3.2-fast",
+      "created": 1776811206,
+      "object": "model",
+      "owned_by": "system"
+    },
+    {
+      "id": "openai/gpt-oss-120b-fast",
+      "created": 1776811206,
+      "object": "model",
+      "owned_by": "system"
+    },
+    {
+      "id": "MiniMaxAI/MiniMax-M2.5-fast",
+      "created": 1776811208,
+      "object": "model",
+      "owned_by": "system"
+    },
+    {
+      "id": "Qwen/Qwen3-235B-A22B-Thinking-2507-fast",
+      "created": 1776811203,
+      "object": "model",
+      "owned_by": "system"
+    },
+    {
+      "id": "Qwen/Qwen3.5-397B-A17B-fast",
+      "created": 1776811203,
+      "object": "model",
+      "owned_by": "system"
+    },
+    {
+      "id": "Qwen/Qwen3-Next-80B-A3B-Thinking-fast",
+      "created": 1776811206,
+      "object": "model",
+      "owned_by": "system"
+    },
+    {
+      "id": "moonshotai/Kimi-K2.5-fast",
+      "created": 1776811206,
+      "object": "model",
+      "owned_by": "system"
+    }
+  ]
+}
+</pre>
+<br>
+<p>So for my case the ID is <code>moonshotai/Kimi-K2.5</code>. Plugged it in, worked first try.</p>
+<br>
+<h2>Why I still want to write a proper Rig provider</h2>
+<br>
+<p>Look, the OpenAI compatibility hack works. It's 10 lines. It's zero maintenance. But it's still a hack. In the future they way Rig does stuff may change, and there may be some certain changes in both Nebius and there that can impact it. So, here's what a proper Rig provider would give me/us:</p>
+<br>
+<p><b>Native model constants</b> - Instead of hardcoding <code>"moonshotai/Kimi-K2.5"</code> as a string, we'd have <code>nebius::KIMI_K2_5</code> or similar. Gotta love that type safety</p>
+<br>
+<p><b>Proper model listing</b> - Rig providers implement <code>ModelListing</code> which lets you query available models through the framework.</p>
+<br>
+<p><b>Nebius-specific features</b> - Things like dedicated endpoints (reserved GPU capacity), fine-tuning jobs, could be first-class citizens instead of string parameters.</p>
+<br>
+<p><b>Cleaner architecture</b> - The enum dispatch would have <code>Nebius(rig::agent::Agent&lt;nebius::completion::CompletionModel&gt;)</code> instead of piggybacking on OpenAI's type. Semantically correct.</p>
+<br>
+<p><b>Provider-specific auth</b> - Nebius uses project-based API keys with a specific format. A native provider could handle this more elegantly than <code>std::env::var("NEBIUS_API_KEY")</code>.</p>
+<br>
+<p>So yeah, I want to write that PR, soon 🤞 The hack is fine for now, but the proper thing is... well, proper.</p>
+<br>
+<h2>What this means for the wider ecosystem?</h2>
+<br>
+<p>I think OpenAI-compatible APIs are one of the most underrated developments in the LLM space right now. They let you:</p>
+<br>
+<ul>
+<li>Switch providers without changing code</li>
+<li>Self-host models (Ollama, vLLM) and use the same client</li>
+<li>Try new providers (like Nebius) with zero integration work</li>
+<li>Avoid vendor lock-in without building abstraction layers</li>
+</ul>
+<br>
+<br>
+<p>Rig's design accidentally makes this even better. Because it separates the HTTP client from the provider logic, any OpenAI-compatible endpoint Just Works with a <code>base_url</code> override. I wonder what other providers use this API compatibility.</p>
+<br>
+<p>But here's the tension: <b>compatibility is great for adoption, however native providers are better for developer ergonomics.</b> The OpenAI hack gets you running in 10 minutes. The native provider gets you type safety, discoverability, and feature completeness.</p>
+<br>
+<p>Both have their place. I'm just glad we can choose.</p>
+<br>
+<h2>What's next</h2>
+<br>
+<p><b>Write that proper Rig provider PR (seriously, I should)</b></p>
+<br>
+<p>If you're building with Rust and Rig, and you come across an OpenAI-compatible provider, don't overthink it. Just set the base URL and go. But if you stick with that provider... maybe write the native integration too. Future You will thank present you. (and so will I)</p>
+<br>
+<hr>
+<br>
+<p><i>More detail on the Obsidian bit and the agent itself can be found in <a href="https://rup12.net/posts/running-obsidian-headless/">this</a> blog post. The code is in not yet available, as it's just a mess, please bear with me. And if you want to see the AWS SDK for Rust pushed to its limits, check out <a href="/posts/download-and-deserialize-10000-files-in-10-seconds/">Download and deserialize 10,000 files in 9 seconds</a>.</i></p>
+<br>
+<p>Until next time friends! Don't forget to tip your compiler! 🦀</p>
+
+<hr>
+<font size="-1">rup12.net &mdash; Darko Mesaros</font>
+</td></tr>
+</table>
+
+</font>
+</body>
+</html>
