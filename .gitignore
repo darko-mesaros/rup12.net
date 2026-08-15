@@ -24,3 +24,6 @@ pnpm-debug.log*
 
 # local-only agent instructions
 AGENTS.md
+
+# Kiro
+.kiro
