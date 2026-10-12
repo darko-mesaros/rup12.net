@@ -9,7 +9,7 @@ image:
   src: /post-content/video-transcription-prefect-nebius/header.png
   alt: Image of the full pipeline shown in prefect
 pubDate: 2026-04-15
-isPinned: true
+isPinned: false
 ---
 
 I've been recording videos and livestreaming for a good (checks calendar), oh god, 6 years now! I can't believe it's been that long. Well, that has produced a hefty collection of content. While some of that is over on my [YouTube Channel](https://youtube.com/c/ruptwelve), not everyone (me included) wants to go and rewatch it all. However, I do think there is some good content I can pull away from there. Something that can get me started on a blog post or two. So, the question is: How do I extract information from hours and hours of videos? You transcribe them into text! 👏 Now, this is nothing new, but since the recent AI craze, some really impressive AI models have shown up with the ability to do a real good job in transcribing videos. And I want to, like any good engineer, tinker with them.

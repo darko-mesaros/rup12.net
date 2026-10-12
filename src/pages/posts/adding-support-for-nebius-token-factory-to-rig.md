@@ -9,7 +9,7 @@ pubDate: 2026-04-21
 image:
   src: /post-content/nebius-rig-token-factory/header.png
   alt: Screenshot of the code that builds the nebius agent
-isPinned: true
+isPinned: false
 ---
 
 > **TL;DR:** Nebius Token Factory speaks OpenAI's API protocol. So instead of building a custom Rig provider from scratch, I just pointed `openai::CompletionsClient` at their base URL. It took 10 lines of code and one infuriating trailing slash to get working. But I still want to write a proper Rig provider PR.
